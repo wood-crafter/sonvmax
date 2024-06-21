@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom'
 import Login from './views/Login'
 import Home from './views/Home'
+import ForgetPassword from './views/ForgetPassword'
 
 const AppRoutes = () => {
   return (
@@ -15,6 +16,9 @@ const AppRoutes = () => {
         )} />
       <Route path="/home" element={(
         <Home />
+        )} />
+      <Route path="/forget_password" element={(
+        <ForgetPassword />
         )} />
       <Route path="/*" element={<Home />} />
     </Routes>
