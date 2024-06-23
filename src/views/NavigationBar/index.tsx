@@ -7,42 +7,36 @@ type MenuItem = Required<MenuProps>['items'][number]
 
 const items: MenuItem[] = [
   {
-    label: 'Navigation One',
-    key: 'mail',
+    label: 'Danh mục sản phẩm',
+    key: 'productCollection',
   },
   {
-    label: 'Navigation Two',
-    key: 'app',
+    label: 'Home',
+    key: 'home',
   },
   {
-    label: 'Navigation Three - Submenu',
-    key: 'SubMenu',
-    children: [
-      {
-        type: 'group',
-        label: 'Item 1',
-        children: [
-          { label: 'Option 1', key: 'setting:1' },
-          { label: 'Option 2', key: 'setting:2' },
-        ],
-      },
-      {
-        type: 'group',
-        label: 'Item 2',
-        children: [
-          { label: 'Option 3', key: 'setting:3' },
-          { label: 'Option 4', key: 'setting:4' },
-        ],
-      },
-    ],
+    label: 'Giới thiệu',
+    key: 'introduce',
   },
   {
-    key: 'alipay',
-    label: (
-      <a href="https://ant.design" target="_blank" rel="noopener noreferrer">
-        Navigation Four - Link
-      </a>
-    ),
+    label: 'Tin tức',
+    key: 'news',
+  },
+  {
+    label: 'Sản phẩm',
+    key: 'products',
+  },
+  {
+    label: 'Dự án',
+    key: 'project',
+  },
+  {
+    label: 'Tư vấn',
+    key: 'advise',
+  },
+  {
+    label: 'Hợp tác',
+    key: 'cooperate'
   },
 ];
 
