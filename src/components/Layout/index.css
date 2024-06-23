@@ -4,3 +4,10 @@
   width: 100vw;
   min-height: 100vh;
 }
+
+.ManagerLayout {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  min-height: 100vh;
+}

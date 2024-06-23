@@ -40,14 +40,54 @@ const items: MenuItem[] = [
   },
 ];
 
-function Nav() {
+const managerItems: MenuItem[] = [
+  {
+    label: 'Quản lý nhân viên',
+    key: 'staff',
+  },
+  {
+    label: 'Quản lý đại lý',
+    key: 'agent',
+  },
+  {
+    label: 'Quản lý voucher',
+    key: 'voucher',
+  },
+  {
+    label: 'Quản lý đơn',
+    key: 'order',
+  },
+  {
+    label: <a href='/manage/products'>Quản lý sản phẩm</a>,
+    key: 'product'
+  },
+  {
+    label: 'Quản lý hóa đơn',
+    key: 'invoice',
+  },
+  {
+    label: 'Quản lý phiếu',
+    key: 'ticket',
+  },
+  {
+    label: 'Hồ sơ',
+    key: 'profile',
+  },
+];
+
+function Nav({ isManager = false }: { isManager: boolean }) {
   const [current, setCurrent] = useState('mail');
 
   const onClick: MenuProps['onClick'] = (e) => {
     setCurrent(e.key);
   };
   return (
-    <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
+    <Menu
+      onClick={onClick}
+      selectedKeys={[current]}
+      mode={isManager ? "vertical" : "horizontal"}
+      items={isManager ? managerItems : items}
+    />
   )
 }
 
