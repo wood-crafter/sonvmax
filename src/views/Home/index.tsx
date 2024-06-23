@@ -5,7 +5,7 @@ import { HOME_TOP_BANNERS } from '../../constant'
 
 function Home() {
   return (
-    <div className='home-body'>
+    <div className='Home'>
       <Swiper
         spaceBetween={0}
         slidesPerView={1}

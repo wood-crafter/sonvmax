@@ -7,23 +7,32 @@ import {
 import Login from './views/Login'
 import Home from './views/Home'
 import ForgetPassword from './views/ForgetPassword'
+import Layout from './components/Layout'
+
+type menuSetting = {
+  path: string,
+  element: React.ReactNode,
+  hasNav: boolean,
+}
+
+const menus: menuSetting[] = [
+  { path: '/login', element: <Login />, hasNav: false },
+  { path: '/home', element: <Home />, hasNav: true },
+  { path: '/forget_password', element: <ForgetPassword />, hasNav: false },
+  { path: '/*', element: <Home />, hasNav: true },
+]
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/login" element={(
-        <Login />
-        )} />
-      <Route path="/home" element={(
-        <Home />
-        )} />
-      <Route path="/forget_password" element={(
-        <ForgetPassword />
-        )} />
-      <Route path="/*" element={<Home />} />
+      {menus.map(item => {
+        return <Route path={item.path} element={<Layout Child={item.element} hasNav={item.hasNav} />} />
+      })}
     </Routes>
   )
 }
+
+
 
 function App() {
   return (

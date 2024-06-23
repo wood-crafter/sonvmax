@@ -1,4 +1,4 @@
-.home-body {
+.Home {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6,7 +6,7 @@
   height: 100vh;
 }
 
-.swiper-slide-banner {
+.Home .swiper-slide-banner {
   object-fit: cover;
   height: 60vh;
 }

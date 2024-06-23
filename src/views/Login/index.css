@@ -99,3 +99,7 @@ a {
   border-radius: 0.1rem;
   background-color: rgb(198, 198, 198);
 }
+
+button {
+  color: black;
+}
