@@ -23,7 +23,7 @@ function ManageProduct() {
   }
   const [productName, setProductName] = useState<string>('')
   const [price, setPrice] = useState<string>('')
-  const [quantity, setQuantity] = useState<string>('0')
+  const [quantity, setQuantity] = useState<string>('')
   const [category, setCategory] = useState<string>('')
 
   const [nextProductName, setNextProductName] = useState('')

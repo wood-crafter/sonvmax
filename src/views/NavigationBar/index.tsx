@@ -46,7 +46,7 @@ const managerItems: MenuItem[] = [
     key: 'staff',
   },
   {
-    label: 'Quản lý đại lý',
+    label: <a href='/manage/agents'>Quản lý đại lý</a>,
     key: 'agent',
   },
   {

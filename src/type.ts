@@ -32,3 +32,31 @@ export type RequestOptions = {
   body?: string
   [key: string]: any
 }
+
+export type Agent = {
+  id: string
+  roleId: string
+  email: string
+  username: string
+  password: string
+  rank: number
+  taxCode: string
+  phoneNumber: string
+  fullName: string
+  agentName: string
+  debitLimit: number
+  accountHave: number
+  accountDebit: number
+  address: string
+  orders: any[]
+  invoice: any[]
+  transactions: any[]
+  role: Role
+}
+
+export type Role = {
+  id: string
+  name: string
+  staff: any[]
+  agent: Agent[]
+}

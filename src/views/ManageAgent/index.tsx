@@ -1,0 +1,300 @@
+import { useState } from 'react'
+import './index.css'
+import { Table, Space, Button, Modal, notification, Input } from "antd"
+import { ColumnType } from 'antd/es/table'
+import { SmileOutlined } from '@ant-design/icons'
+import { Role, Agent } from '../../type'
+import { addAgent, deleteAgent, requestOptions, updateAgent, useAgents, useRoles } from '../../hooks/useAgent'
+
+function ManageAgent() {
+  const [api, contextHolder] = notification.useNotification()
+  const { data: rolesResponse } = useRoles(1)
+  const { data, mutate: refreshAgents } = useAgents(1)
+  const products = data?.data ?? []
+  const roles = rolesResponse?.data
+
+  const openNotification = () => {
+    api.open({
+      message: 'Tạo thất bại',
+      description:
+        'Vui lòng điền đủ thông tin',
+      icon: <SmileOutlined style={{ color: '#108ee9' }} />,
+    });
+  }
+
+  const [debitLimit, setDebitLimit] = useState<string>('')
+  const [accountDebit, setAccountDebit] = useState<string>('')
+  const [accountHave, setAccountHave] = useState<string>('')
+  const [rank, setRank] = useState<string>('')
+  const [role, setRole] = useState<string>('')
+
+  const [nextAgentFullName, setNextAgentFullName] = useState('')
+  const [nextAgentEmail, setNextAgentEmail] = useState('')
+  const [nextAgentUsername, setNextAgentUsername] = useState('')
+  const [nextAgentPassword, setNextAgentPassword] = useState('')
+  const [nextAgentAddress, setNextAgentAddress] = useState('')
+  const [nextAgentPhoneNumber, setNextAgentPhoneNumber] = useState('')
+  const [nextAgentName, setNextAgentName] = useState('')
+  const [nextAgentTaxCode, setNextAgentTaxCode] = useState('')
+  const [nextDebitLimit, setNextDebitLimit] = useState<string>('')
+  const [nextAccountDebit, setNextAccountDebit] = useState<string>('')
+  const [nextAccountHave, setNextAccountHave] = useState<string>('')
+  const [nextRank, setNextRank] = useState<string>('')
+  const [nextRole, setNextRole] = useState<string>('')
+
+  const [currentEditing, setCurrentEditing] = useState<Agent | null>(null)
+  const handleUpdateAgent = async () => {
+    const updateData = {
+      ...currentEditing,
+      roleId: role,
+      debitLimit: +debitLimit,
+      accountDebit: +accountDebit,
+      accountHave: +accountHave,
+      rank: +rank,
+    }
+    const updateBody = JSON.stringify(updateData)
+
+    await updateAgent(
+      `/agent/update-agent/${currentEditing?.id}`,
+      { ...requestOptions, body: updateBody, method: "PUT", headers: { 'Content-Type': 'application/json' } }
+    )
+  }
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const showModal = (record: Agent) => {
+    setCurrentEditing(record)
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmUpdate = async () => {
+    await handleUpdateAgent()
+    refreshAgents()
+    setIsModalOpen(false)
+  };
+
+  const handleCancelUpdate = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleDeleteRecord = async (record: Agent) => {
+    await deleteAgent(`/agent/remove-agent/${record.id}`, { ...requestOptions, method: 'DELETE' })
+    refreshAgents()
+  }
+
+  const clearAddInput = () => {
+    setNextAgentFullName('')
+    setNextAgentName('')
+    setNextAgentUsername('')
+    setNextAgentPassword('')
+    setNextAgentAddress('')
+    setNextAgentPhoneNumber('')
+    setNextAgentTaxCode('')
+    setNextAgentEmail('')
+    setNextDebitLimit('')
+    setNextAccountDebit('')
+    setNextAccountHave('')
+    setNextRank('')
+    setNextRole(roles ? roles[0].id : '')
+  }
+
+  const handleAddOk = async () => {
+    if (
+      !nextAgentFullName || !nextAgentEmail || !nextAgentAddress
+      || !nextAgentName || !nextAgentUsername || !nextAgentPassword
+      || !nextAgentPhoneNumber || !nextAgentTaxCode || !nextDebitLimit
+      || !nextAccountHave || !nextAccountDebit || !nextRank || !nextRole
+    ) {
+      openNotification()
+      return
+    }
+    const productToAdd = JSON.stringify({
+      email: nextAgentEmail,
+      username: nextAgentUsername,
+      password: nextAgentPassword,
+      rank: nextRank,
+      address: nextAgentAddress,
+      taxCode: nextAgentTaxCode,
+      phoneNumber: nextAgentPhoneNumber,
+      fullName: nextAgentFullName,
+      agentName: nextAgentName,
+      debitLimit: nextDebitLimit,
+      accountHave: nextAccountHave,
+      accountDebit: nextAccountDebit,
+    })
+
+    await addAgent(
+      `/agent/create-agent/${nextRole}`,
+      { ...requestOptions, body: productToAdd, method: "POST", headers: { 'Content-Type': 'application/json' } }
+    )
+    refreshAgents()
+    clearAddInput()
+  };
+
+  const handleAddCancel = () => {
+    setIsAddModalOpen(false);
+  };
+
+  const handleSetNumberInput = (e: React.ChangeEvent<HTMLInputElement>, setter: any) => {
+    const { value: inputValue } = e.target;
+    const reg = /^-?\d*(\.\d*)?$/;
+    if (reg.test(inputValue) || inputValue === '' || inputValue === '-') {
+      setter(inputValue);
+    }
+  }
+
+  const columns: ColumnType<Agent>[] = [
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: 'Công nợ tối đa',
+      dataIndex: 'debitLimit',
+      key: 'debitLimit',
+    },
+    {
+      title: 'Tài khoản hiện có',
+      dataIndex: 'accountHave',
+      key: 'accountHave',
+      render: (accountHave: number) => <div>{accountHave}</div>
+    },
+    {
+      title: 'Xếp hạng',
+      dataIndex: 'rank',
+      key: 'rank',
+    },
+    {
+      title: 'Vai trò',
+      dataIndex: 'roleId',
+      key: 'roleId',
+      render: (value: string) => (
+        <div>{roles?.find(it => it.id === value)?.name}</div>
+      )
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_, record: Agent) => (
+        <Space size="middle">
+          <Button onClick={() => showModal(record)}>Update</Button>
+          <Button onClick={() => handleDeleteRecord(record)}>Delete</Button>
+        </Space>
+      ),
+    },
+  ]
+
+  return (
+    <div className='ManageAgent'>
+      {contextHolder}
+      <Button onClick={() => { setIsAddModalOpen(true) }} type="primary" style={{ marginBottom: 16 }}>
+        Thêm khách hàng
+      </Button>
+      <Table columns={columns} dataSource={products} />
+      <Modal title="Sửa thông tin khách hàng" open={isModalOpen} onOk={handleConfirmUpdate} onCancel={handleCancelUpdate}>
+        {currentEditing && (
+          <div className='modal-update-container'>
+            <label htmlFor="agent-email">Email đại lý: </label>
+            <Input value={currentEditing?.email} type="text" name='agent-email' readOnly />
+            <label htmlFor="debitLimit">Công nợ tối đa: </label>
+            <Input
+              name='debitLimit'
+              value={debitLimit}
+              onChange={(e) => { handleSetNumberInput(e, setDebitLimit) }}
+              placeholder={currentEditing.debitLimit.toString()}
+              maxLength={16}
+            />
+            <label htmlFor="accountDebit">Dư nợ hiện tại: </label>
+            <Input
+              name='accountDebit'
+              value={accountDebit}
+              onChange={(e) => { handleSetNumberInput(e, setAccountDebit) }}
+              placeholder={currentEditing.accountDebit.toString()}
+              maxLength={16}
+            />
+            <label htmlFor="accountHave">Tài khoản hiện có: </label>
+            <Input
+              name='accountHave'
+              value={accountHave}
+              onChange={(e) => { handleSetNumberInput(e, setAccountHave) }}
+              placeholder={currentEditing.accountHave.toString()}
+              maxLength={16}
+            />
+            <label htmlFor="rank">Xếp hạng: </label>
+            <Input
+              name='rank'
+              value={rank}
+              onChange={(e) => { handleSetNumberInput(e, setRank) }}
+              placeholder={currentEditing.rank.toString()}
+              maxLength={16}
+            />
+            <label htmlFor="role">Vai trò:</label>
+            <select value={role} id="role" name="role" onChange={(e) => { setRole(e.target.value) }}>
+              {roles && roles.map((role: Role) => {
+                return <option value={role.id}>{role.name}</option>
+              })}
+            </select>
+          </div>
+        )}
+      </Modal>
+      <Modal title="Thêm khách hàng" open={isAddModalOpen} onOk={handleAddOk} onCancel={handleAddCancel}>
+        <div className='modal-update-container'>
+          <label htmlFor="agent-fullname">Tên đầy đủ đại lý: </label>
+          <Input value={nextAgentFullName} type="text" placeholder='Thêm tên đại lý' onChange={(e) => { setNextAgentFullName(e.target.value) }} name='agent-fullname' />
+          <label htmlFor="agent-email">Email đại lý: </label>
+          <Input value={nextAgentEmail} type="text" placeholder='Thêm tên đại lý' onChange={(e) => { setNextAgentEmail(e.target.value) }} name='agent-email' />
+          <label htmlFor="agent-username">Tên đăng nhập đại lý: </label>
+          <Input value={nextAgentUsername} type="text" placeholder='Thêm tên tài khoản đại lý' onChange={(e) => { setNextAgentUsername(e.target.value) }} name='agent-username' />
+          <label htmlFor="agent-password">Mật khẩu đại lý: </label>
+          <Input value={nextAgentPassword} type="text" placeholder='Thêm tên mật khẩu đại lý' onChange={(e) => { setNextAgentPassword(e.target.value) }} name='agent-password' />
+          <label htmlFor="agent-address">Địa chỉ đại lý: </label>
+          <Input value={nextAgentAddress} type="text" placeholder='Thêm tên địa chỉ đại lý' onChange={(e) => { setNextAgentAddress(e.target.value) }} name='agent-address' />
+          <label htmlFor="agent-phone-number">Số điện thoại đại lý: </label>
+          <Input value={nextAgentPhoneNumber} type="text" placeholder='Thêm tên đại lý' onChange={(e) => { setNextAgentPhoneNumber(e.target.value) }} name='agent-phone-number' />
+          <label htmlFor="agent-name">Tên đại lý: </label>
+          <Input value={nextAgentName} type="text" placeholder='Thêm tên đại lý' onChange={(e) => { setNextAgentName(e.target.value) }} name='agent-name' />
+          <label htmlFor="agent-tax-code">Mã số thuế đại lý: </label>
+          <Input value={nextAgentTaxCode} type="text" placeholder='Thêm tên đại lý' onChange={(e) => { setNextAgentTaxCode(e.target.value) }} name='agent-tax-code' />
+          <label htmlFor="debit-limit">Công nợ tối đa: </label>
+          <Input
+            name='debit-limit'
+            value={nextDebitLimit}
+            onChange={(e) => { handleSetNumberInput(e, setNextDebitLimit) }}
+            maxLength={16}
+          />
+          <label htmlFor="account-debit">Dư nợ: </label>
+          <Input
+            name='account-debit'
+            value={nextAccountDebit}
+            onChange={(e) => { handleSetNumberInput(e, setNextAccountDebit) }}
+            maxLength={16}
+          />
+          <label htmlFor="account-have">Tài khoản hiện có: </label>
+          <Input
+            name='account-have'
+            value={nextAccountHave}
+            onChange={(e) => { handleSetNumberInput(e, setNextAccountHave) }}
+            maxLength={16}
+          />
+          <label htmlFor="rank">Xếp hạng: </label>
+          <Input
+            name='rank'
+            value={nextRank}
+            onChange={(e) => { handleSetNumberInput(e, setNextRank) }}
+            maxLength={16}
+          />
+          <label htmlFor="role">Vai trò</label>
+          <select value={nextRole} id="category" name="category" onChange={(e) => { setNextRole(e.target.value) }}>
+            <option value="" disabled selected>Chọn vai trò</option>
+            {roles && roles.map((role: Role) => {
+              return <option key={role.id} value={role.id}>{role.name}</option>
+            })}
+          </select>
+        </div>
+      </Modal>
+    </div>
+  )
+}
+
+export default ManageAgent
