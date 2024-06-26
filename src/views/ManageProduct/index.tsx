@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './index.css'
-import { Table, Space, Button, Modal, notification } from "antd"
+import { Table, Space, Button, Modal, notification, Input } from "antd"
 import { ColumnType } from 'antd/es/table'
 import { SmileOutlined } from '@ant-design/icons'
 import useSWR from 'swr'
@@ -88,6 +88,18 @@ async function updateProduct(url: string, requestOptions: RequestOptions) {
   return res.json() as Promise<Product>
 }
 
+async function deleteProduct(url: string, requestOptions: RequestOptions) {
+  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
+
+  return res.json() as Promise<Product>
+}
+
+async function addProduct(url: string, requestOptions: RequestOptions) {
+  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
+
+  return res.json() as Promise<Product>
+}
+
 function ManageProduct() {
   const [api, contextHolder] = notification.useNotification()
   const { data: categoryResponse } = useCategories(1)
@@ -104,24 +116,24 @@ function ManageProduct() {
     });
   }
   const [productName, setProductName] = useState<string>('')
-  const [price, setPrice] = useState<number>(0)
-  const [quantity, setQuantity] = useState<number>(0)
+  const [price, setPrice] = useState<string>('')
+  const [quantity, setQuantity] = useState<string>('0')
   const [category, setCategory] = useState<string>('')
 
   const [nextProductName, setNextProductName] = useState('')
   const [nextProductDescription, setNextProductDescription] = useState('')
-  const [nextPrice, setNextPrice] = useState(0)
-  const [nextQuantity, setNextQuantity] = useState(0)
-  const [nextCategory, setNextCategory] = useState('sb')
+  const [nextPrice, setNextPrice] = useState('')
+  const [nextQuantity, setNextQuantity] = useState('')
+  const [nextCategory, setNextCategory] = useState(categories ? categories[0].id : '')
 
   const [currentEditing, setCurrentEditing] = useState<Product | null>(null)
   const handleUpdateProduct = async () => {
     const updateData = {
       ...currentEditing,
       categoryId: category,
-      price: price,
+      price: +price,
       nameProduct: productName,
-      quantity: quantity,
+      quantity: +quantity,
     }
     const updateBody = JSON.stringify(updateData)
 
@@ -136,8 +148,8 @@ function ManageProduct() {
   const showModal = (record: Product) => {
     setCurrentEditing(record)
     setProductName(record.nameProduct)
-    setPrice(record.price)
-    setQuantity(record.quantity)
+    setPrice(record.price.toString())
+    setQuantity(record.quantity.toString())
     setCategory(record.categoryId)
     setIsModalOpen(true);
   };
@@ -152,49 +164,53 @@ function ManageProduct() {
     setIsModalOpen(false);
   };
 
-  const handleDeleteRecord = (_record: Product) => {
+  const handleDeleteRecord = async (record: Product) => {
+    await deleteProduct(`/product/remove-product/${record.id}`, { ...requestOptions, method: 'DELETE' })
     refreshProducts()
-    // setData((data: Product[]) => {
-    //   return data.filter(item => {
-    //     return item.id !== record.id
-    //   })
-    // })
   }
 
   const clearAddInput = () => {
     setNextProductName('')
-    setQuantity(0)
-    setNextPrice(0)
+    setQuantity('')
+    setNextPrice('')
     setNextProductDescription('')
-    setCategory('sb')
+    setCategory(categories ? categories[0].id : '')
   }
 
-  const handleAddOk = () => {
+  const handleAddOk = async () => {
     if (!nextProductName || !nextProductDescription || !nextPrice || !nextCategory || !nextQuantity) {
       openNotification()
       return
     }
-    // setData((data: Product[]) => {
-    //   const next = [...data]
-    //   next.push({
-    //     id: (Math.random() + 1).toString(36),
-    //     category: nextCategory,
-    //     categoryId: (Math.random() + 1).toString(36),
-    //     price: nextPrice,
-    //     nameProduct: nextProductName,
-    //     description: nextProductDescription,
-    //     quantity: nextQuantity,
-    //     image: (Math.random() + 1).toString(36),
-    //   })
-    //   return next
-    // })
+    const productToAdd = JSON.stringify({
+      price: +nextPrice,
+      nameProduct: nextProductName,
+      description: nextProductDescription,
+      quantity: +nextQuantity,
+      image: null,
+      volume: null,
+      activeProduct: true,
+    })
+
+    await addProduct(
+      `/product/create-product/${nextCategory}`,
+      { ...requestOptions, body: productToAdd, method: "POST", headers: { 'Content-Type': 'application/json' } }
+    )
+    refreshProducts()
     clearAddInput()
-    setIsAddModalOpen(false)
   };
 
   const handleAddCancel = () => {
     setIsAddModalOpen(false);
   };
+
+  const handleSetNumberInput = (e: React.ChangeEvent<HTMLInputElement>, setter: any) => {
+    const { value: inputValue } = e.target;
+    const reg = /^-?\d*(\.\d*)?$/;
+    if (reg.test(inputValue) || inputValue === '' || inputValue === '-') {
+      setter(inputValue);
+    }
+  }
 
   const columns: ColumnType<Product>[] = [
     {
@@ -244,11 +260,23 @@ function ManageProduct() {
         {currentEditing && (
           <div className='modal-update-container'>
             <label htmlFor="product-name">Tên sản phẩm: </label>
-            <input value={productName} type="text" placeholder={currentEditing.nameProduct} onChange={(e) => { setProductName(e.target.value) }} name='product-name' />
+            <Input value={productName} type="text" placeholder={currentEditing.nameProduct} onChange={(e) => { setProductName(e.target.value) }} name='product-name' />
             <label htmlFor="price">Giá: </label>
-            <input value={price} type="number" placeholder={currentEditing.price.toString()} onChange={(e) => { setPrice(+e.target.value) }} name='price' />
-            <label htmlFor="product-name">Số lượng: </label>
-            <input value={quantity} type="number" placeholder={currentEditing.quantity.toString()} onChange={(e) => { setQuantity(+e.target.value) }} name='quantity' />
+            <Input
+              name='price'
+              value={price}
+              onChange={(e) => { handleSetNumberInput(e, setPrice) }}
+              placeholder={currentEditing.price.toString()}
+              maxLength={16}
+            />
+            <label htmlFor="quantity">Số lượng: </label>
+            <Input
+              name='quantity'
+              value={quantity}
+              onChange={(e) => { handleSetNumberInput(e, setQuantity) }}
+              placeholder={currentEditing.quantity.toString()}
+              maxLength={16}
+            />
             <label htmlFor="category">Loại sản phẩm</label>
             <select value={category} id="category" name="category" onChange={(e) => { setCategory(e.target.value) }}>
               {categories && categories.map((category: Category) => {
@@ -262,13 +290,25 @@ function ManageProduct() {
       <Modal title="Thêm sản phẩm" open={isAddModalOpen} onOk={handleAddOk} onCancel={handleAddCancel}>
         <div className='modal-update-container'>
           <label htmlFor="product-name">Tên sản phẩm: </label>
-          <input value={nextProductName} type="text" placeholder='Thêm tên sản phẩm' onChange={(e) => { setNextProductName(e.target.value) }} name='product-name' />
+          <Input value={nextProductName} type="text" placeholder='Thêm tên sản phẩm' onChange={(e) => { setNextProductName(e.target.value) }} name='product-name' />
           <label htmlFor="price">Giá: </label>
-          <input value={nextPrice} type="number" onChange={(e) => { setNextPrice(+e.target.value) }} name='price' />
+          <Input
+            name='price'
+            value={nextPrice}
+            onChange={(e) => { handleSetNumberInput(e, setNextPrice) }}
+            placeholder={nextPrice.toString()}
+            maxLength={16}
+          />
           <label htmlFor="product-name">Số lượng: </label>
-          <input value={nextQuantity} type="number" onChange={(e) => { setNextQuantity(+e.target.value) }} name='quantity' />
+          <Input
+            name='quantity'
+            value={nextQuantity}
+            onChange={(e) => { handleSetNumberInput(e, setNextQuantity) }}
+            placeholder={nextQuantity}
+            maxLength={16}
+          />
           <label htmlFor="product-description">Chi tiết: </label>
-          <input value={nextProductDescription} type="text" placeholder='Thêm chi tiết' onChange={(e) => { setNextProductDescription(e.target.value) }} name='product-description' />
+          <Input value={nextProductDescription} type="text" placeholder='Thêm chi tiết' onChange={(e) => { setNextProductDescription(e.target.value) }} name='product-description' />
           <label htmlFor="category">Loại sản phẩm</label>
           <select value={nextCategory} id="category" name="category" onChange={(e) => { setNextCategory(e.target.value) }}>
             {categories && categories.map((category: Category) => {
