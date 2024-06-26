@@ -3,16 +3,28 @@ import './index.css'
 import { Table, Space, Button, Modal, notification } from "antd"
 import { ColumnType } from 'antd/es/table'
 import { SmileOutlined } from '@ant-design/icons'
+import useSWR from 'swr'
+import { API_ROOT } from '../../constant'
 
 type Product = {
-  id: string,
-  category: string,
-  categoryId: string,
-  price: number,
-  nameProduct: string,
-  description: string,
-  quantity: number,
-  image: string,
+  id: string
+  categoryId: string
+  nameProduct: string
+  price: number
+  description: string | null
+  volume: number | null
+  activeProduct: boolean
+  quantity: number
+  image: string | null
+}
+
+type PagedResponse<T> = {
+  message: string
+  page: number
+  size: number
+  totalRecord: number
+  totalPage: number
+  data: T[]
 }
 
 const categories = [
@@ -20,31 +32,57 @@ const categories = [
   { id: 'skb', title: 'Son Khong Bong' },
 ]
 
-const products: Product[] = [
-  {
-    id: 'clxqe023n0001642g500anxnv',
-    categoryId: 'clxqdzfuc0000642gs8xlu7dq',
-    nameProduct: 'Son bong 1',
-    price: 200,
-    description: 'Son bong 1',
-    quantity: 2000,
-    image: 'image',
-    category: 'sb',
-  },
-  {
-    id: 'clxqe023n0001642g500anxnx',
-    categoryId: 'clxqdzfuc0000642gs8xlu7dq',
-    nameProduct: 'Son khong bong 1',
-    price: 300,
-    description: 'Son khong bong 1',
-    quantity: 3000,
-    image: 'image',
-    category: 'skb',
+// const products: Product[] = [
+//   {
+//     id: 'clxqe023n0001642g500anxnv',
+//     categoryId: 'clxqdzfuc0000642gs8xlu7dq',
+//     nameProduct: 'Son bong 1',
+//     price: 200,
+//     description: 'Son bong 1',
+//     quantity: 2000,
+//     image: 'image',
+//     category: 'sb',
+//   },
+//   {
+//     id: 'clxqe023n0001642g500anxnx',
+//     categoryId: 'clxqdzfuc0000642gs8xlu7dq',
+//     nameProduct: 'Son khong bong 1',
+//     price: 300,
+//     description: 'Son khong bong 1',
+//     quantity: 3000,
+//     image: 'image',
+//     category: 'skb',
+//   }
+// ]
+
+function useProduct(page: number, size = 20) {
+  const { data, isLoading, error, mutate } = useSWR(`/product/get-product?page=${page}&size=${size}`, fetchProduct)
+
+  return {
+    data,
+    isLoading,
+    error,
+    mutate,
   }
-]
+}
+
+async function fetchProduct(url: string) {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Access-Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbklkIjoidGFrYWhpcm8ubWl5YW1vdG9Abm9yaXRzdS5jb20iLCJyb2xlIjowLCJsb2dpbkluZm9JZCI6MjgsImN1c3RvbWVySWQiOjY4LCJzdG9yZUNvZGUiOiJNaXlhbW90byIsImlhdCI6MTcxODMyNTI2MiwiZXhwIjoxNzE4NDExNjYyfQ.Qb8cpuRO6ZyPaHXIznrJq1HqmmkLLdhG9LHC0C9otcs"
+    }
+  };
+
+  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
+
+  return res.json() as Promise<PagedResponse<Product>>
+}
 
 function ManageProduct() {
   const [api, contextHolder] = notification.useNotification();
+  const { data, mutate: refreshProducts } = useProduct(1)
+  const products = data?.data ?? []
 
   const openNotification = () => {
     api.open({
@@ -54,7 +92,6 @@ function ManageProduct() {
       icon: <SmileOutlined style={{ color: '#108ee9' }} />,
     });
   }
-  const [data, setData] = useState(products)
   const [productName, setProductName] = useState('')
   const [price, setPrice] = useState(0)
   const [quantity, setQuantity] = useState(0)
@@ -68,19 +105,19 @@ function ManageProduct() {
 
   const [currentEditing, setCurrentEditing] = useState<Product | null>(null)
   const handleUpdateProduct = () => {
-    setData((data: Product[]): Product[] => {
-      return data.map((item: Product) => {
-        if (item.id === currentEditing?.id) {
-          const updateProduct = { ...currentEditing }
-          updateProduct.category = category
-          updateProduct.price = price
-          updateProduct.nameProduct = productName
-          updateProduct.quantity = quantity
-          return updateProduct
-        }
-        return item
-      })
-    })
+    // setData((data: Product[]): Product[] => {
+    //   return data.map((item: Product) => {
+    //     if (item.id === currentEditing?.id) {
+    //       const updateProduct = { ...currentEditing }
+    //       updateProduct.category = category
+    //       updateProduct.price = price
+    //       updateProduct.nameProduct = productName
+    //       updateProduct.quantity = quantity
+    //       return updateProduct
+    //     }
+    //     return item
+    //   })
+    // })
   }
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -90,7 +127,7 @@ function ManageProduct() {
     setProductName(record.nameProduct)
     setPrice(record.price)
     setQuantity(record.quantity)
-    setCategory(record.category)
+    setCategory(record.categoryId)
     setIsModalOpen(true);
   };
 
@@ -103,12 +140,13 @@ function ManageProduct() {
     setIsModalOpen(false);
   };
 
-  const handleDeleteRecord = (record: Product) => {
-    setData((data: Product[]) => {
-      return data.filter(item => {
-        return item.id !== record.id
-      })
-    })
+  const handleDeleteRecord = (_record: Product) => {
+    refreshProducts()
+    // setData((data: Product[]) => {
+    //   return data.filter(item => {
+    //     return item.id !== record.id
+    //   })
+    // })
   }
 
   const clearAddInput = () => {
@@ -124,20 +162,20 @@ function ManageProduct() {
       openNotification()
       return
     }
-    setData((data: Product[]) => {
-      const next = [...data]
-      next.push({
-        id: (Math.random() + 1).toString(36),
-        category: nextCategory,
-        categoryId: (Math.random() + 1).toString(36),
-        price: nextPrice,
-        nameProduct: nextProductName,
-        description: nextProductDescription,
-        quantity: nextQuantity,
-        image: (Math.random() + 1).toString(36),
-      })
-      return next
-    })
+    // setData((data: Product[]) => {
+    //   const next = [...data]
+    //   next.push({
+    //     id: (Math.random() + 1).toString(36),
+    //     category: nextCategory,
+    //     categoryId: (Math.random() + 1).toString(36),
+    //     price: nextPrice,
+    //     nameProduct: nextProductName,
+    //     description: nextProductDescription,
+    //     quantity: nextQuantity,
+    //     image: (Math.random() + 1).toString(36),
+    //   })
+    //   return next
+    // })
     clearAddInput()
     setIsAddModalOpen(false)
   };
@@ -189,7 +227,7 @@ function ManageProduct() {
       <Button onClick={() => { setIsAddModalOpen(true) }} type="primary" style={{ marginBottom: 16 }}>
         Thêm sản phẩm
       </Button>
-      <Table columns={columns} dataSource={data} />
+      <Table columns={columns} dataSource={products} />
       <Modal title="Sửa sản phẩm" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
         {currentEditing && (
           <div className='modal-update-container'>

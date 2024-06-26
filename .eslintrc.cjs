@@ -14,11 +14,12 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
-    'no-unused-vars': ['error', {
+    'no-unused-vars': ['warn', {
       'vars': 'all',
       'args': 'after-used',
       'caughtErrors': 'all',
       'ignoreRestSiblings': false,
+      'argsIgnorePattern': '^_',
     }]
   },
 }
