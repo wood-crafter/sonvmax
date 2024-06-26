@@ -168,7 +168,7 @@ function ManageProduct() {
       dataIndex: 'category',
       key: 'category',
       render: (value: string) => (
-        <div>{categories.find(it => it.id === value).title}</div>
+        <div>{categories.find(it => it.id === value)?.title}</div>
       )
     },
     {
