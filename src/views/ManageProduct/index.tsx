@@ -3,102 +3,8 @@ import './index.css'
 import { Table, Space, Button, Modal, notification, Input } from "antd"
 import { ColumnType } from 'antd/es/table'
 import { SmileOutlined } from '@ant-design/icons'
-import useSWR from 'swr'
-import { API_ROOT } from '../../constant'
-
-type Product = {
-  id: string
-  categoryId: string
-  nameProduct: string
-  price: number
-  description: string | null
-  volume: number | null
-  activeProduct: boolean
-  quantity: number
-  image: string | null
-}
-
-type Category = {
-  id: string
-  name: string
-  description: string | null
-  products: Product[]
-}
-
-type PagedResponse<T> = {
-  message: string
-  page: number
-  size: number
-  totalRecord: number
-  totalPage: number
-  data: T[]
-}
-
-type RequestOptions = {
-  method?: string
-  headers?: Record<string, string>
-  body?: string
-  [key: string]: any
-}
-
-const requestOptions: RequestOptions = {
-  method: "GET",
-  headers: {
-    "Access-Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbklkIjoidGFrYWhpcm8ubWl5YW1vdG9Abm9yaXRzdS5jb20iLCJyb2xlIjowLCJsb2dpbkluZm9JZCI6MjgsImN1c3RvbWVySWQiOjY4LCJzdG9yZUNvZGUiOiJNaXlhbW90byIsImlhdCI6MTcxODMyNTI2MiwiZXhwIjoxNzE4NDExNjYyfQ.Qb8cpuRO6ZyPaHXIznrJq1HqmmkLLdhG9LHC0C9otcs"
-  }
-}
-
-function useCategories(page: number, size = 20) {
-  const { data, isLoading, error, mutate } = useSWR(`/category/get-category?page=${page}&size=${size}`, fetchCategories)
-
-  return {
-    data,
-    isLoading,
-    error,
-    mutate,
-  }
-}
-
-async function fetchCategories(url: string) {
-  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
-
-  return res.json() as Promise<PagedResponse<Category>>
-}
-
-function useProducts(page: number, size = 20) {
-  const { data, isLoading, error, mutate } = useSWR(`/product/get-product?page=${page}&size=${size}`, fetchProducts)
-
-  return {
-    data,
-    isLoading,
-    error,
-    mutate,
-  }
-}
-
-async function fetchProducts(url: string) {
-  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
-
-  return res.json() as Promise<PagedResponse<Product>>
-}
-
-async function updateProduct(url: string, requestOptions: RequestOptions) {
-  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
-
-  return res.json() as Promise<Product>
-}
-
-async function deleteProduct(url: string, requestOptions: RequestOptions) {
-  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
-
-  return res.json() as Promise<Product>
-}
-
-async function addProduct(url: string, requestOptions: RequestOptions) {
-  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
-
-  return res.json() as Promise<Product>
-}
+import { Category, Product } from '../../type'
+import { useCategories, useProducts, updateProduct, deleteProduct, addProduct, requestOptions } from '../../hooks/useProduct'
 
 function ManageProduct() {
   const [api, contextHolder] = notification.useNotification()
@@ -311,8 +217,9 @@ function ManageProduct() {
           <Input value={nextProductDescription} type="text" placeholder='Thêm chi tiết' onChange={(e) => { setNextProductDescription(e.target.value) }} name='product-description' />
           <label htmlFor="category">Loại sản phẩm</label>
           <select value={nextCategory} id="category" name="category" onChange={(e) => { setNextCategory(e.target.value) }}>
+            <option value="" disabled selected>Chọn loại sơn</option>
             {categories && categories.map((category: Category) => {
-              return <option value={category.id}>{category.name}</option>
+              return <option key={category.id} value={category.id}>{category.name}</option>
             })}
           </select>
         </div>
