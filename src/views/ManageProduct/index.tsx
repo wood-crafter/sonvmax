@@ -18,6 +18,13 @@ type Product = {
   image: string | null
 }
 
+type Category = {
+  id: string
+  name: string
+  description: string | null
+  products: Product[]
+}
+
 type PagedResponse<T> = {
   message: string
   page: number
@@ -27,36 +34,22 @@ type PagedResponse<T> = {
   data: T[]
 }
 
-const categories = [
-  { id: 'sb', title: 'Son Bong' },
-  { id: 'skb', title: 'Son Khong Bong' },
-]
+type RequestOptions = {
+  method?: string
+  headers?: Record<string, string>
+  body?: string
+  [key: string]: any
+}
 
-// const products: Product[] = [
-//   {
-//     id: 'clxqe023n0001642g500anxnv',
-//     categoryId: 'clxqdzfuc0000642gs8xlu7dq',
-//     nameProduct: 'Son bong 1',
-//     price: 200,
-//     description: 'Son bong 1',
-//     quantity: 2000,
-//     image: 'image',
-//     category: 'sb',
-//   },
-//   {
-//     id: 'clxqe023n0001642g500anxnx',
-//     categoryId: 'clxqdzfuc0000642gs8xlu7dq',
-//     nameProduct: 'Son khong bong 1',
-//     price: 300,
-//     description: 'Son khong bong 1',
-//     quantity: 3000,
-//     image: 'image',
-//     category: 'skb',
-//   }
-// ]
+const requestOptions: RequestOptions = {
+  method: "GET",
+  headers: {
+    "Access-Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbklkIjoidGFrYWhpcm8ubWl5YW1vdG9Abm9yaXRzdS5jb20iLCJyb2xlIjowLCJsb2dpbkluZm9JZCI6MjgsImN1c3RvbWVySWQiOjY4LCJzdG9yZUNvZGUiOiJNaXlhbW90byIsImlhdCI6MTcxODMyNTI2MiwiZXhwIjoxNzE4NDExNjYyfQ.Qb8cpuRO6ZyPaHXIznrJq1HqmmkLLdhG9LHC0C9otcs"
+  }
+}
 
-function useProduct(page: number, size = 20) {
-  const { data, isLoading, error, mutate } = useSWR(`/product/get-product?page=${page}&size=${size}`, fetchProduct)
+function useCategories(page: number, size = 20) {
+  const { data, isLoading, error, mutate } = useSWR(`/category/get-category?page=${page}&size=${size}`, fetchCategories)
 
   return {
     data,
@@ -66,23 +59,41 @@ function useProduct(page: number, size = 20) {
   }
 }
 
-async function fetchProduct(url: string) {
-  const requestOptions = {
-    method: "GET",
-    headers: {
-      "Access-Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbklkIjoidGFrYWhpcm8ubWl5YW1vdG9Abm9yaXRzdS5jb20iLCJyb2xlIjowLCJsb2dpbkluZm9JZCI6MjgsImN1c3RvbWVySWQiOjY4LCJzdG9yZUNvZGUiOiJNaXlhbW90byIsImlhdCI6MTcxODMyNTI2MiwiZXhwIjoxNzE4NDExNjYyfQ.Qb8cpuRO6ZyPaHXIznrJq1HqmmkLLdhG9LHC0C9otcs"
-    }
-  };
+async function fetchCategories(url: string) {
+  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
 
+  return res.json() as Promise<PagedResponse<Category>>
+}
+
+function useProducts(page: number, size = 20) {
+  const { data, isLoading, error, mutate } = useSWR(`/product/get-product?page=${page}&size=${size}`, fetchProducts)
+
+  return {
+    data,
+    isLoading,
+    error,
+    mutate,
+  }
+}
+
+async function fetchProducts(url: string) {
   const res = await fetch(`${API_ROOT}${url}`, requestOptions)
 
   return res.json() as Promise<PagedResponse<Product>>
 }
 
+async function updateProduct(url: string, requestOptions: RequestOptions) {
+  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
+
+  return res.json() as Promise<Product>
+}
+
 function ManageProduct() {
-  const [api, contextHolder] = notification.useNotification();
-  const { data, mutate: refreshProducts } = useProduct(1)
+  const [api, contextHolder] = notification.useNotification()
+  const { data: categoryResponse } = useCategories(1)
+  const { data, mutate: refreshProducts } = useProducts(1)
   const products = data?.data ?? []
+  const categories = categoryResponse?.data
 
   const openNotification = () => {
     api.open({
@@ -92,10 +103,10 @@ function ManageProduct() {
       icon: <SmileOutlined style={{ color: '#108ee9' }} />,
     });
   }
-  const [productName, setProductName] = useState('')
-  const [price, setPrice] = useState(0)
-  const [quantity, setQuantity] = useState(0)
-  const [category, setCategory] = useState('')
+  const [productName, setProductName] = useState<string>('')
+  const [price, setPrice] = useState<number>(0)
+  const [quantity, setQuantity] = useState<number>(0)
+  const [category, setCategory] = useState<string>('')
 
   const [nextProductName, setNextProductName] = useState('')
   const [nextProductDescription, setNextProductDescription] = useState('')
@@ -104,20 +115,20 @@ function ManageProduct() {
   const [nextCategory, setNextCategory] = useState('sb')
 
   const [currentEditing, setCurrentEditing] = useState<Product | null>(null)
-  const handleUpdateProduct = () => {
-    // setData((data: Product[]): Product[] => {
-    //   return data.map((item: Product) => {
-    //     if (item.id === currentEditing?.id) {
-    //       const updateProduct = { ...currentEditing }
-    //       updateProduct.category = category
-    //       updateProduct.price = price
-    //       updateProduct.nameProduct = productName
-    //       updateProduct.quantity = quantity
-    //       return updateProduct
-    //     }
-    //     return item
-    //   })
-    // })
+  const handleUpdateProduct = async () => {
+    const updateData = {
+      ...currentEditing,
+      categoryId: category,
+      price: price,
+      nameProduct: productName,
+      quantity: quantity,
+    }
+    const updateBody = JSON.stringify(updateData)
+
+    await updateProduct(
+      `/product/update-product/${currentEditing?.id}`,
+      { ...requestOptions, body: updateBody, method: "PUT", headers: { 'Content-Type': 'application/json' } }
+    )
   }
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -131,8 +142,9 @@ function ManageProduct() {
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
-    handleUpdateProduct()
+  const handleOk = async () => {
+    await handleUpdateProduct()
+    refreshProducts()
     setIsModalOpen(false)
   };
 
@@ -203,10 +215,10 @@ function ManageProduct() {
     },
     {
       title: 'Loại sản phẩm',
-      dataIndex: 'category',
-      key: 'category',
+      dataIndex: 'categoryId',
+      key: 'categoryId',
       render: (value: string) => (
-        <div>{categories.find(it => it.id === value)?.title}</div>
+        <div>{categories?.find(it => it.id === value)?.name}</div>
       )
     },
     {
@@ -239,8 +251,9 @@ function ManageProduct() {
             <input value={quantity} type="number" placeholder={currentEditing.quantity.toString()} onChange={(e) => { setQuantity(+e.target.value) }} name='quantity' />
             <label htmlFor="category">Loại sản phẩm</label>
             <select value={category} id="category" name="category" onChange={(e) => { setCategory(e.target.value) }}>
-              <option value="sb">Son Bong</option>
-              <option value="skb">Son Khong Bong</option>
+              {categories && categories.map((category: Category) => {
+                return <option value={category.id}>{category.name}</option>
+              })}
             </select>
           </div>
         )}
@@ -258,8 +271,9 @@ function ManageProduct() {
           <input value={nextProductDescription} type="text" placeholder='Thêm chi tiết' onChange={(e) => { setNextProductDescription(e.target.value) }} name='product-description' />
           <label htmlFor="category">Loại sản phẩm</label>
           <select value={nextCategory} id="category" name="category" onChange={(e) => { setNextCategory(e.target.value) }}>
-            <option value="sb">Son Bong</option>
-            <option value="skb">Son Khong Bong</option>
+            {categories && categories.map((category: Category) => {
+              return <option value={category.id}>{category.name}</option>
+            })}
           </select>
         </div>
       </Modal>
