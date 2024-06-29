@@ -3,11 +3,11 @@ export type Product = {
   categoryId: string
   nameProduct: string
   price: number
-  description: string | null
-  volume: number | null
+  description: string
+  volume: number | undefined
   activeProduct: boolean
   quantity: number
-  image: string | null
+  image: string | undefined
 }
 
 export type Category = {
@@ -59,4 +59,16 @@ export type Role = {
   name: string
   staff: any[]
   agent: Agent[]
+}
+
+export type Staff = {
+  id: string
+  roleId: string
+  fullName: string
+  phoneNumber: string
+  isActive: boolean
+  gender: number
+  username: string
+  password: string
+  role: Role
 }

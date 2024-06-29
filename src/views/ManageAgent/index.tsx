@@ -10,7 +10,7 @@ function ManageAgent() {
   const [api, contextHolder] = notification.useNotification()
   const { data: rolesResponse } = useRoles(1)
   const { data, mutate: refreshAgents } = useAgents(1)
-  const products = data?.data ?? []
+  const agents = data?.data ?? []
   const roles = rolesResponse?.data
 
   const openNotification = () => {
@@ -108,7 +108,7 @@ function ManageAgent() {
       openNotification()
       return
     }
-    const productToAdd = JSON.stringify({
+    const agentToAdd = JSON.stringify({
       email: nextAgentEmail,
       username: nextAgentUsername,
       password: nextAgentPassword,
@@ -125,7 +125,7 @@ function ManageAgent() {
 
     await addAgent(
       `/agent/create-agent/${nextRole}`,
-      { ...requestOptions, body: productToAdd, method: "POST", headers: { 'Content-Type': 'application/json' } }
+      { ...requestOptions, body: agentToAdd, method: "POST", headers: { 'Content-Type': 'application/json' } }
     )
     refreshAgents()
     clearAddInput()
@@ -144,6 +144,11 @@ function ManageAgent() {
   }
 
   const columns: ColumnType<Agent>[] = [
+    {
+      title: 'Tên đại lý',
+      dataIndex: 'agentName',
+      key: 'agentName',
+    },
     {
       title: 'Email',
       dataIndex: 'email',
@@ -189,9 +194,9 @@ function ManageAgent() {
     <div className='ManageAgent'>
       {contextHolder}
       <Button onClick={() => { setIsAddModalOpen(true) }} type="primary" style={{ marginBottom: 16 }}>
-        Thêm khách hàng
+        Thêm đại lý
       </Button>
-      <Table columns={columns} dataSource={products} />
+      <Table columns={columns} dataSource={agents} />
       <Modal title="Sửa thông tin khách hàng" open={isModalOpen} onOk={handleConfirmUpdate} onCancel={handleCancelUpdate}>
         {currentEditing && (
           <div className='modal-update-container'>

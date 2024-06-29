@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './index.css'
-import { Table, Space, Button, Modal, notification, Input } from "antd"
+import { Table, Space, Button, Modal, notification, Input, Radio } from "antd"
 import { ColumnType } from 'antd/es/table'
 import { SmileOutlined } from '@ant-design/icons'
 import { Category, Product } from '../../type'
@@ -23,14 +23,20 @@ function ManageProduct() {
   }
   const [productName, setProductName] = useState<string>('')
   const [price, setPrice] = useState<string>('')
-  const [quantity, setQuantity] = useState<string>('')
+
+  // TODO: Remove quantity -> quantity only changes by stocker
+  // TODO: Add images
+  // TODO: Price -> Giá niêm yết
+  const [description, setDescription] = useState<string>('')
   const [category, setCategory] = useState<string>('')
+  const [activeProduct, setActiveProduct] = useState(false)
 
   const [nextProductName, setNextProductName] = useState('')
   const [nextProductDescription, setNextProductDescription] = useState('')
   const [nextPrice, setNextPrice] = useState('')
-  const [nextQuantity, setNextQuantity] = useState('')
+  const [nextDescription, setNextDescription] = useState('')
   const [nextCategory, setNextCategory] = useState(categories ? categories[0].id : '')
+  const [nextActiveProduct, setNextActiveProduct] = useState(false)
 
   const [currentEditing, setCurrentEditing] = useState<Product | null>(null)
   const handleUpdateProduct = async () => {
@@ -39,7 +45,8 @@ function ManageProduct() {
       categoryId: category,
       price: +price,
       nameProduct: productName,
-      quantity: +quantity,
+      description: description,
+      activeProduct: activeProduct,
     }
     const updateBody = JSON.stringify(updateData)
 
@@ -55,8 +62,9 @@ function ManageProduct() {
     setCurrentEditing(record)
     setProductName(record.nameProduct)
     setPrice(record.price.toString())
-    setQuantity(record.quantity.toString())
+    setDescription(record.description)
     setCategory(record.categoryId)
+    setActiveProduct(record.activeProduct)
     setIsModalOpen(true);
   };
 
@@ -77,14 +85,14 @@ function ManageProduct() {
 
   const clearAddInput = () => {
     setNextProductName('')
-    setQuantity('')
+    setDescription('')
     setNextPrice('')
     setNextProductDescription('')
     setCategory(categories ? categories[0].id : '')
   }
 
   const handleAddOk = async () => {
-    if (!nextProductName || !nextProductDescription || !nextPrice || !nextCategory || !nextQuantity) {
+    if (!nextProductName || !nextProductDescription || !nextPrice || !nextCategory || !nextDescription) {
       openNotification()
       return
     }
@@ -92,10 +100,10 @@ function ManageProduct() {
       price: +nextPrice,
       nameProduct: nextProductName,
       description: nextProductDescription,
-      quantity: +nextQuantity,
+      quantity: +nextDescription,
       image: null,
       volume: null,
-      activeProduct: true,
+      activeProduct: nextActiveProduct,
     })
 
     await addProduct(
@@ -125,15 +133,21 @@ function ManageProduct() {
       key: 'nameProduct',
     },
     {
-      title: 'Giá',
+      title: 'Hình ảnh',
+      dataIndex: 'image',
+      key: 'image',
+      render: (image: string) => <img src={image} />
+    },
+    {
+      title: 'Giá niêm yết',
       dataIndex: 'price',
       key: 'price',
       render: (price: number) => <div>{price}</div>
     },
     {
-      title: 'Số lượng',
-      dataIndex: 'quantity',
-      key: 'quantity',
+      title: 'Chi tiết',
+      dataIndex: 'description',
+      key: 'description',
     },
     {
       title: 'Loại sản phẩm',
@@ -142,6 +156,12 @@ function ManageProduct() {
       render: (value: string) => (
         <div>{categories?.find(it => it.id === value)?.name}</div>
       )
+    },
+    {
+      title: 'Hoạt động',
+      dataIndex: 'activeProduct',
+      key: 'activeProduct',
+      render: (isActive: boolean) => <p style={{ color: isActive ? 'green' : 'red' }}>{isActive ? 'Hoạt động' : 'Tạm dừng'}</p>
     },
     {
       title: 'Action',
@@ -167,7 +187,7 @@ function ManageProduct() {
           <div className='modal-update-container'>
             <label htmlFor="product-name">Tên sản phẩm: </label>
             <Input value={productName} type="text" placeholder={currentEditing.nameProduct} onChange={(e) => { setProductName(e.target.value) }} name='product-name' />
-            <label htmlFor="price">Giá: </label>
+            <label htmlFor="price">Giá niêm yết: </label>
             <Input
               name='price'
               value={price}
@@ -175,13 +195,13 @@ function ManageProduct() {
               placeholder={currentEditing.price.toString()}
               maxLength={16}
             />
-            <label htmlFor="quantity">Số lượng: </label>
+            <label htmlFor="description">Chi tiết sản phẩm: </label>
             <Input
-              name='quantity'
-              value={quantity}
-              onChange={(e) => { handleSetNumberInput(e, setQuantity) }}
-              placeholder={currentEditing.quantity.toString()}
-              maxLength={16}
+              name='description'
+              value={description}
+              onChange={(e) => { setDescription(e.target.value) }}
+              placeholder={currentEditing.description}
+              maxLength={256}
             />
             <label htmlFor="category">Loại sản phẩm</label>
             <select value={category} id="category" name="category" onChange={(e) => { setCategory(e.target.value) }}>
@@ -189,6 +209,10 @@ function ManageProduct() {
                 return <option value={category.id}>{category.name}</option>
               })}
             </select>
+            <Radio.Group onChange={(e) => { setActiveProduct(e.target.value) }} value={activeProduct}>
+              <Radio value={true}>Hoạt động</Radio>
+              <Radio value={false}>Tạm dừng</Radio>
+            </Radio.Group>
           </div>
         )}
       </Modal>
@@ -197,21 +221,21 @@ function ManageProduct() {
         <div className='modal-update-container'>
           <label htmlFor="product-name">Tên sản phẩm: </label>
           <Input value={nextProductName} type="text" placeholder='Thêm tên sản phẩm' onChange={(e) => { setNextProductName(e.target.value) }} name='product-name' />
-          <label htmlFor="price">Giá: </label>
+          <label htmlFor="price">Giá niêm yết: </label>
           <Input
             name='price'
             value={nextPrice}
             onChange={(e) => { handleSetNumberInput(e, setNextPrice) }}
-            placeholder={nextPrice.toString()}
+            placeholder={'Thêm giá'}
             maxLength={16}
           />
-          <label htmlFor="product-name">Số lượng: </label>
+          <label htmlFor="descrition">Chi tiết sản phẩm: </label>
           <Input
-            name='quantity'
-            value={nextQuantity}
-            onChange={(e) => { handleSetNumberInput(e, setNextQuantity) }}
-            placeholder={nextQuantity}
-            maxLength={16}
+            name='descrition'
+            value={nextDescription}
+            onChange={(e) => { setNextDescription(e.target.value) }}
+            placeholder={'Thêm chi tiết'}
+            maxLength={256}
           />
           <label htmlFor="product-description">Chi tiết: </label>
           <Input value={nextProductDescription} type="text" placeholder='Thêm chi tiết' onChange={(e) => { setNextProductDescription(e.target.value) }} name='product-description' />
@@ -222,6 +246,10 @@ function ManageProduct() {
               return <option key={category.id} value={category.id}>{category.name}</option>
             })}
           </select>
+          <Radio.Group onChange={(e) => { setNextActiveProduct(e.target.value) }} value={nextActiveProduct}>
+            <Radio value={true}>Hoạt động</Radio>
+            <Radio value={false}>Tạm dừng</Radio>
+          </Radio.Group>
         </div>
       </Modal>
     </div>

@@ -10,6 +10,7 @@ import ForgetPassword from './views/ForgetPassword'
 import Layout from './components/Layout'
 import ManageProduct from './views/ManageProduct'
 import ManageAgent from './views/ManageAgent'
+import ManageStaff from './views/ManageStaff'
 
 type menuSetting = {
   path: string,
@@ -24,6 +25,7 @@ const menus: menuSetting[] = [
   { path: '/forget_password', element: <ForgetPassword />, hasNav: false, isManager: false },
   { path: '/manage/products', element: <ManageProduct />, hasNav: true, isManager: true },
   { path: '/manage/agents', element: <ManageAgent />, hasNav: true, isManager: true },
+  { path: '/manage/staff', element: <ManageStaff />, hasNav: true, isManager: true },
   { path: '/*', element: <Home />, hasNav: true, isManager: false },
 ]
 

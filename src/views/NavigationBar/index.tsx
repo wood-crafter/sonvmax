@@ -42,7 +42,7 @@ const items: MenuItem[] = [
 
 const managerItems: MenuItem[] = [
   {
-    label: 'Quản lý nhân viên',
+    label: <a href='/manage/staff'>Quản lý nhân viên</a>,
     key: 'staff',
   },
   {

@@ -1,0 +1,8 @@
+.ManageStaff {
+  flex-grow: 1;
+}
+
+.modal-update-container {
+  display: flex;
+  flex-direction: column;
+}
