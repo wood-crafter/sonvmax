@@ -119,6 +119,7 @@ function ManageStaff() {
       title: 'Họ và tên',
       dataIndex: 'fullName',
       key: 'fullName',
+      sorter: (a, b) => a.fullName.localeCompare(b.fullName),
     },
     {
       title: 'Tên đăng nhập',
@@ -131,7 +132,7 @@ function ManageStaff() {
       key: 'phoneNumber',
     },
     {
-      title: 'Hoạt đông',
+      title: 'Hoạt động',
       dataIndex: 'isActive',
       key: 'isActive',
       render: (isActive: boolean) => <p style={{ color: isActive ? 'green' : 'red' }}>{isActive ? 'Hoạt động' : 'Tạm dừng'}</p>

@@ -4,6 +4,7 @@ import { Table, Space, Button, Modal, notification, Input, Radio } from "antd"
 import { ColumnType } from 'antd/es/table'
 import { SmileOutlined } from '@ant-design/icons'
 import { Category, Product } from '../../type'
+import { NumberToVND } from '../../helper'
 import { useCategories, useProducts, updateProduct, deleteProduct, addProduct, requestOptions } from '../../hooks/useProduct'
 
 function ManageProduct() {
@@ -131,6 +132,7 @@ function ManageProduct() {
       title: 'Tên sản phẩm',
       dataIndex: 'nameProduct',
       key: 'nameProduct',
+      sorter: (a, b) => a.nameProduct.localeCompare(b.nameProduct),
     },
     {
       title: 'Hình ảnh',
@@ -142,7 +144,8 @@ function ManageProduct() {
       title: 'Giá niêm yết',
       dataIndex: 'price',
       key: 'price',
-      render: (price: number) => <div>{price}</div>
+      sorter: (a, b) => +a.price - +b.price,
+      render: (price: number) => <div>{NumberToVND.format(price)}</div>
     },
     {
       title: 'Chi tiết',
@@ -155,13 +158,14 @@ function ManageProduct() {
       key: 'categoryId',
       render: (value: string) => (
         <div>{categories?.find(it => it.id === value)?.name}</div>
-      )
+      ),
+      sorter: (a, b) => a.categoryId.localeCompare(b.categoryId),
     },
     {
       title: 'Hoạt động',
       dataIndex: 'activeProduct',
       key: 'activeProduct',
-      render: (isActive: boolean) => <p style={{ color: isActive ? 'green' : 'red' }}>{isActive ? 'Hoạt động' : 'Tạm dừng'}</p>
+      render: (isActive: boolean) => <p style={{ color: isActive ? 'green' : 'red' }}>{isActive ? 'Hoạt động' : 'Tạm dừng'}</p>,
     },
     {
       title: 'Action',

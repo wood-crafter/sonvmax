@@ -23,7 +23,7 @@ const items: MenuItem[] = [
     key: 'news',
   },
   {
-    label: 'Sản phẩm',
+    label: <a href='/products'>Sản phẩm</a>,
     key: 'products',
   },
   {
@@ -72,6 +72,10 @@ const managerItems: MenuItem[] = [
   {
     label: 'Hồ sơ',
     key: 'profile',
+  },
+  {
+    label: <a href='/manage/color'>Quản lý màu</a>,
+    key: 'color',
   },
 ];
 

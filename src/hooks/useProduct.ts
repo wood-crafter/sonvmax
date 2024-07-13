@@ -37,10 +37,27 @@ export function useProducts(page: number, size = 20) {
   }
 }
 
+export function useProductsById(id: string) {
+  const { data, isLoading, error, mutate } = useSWR(`/product/get-product/${id}`, fetchProductsById)
+
+  return {
+    data,
+    isLoading,
+    error,
+    mutate,
+  }
+}
+
 export async function fetchProducts(url: string) {
   const res = await fetch(`${API_ROOT}${url}`, requestOptions)
 
   return res.json() as Promise<PagedResponse<Product>>
+}
+
+export async function fetchProductsById(url: string) {
+  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
+
+  return res.json() as Promise<Product>
 }
 
 export async function updateProduct(url: string, requestOptions: RequestOptions) {

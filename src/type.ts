@@ -72,3 +72,9 @@ export type Staff = {
   password: string
   role: Role
 }
+
+export type RGB = {
+  r: number
+  g: number
+  b: number
+}

@@ -5,6 +5,7 @@ import { ColumnType } from 'antd/es/table'
 import { SmileOutlined } from '@ant-design/icons'
 import { Role, Agent } from '../../type'
 import { addAgent, deleteAgent, requestOptions, updateAgent, useAgents, useRoles } from '../../hooks/useAgent'
+import { NumberToVND } from '../../helper'
 
 function ManageAgent() {
   const [api, contextHolder] = notification.useNotification()
@@ -148,6 +149,7 @@ function ManageAgent() {
       title: 'Tên đại lý',
       dataIndex: 'agentName',
       key: 'agentName',
+      sorter: (a, b) => a.agentName.localeCompare(b.agentName),
     },
     {
       title: 'Email',
@@ -158,12 +160,19 @@ function ManageAgent() {
       title: 'Công nợ tối đa',
       dataIndex: 'debitLimit',
       key: 'debitLimit',
+      render: (debitLimit: number) => <div>{NumberToVND.format(debitLimit)}</div>,
+    },
+    {
+      title: 'Công nợ hiện tại',
+      dataIndex: 'accountDebit',
+      key: 'accountDebit',
+      render: (accountDebit: number) => <div>{NumberToVND.format(accountDebit)}</div>,
     },
     {
       title: 'Tài khoản hiện có',
       dataIndex: 'accountHave',
       key: 'accountHave',
-      render: (accountHave: number) => <div>{accountHave}</div>
+      render: (accountHave: number) => <div>{NumberToVND.format(accountHave)}</div>,
     },
     {
       title: 'Xếp hạng',
