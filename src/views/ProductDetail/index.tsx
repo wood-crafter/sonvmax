@@ -4,6 +4,7 @@ import { useProductsById } from '../../hooks/useProduct'
 import { InputNumber } from 'antd';
 import './index.css'
 import { NumberToVND, compareBrightness, getClosestMainColor } from '../../helper'
+import { useLocation } from 'react-router-dom';
 
 const ALL_COLORS = [
   { r: 243, g: 225, b: 216 },
@@ -131,8 +132,9 @@ const ALL_COLORS = [
 ];
 
 function ProductDetail() {
+  const currentProductId = useLocation().pathname.split('/')[2]
   const [currentChildColors, setCurrentChildColors] = useState<any>([])
-  const { data: product } = useProductsById('clxw4fjgy000397isfxkgdt5r')
+  const { data: product } = useProductsById(currentProductId)
 
   const handleChangeMainColor = (colorName: string) => {
     const nextChildColor = ALL_COLORS.filter(item => getClosestMainColor(item) === colorName).sort(compareBrightness)

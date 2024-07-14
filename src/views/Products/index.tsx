@@ -17,7 +17,7 @@ function Products() {
       <div className='products-container' style={{ gridTemplateColumns: `repeat(${ITEM_PER_ROW}, 1fr)` }}>
         {products.map((item: Product) => (
           <div key={item.id} className='grid-item'>
-            <a href={`/product_detail/${item.id}`}><img src={item.image} /></a>
+            <a href={`/product_detail/${item.id}`}><img src={item.image} style={{ height: '70%', width: '100%' }} /></a>
             <div>{item.nameProduct}</div>
             <div>{NumberToVND.format(item.price)}</div>
           </div>
