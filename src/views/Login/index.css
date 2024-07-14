@@ -1,4 +1,4 @@
-.login-body {
+.Login {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,7 +95,7 @@ a {
   border: 0;
 }
 
-#button-switcher-active {
+.Login .button-switcher-active {
   border-radius: 0.1rem;
   background-color: rgb(198, 198, 198);
 }

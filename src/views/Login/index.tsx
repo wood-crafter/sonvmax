@@ -1,31 +1,62 @@
+import { useState } from 'react'
 import './index.css'
+import { useLocation } from 'react-router-dom'
+import { useLogin } from '../../hooks/useProduct'
 
 function Login() {
+  const location = useLocation().pathname
+  const [isLogin, setIsLogin] = useState(location === '/login')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const { trigger } = useLogin()
+
+  const handleLogin = async () => {
+    if (!email) {
+      setError('Vui lòng nhập email')
+      return
+    }
+
+    if (!password) {
+      setError('Vui lòng nhập mật khẩu')
+      return
+    }
+
+    const res = await trigger({
+      username: email, password
+    })
+
+    if (res.accessToken) {
+
+    }
+  }
+
   return (
-    <div className='login-body'>
+    <div className='Login'>
       <div className='login-form-container'>
         <div className='login-form-title'>
-          Đăng nhập
+          {isLogin ? 'Đăng nhập' : 'Đăng ký'}
         </div>
         <div className='signin-signout-switcher'>
-          <button id='button-switcher-active'>
+          <button className={isLogin ? 'button-switcher-active' : ''} onClick={() => { setIsLogin(true) }}>
             Đăng nhập
           </button>
-          <button>
+          <button className={isLogin ? '' : 'button-switcher-active'} onClick={() => { setIsLogin(false) }}>
             Đăng ký
           </button>
         </div>
         <div className='login-form-inputs'>
-          <input type='email' placeholder='Email'/>
-          <input type='password' placeholder='Mật khẩu'/>
+          <input type='email' placeholder='Email' value={email} onChange={(e) => { setEmail(e.target.value) }} />
+          <input type='password' placeholder='Mật khẩu' value={password} onChange={(e) => { setPassword(e.target.value) }} />
         </div>
         <a className='forget-password'>Quên mật khẩu</a>
-        <button className='login-button'>
+        <button className='login-button' onClick={handleLogin}>
           Đăng nhập
         </button>
+        {error && <div style={{ color: 'red' }}>{error}</div>}
         <div className='no-account'>
-          <h5>Chưa có tài khoản?</h5>
-          <a>Đăng ký ngay</a>
+          <h5>{isLogin ? 'Chưa có tài khoản?' : 'Đã có tài khoản'}</h5>
+          <a>{isLogin ? 'Đăng ký ngay' : 'Đăng nhập'}</a>
         </div>
       </div>
     </div>

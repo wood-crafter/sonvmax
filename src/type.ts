@@ -78,3 +78,8 @@ export type RGB = {
   g: number
   b: number
 }
+
+export type LoginBody = {
+  username: string
+  password: string
+}

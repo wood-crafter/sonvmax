@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { ITEM_PER_ROW, MAIN_COLORS } from '../../constant'
-import { useCategories, useProductsById } from '../../hooks/useProduct'
-import type { InputNumberProps } from 'antd';
+import { useProductsById } from '../../hooks/useProduct'
 import { InputNumber } from 'antd';
 import './index.css'
 import { NumberToVND, compareBrightness, getClosestMainColor } from '../../helper'
