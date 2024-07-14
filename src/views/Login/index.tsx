@@ -2,14 +2,19 @@ import { useState } from 'react'
 import './index.css'
 import { useLocation } from 'react-router-dom'
 import { useLogin } from '../../hooks/useProduct'
+import { useUserStore } from '../../store/user'
+import { useNavigate } from "react-router-dom"
 
 function Login() {
+  const navigate = useNavigate()
   const location = useLocation().pathname
   const [isLogin, setIsLogin] = useState(location === '/login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const { trigger } = useLogin()
+  const setAccessToken = useUserStore((state) => state.setAccessToken)
+  const setRoleName = useUserStore((state) => state.setRoleName)
 
   const handleLogin = async () => {
     if (!email) {
@@ -27,7 +32,15 @@ function Login() {
     })
 
     if (res.accessToken) {
-
+      setAccessToken(res.accessToken)
+      const payload = res.accessToken.split('.')[1]
+      const roleName = JSON.parse(atob(payload)).roleName
+      setRoleName(roleName)
+      if (roleName === 'agent') {
+        navigate('/home')
+      } else {
+        navigate('/manage/products')
+      }
     }
   }
 

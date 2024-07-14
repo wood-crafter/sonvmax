@@ -11,7 +11,7 @@ const items: MenuItem[] = [
     key: 'productCollection',
   },
   {
-    label: 'Home',
+    label: <a href='/home'>Trang chủ</a>,
     key: 'home',
   },
   {

@@ -24,7 +24,7 @@ type menuSetting = {
 
 const menus: menuSetting[] = [
   { path: '/login', element: <Login />, hasNav: false, isManager: false },
-  { path: '/home', element: <Home />, hasNav: true, isManager: true },
+  { path: '/home', element: <Home />, hasNav: true, isManager: false },
   { path: '/forget_password', element: <ForgetPassword />, hasNav: false, isManager: false },
   { path: '/manage/products', element: <ManageProduct />, hasNav: true, isManager: true },
   { path: '/manage/agents', element: <ManageAgent />, hasNav: true, isManager: true },
