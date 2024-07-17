@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { FormEventHandler, useState } from 'react'
 import './index.css'
 import { useLocation } from 'react-router-dom'
 import { useLogin } from '../../hooks/useProduct'
 import { useUserStore } from '../../store/user'
 import { useNavigate } from "react-router-dom"
+import { ADMIN_ROLES } from '../../constant'
 
 function Login() {
   const navigate = useNavigate()
@@ -14,9 +15,10 @@ function Login() {
   const [error, setError] = useState('')
   const { trigger } = useLogin()
   const setAccessToken = useUserStore((state) => state.setAccessToken)
-  const setRoleName = useUserStore((state) => state.setRoleName)
 
-  const handleLogin = async () => {
+  const handleLogin: FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault()
+
     if (!email) {
       setError('Vui lòng nhập email')
       return
@@ -32,12 +34,11 @@ function Login() {
     })
 
     if (res.accessToken) {
-      setAccessToken(res.accessToken)
       const payload = res.accessToken.split('.')[1]
       const roleName = JSON.parse(atob(payload)).roleName
-      setRoleName(roleName)
       setAccessToken(res.accessToken)
-      if (roleName === 'AGENT') {
+
+      if (!ADMIN_ROLES.includes(roleName)) {
         navigate('/home')
       } else {
         navigate('/manage/products')
@@ -47,7 +48,7 @@ function Login() {
 
   return (
     <div className='Login'>
-      <div className='login-form-container'>
+      <form className='login-form-container' onSubmit={handleLogin}>
         <div className='login-form-title'>
           {isLogin ? 'Đăng nhập' : 'Đăng ký'}
         </div>
@@ -64,7 +65,7 @@ function Login() {
           <input type='password' placeholder='Mật khẩu' value={password} onChange={(e) => { setPassword(e.target.value) }} />
         </div>
         <a className='forget-password'>Quên mật khẩu</a>
-        <button className='login-button' onClick={handleLogin}>
+        <button className='login-button' type="submit">
           Đăng nhập
         </button>
         {error && <div style={{ color: 'red' }}>{error}</div>}
@@ -72,7 +73,7 @@ function Login() {
           <h5>{isLogin ? 'Chưa có tài khoản?' : 'Đã có tài khoản'}</h5>
           <a>{isLogin ? 'Đăng ký ngay' : 'Đăng nhập'}</a>
         </div>
-      </div>
+      </form>
     </div>
   )
 }

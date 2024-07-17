@@ -2,6 +2,7 @@ import './index.css'
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -11,7 +12,7 @@ const items: MenuItem[] = [
     key: 'productCollection',
   },
   {
-    label: <a href='/home'>Trang chủ</a>,
+    label: <Link to='/home'>Trang chủ</Link>,
     key: 'home',
   },
   {
@@ -23,7 +24,7 @@ const items: MenuItem[] = [
     key: 'news',
   },
   {
-    label: <a href='/products'>Sản phẩm</a>,
+    label: <Link to='/products'>Sản phẩm</Link>,
     key: 'products',
   },
   {
@@ -42,11 +43,11 @@ const items: MenuItem[] = [
 
 const managerItems: MenuItem[] = [
   {
-    label: <a href='/manage/staff'>Quản lý nhân viên</a>,
+    label: <Link to='/manage/staff'>Quản lý nhân viên</Link>,
     key: 'staff',
   },
   {
-    label: <a href='/manage/agents'>Quản lý đại lý</a>,
+    label: <Link to='/manage/agents'>Quản lý đại lý</Link>,
     key: 'agent',
   },
   {
@@ -58,7 +59,7 @@ const managerItems: MenuItem[] = [
     key: 'order',
   },
   {
-    label: <a href='/manage/products'>Quản lý sản phẩm</a>,
+    label: <Link to='/manage/products'>Quản lý sản phẩm</Link>,
     key: 'product'
   },
   {
@@ -74,7 +75,7 @@ const managerItems: MenuItem[] = [
     key: 'profile',
   },
   {
-    label: <a href='/manage/color'>Quản lý màu</a>,
+    label: <Link to='/manage/color'>Quản lý màu</Link>,
     key: 'color',
   },
 ];

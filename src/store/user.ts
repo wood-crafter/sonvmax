@@ -3,7 +3,6 @@ import { create } from 'zustand'
 interface UserState {
   accessToken: string
   roleName: string
-  setRoleName: (nextRole: string) => void
   setAccessToken: (token: string) => void
   removeAccessToken: () => void
 }
@@ -11,7 +10,11 @@ interface UserState {
 export const useUserStore = create<UserState>((set) => ({
   accessToken: '',
   roleName: '',
-  setRoleName: (nextRole) => set(() => ({ roleName: nextRole })),
-  setAccessToken: (token: string) => set(() => ({ accessToken: token })),
+  setAccessToken: (token: string) => {
+    set(() => ({ accessToken: token }))
+    const payload = token.split('.')[1]
+    const roleName = JSON.parse(atob(payload)).roleName
+    set(() => ({ roleName: roleName }))
+  },
   removeAccessToken: () => set({ accessToken: '' }),
 }))
