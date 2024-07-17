@@ -36,7 +36,8 @@ function Login() {
       const payload = res.accessToken.split('.')[1]
       const roleName = JSON.parse(atob(payload)).roleName
       setRoleName(roleName)
-      if (roleName === 'agent') {
+      setAccessToken(res.accessToken)
+      if (roleName === 'AGENT') {
         navigate('/home')
       } else {
         navigate('/manage/products')

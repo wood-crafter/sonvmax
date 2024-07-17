@@ -87,12 +87,13 @@ a {
   width: 50%;
   height: 100%;
   border-radius: 0;
-  background-color: white;
+  background-color: rgb(129, 129, 129);
   border: 0;
 }
 
 .signin-signout-switcher>button:active {
   border: 0;
+  background-color: black;
 }
 
 .Login .button-switcher-active {
