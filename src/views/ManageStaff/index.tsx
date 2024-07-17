@@ -5,8 +5,20 @@ import { ColumnType } from 'antd/es/table'
 import { SmileOutlined } from '@ant-design/icons'
 import { Role, Staff } from '../../type'
 import { addStaff, deleteStaff, requestOptions, updateStaff, useRoles, useStaffs } from '../../hooks/useStaff'
+import { useAuthenticatedFetch } from '../../hooks/useAuthenticatedFetch'
+import { useUserStore } from '../../store/user'
+import { API_ROOT } from '../../constant'
+import { useNavigate } from 'react-router-dom'
 
 function ManageStaff() {
+  const accessToken = useUserStore((state) => state.accessToken)
+  const roleName = useUserStore((state) => state.roleName)
+  const authFetch = useAuthenticatedFetch()
+  const navigate = useNavigate()
+
+  if (roleName === 'AGENT') {
+    navigate('/home')
+  }
   const [api, contextHolder] = notification.useNotification()
   const { data: rolesResponse } = useRoles(1)
   const { data, mutate: refreshStaffs } = useStaffs(1)
@@ -44,9 +56,17 @@ function ManageStaff() {
     }
     const updateBody = JSON.stringify(updateData)
 
-    await updateStaff(
-      `/staff/update-staff/${currentEditing?.id}`,
-      { ...requestOptions, body: updateBody, method: "PUT", headers: { 'Content-Type': 'application/json' } }
+    await authFetch(
+      `${API_ROOT}/staff/update-staff/${currentEditing?.id}`,
+      {
+        ...requestOptions,
+        body: updateBody,
+        method: "PUT",
+        headers: {
+          ...requestOptions.headers,
+          "Authorization": `Bearer ${accessToken}`
+        }
+      }
     )
   }
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,7 +90,14 @@ function ManageStaff() {
   };
 
   const handleDeleteRecord = async (record: Staff) => {
-    await deleteStaff(`/staff/remove-staff/${record.id}`, { ...requestOptions, method: 'DELETE' })
+    await authFetch(`${API_ROOT}/staff/remove-staff/${record.id}`, {
+      ...requestOptions,
+      method: 'DELETE',
+      headers: {
+        ...requestOptions.headers,
+        "Authorization": `Bearer ${accessToken}`
+      }
+    })
     refreshStaffs()
   }
 
@@ -102,10 +129,15 @@ function ManageStaff() {
       fullName: nextFullName,
     })
 
-    await addStaff(
-      `/staff/create-staff/${nextRole}`,
-      { ...requestOptions, body: staffToAdd, method: "POST", headers: { 'Content-Type': 'application/json' } }
-    )
+    await addStaff(`${API_ROOT}/staff/create-staff/${nextRole}`, {
+      ...requestOptions,
+      body: staffToAdd,
+      method: "POST",
+      headers: {
+        ...requestOptions.headers,
+        "Authorization": `Bearer ${accessToken}`
+      }
+    })
     refreshStaffs()
     clearAddInput()
   };
@@ -141,7 +173,7 @@ function ManageStaff() {
       title: 'Giới tính',
       dataIndex: 'gender',
       key: 'gender',
-      render: (gender: number) => <div>{gender === 1 ? 'Name' : 'Nữ'}</div>,
+      render: (gender: number) => <div>{gender === 1 ? 'Nam' : 'Nữ'}</div>,
     },
     {
       title: 'Vai trò',
