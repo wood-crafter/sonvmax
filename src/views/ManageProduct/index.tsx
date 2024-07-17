@@ -5,9 +5,21 @@ import { ColumnType } from 'antd/es/table'
 import { SmileOutlined } from '@ant-design/icons'
 import { Category, Product } from '../../type'
 import { NumberToVND } from '../../helper'
-import { useCategories, useProducts, updateProduct, deleteProduct, addProduct, requestOptions } from '../../hooks/useProduct'
+import { useCategories, useProducts, requestOptions } from '../../hooks/useProduct'
+import { useUserStore } from '../../store/user'
+import { useNavigate } from 'react-router-dom'
+import { useAuthenticatedFetch } from '../../hooks/useAuthenticatedFetch'
+import { API_ROOT } from '../../constant'
 
 function ManageProduct() {
+  const accessToken = useUserStore((state) => state.accessToken)
+  const roleName = useUserStore((state) => state.roleName)
+  const authFetch = useAuthenticatedFetch()
+  const navigate = useNavigate()
+
+  if (roleName === 'AGENT') {
+    navigate('/home')
+  }
   const [api, contextHolder] = notification.useNotification()
   const { data: categoryResponse } = useCategories(1)
   const { data, mutate: refreshProducts } = useProducts(1)
@@ -24,16 +36,12 @@ function ManageProduct() {
   }
   const [productName, setProductName] = useState<string>('')
   const [price, setPrice] = useState<string>('')
-
-  // TODO: Remove quantity -> quantity only changes by stocker
-  // TODO: Add images
-  // TODO: Price -> Giá niêm yết
   const [description, setDescription] = useState<string>('')
   const [category, setCategory] = useState<string>('')
   const [activeProduct, setActiveProduct] = useState(false)
-
   const [nextProductName, setNextProductName] = useState('')
   const [nextProductDescription, setNextProductDescription] = useState('')
+  const [nextProductQuantity, setNextProductQuantity] = useState('')
   const [nextPrice, setNextPrice] = useState('')
   const [nextDescription, setNextDescription] = useState('')
   const [nextCategory, setNextCategory] = useState(categories ? categories[0].id : '')
@@ -51,9 +59,14 @@ function ManageProduct() {
     }
     const updateBody = JSON.stringify(updateData)
 
-    await updateProduct(
-      `/product/update-product/${currentEditing?.id}`,
-      { ...requestOptions, body: updateBody, method: "PUT", headers: { 'Content-Type': 'application/json' } }
+    await authFetch(
+      `${API_ROOT}/product/update-product/${currentEditing?.id}`,
+      {
+        ...requestOptions, body: updateBody, method: "PUT", headers: {
+          ...requestOptions.headers,
+          "Authorization": `Bearer ${accessToken}`
+        }
+      }
     )
   }
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,7 +93,12 @@ function ManageProduct() {
   };
 
   const handleDeleteRecord = async (record: Product) => {
-    await deleteProduct(`/product/remove-product/${record.id}`, { ...requestOptions, method: 'DELETE' })
+    await authFetch(`${API_ROOT}/product/remove-product/${record.id}`, {
+      ...requestOptions, method: 'DELETE', headers: {
+        ...requestOptions.headers,
+        'Authorization': `Bearer ${accessToken}`
+      }
+    })
     refreshProducts()
   }
 
@@ -93,7 +111,7 @@ function ManageProduct() {
   }
 
   const handleAddOk = async () => {
-    if (!nextProductName || !nextProductDescription || !nextPrice || !nextCategory || !nextDescription) {
+    if (!nextProductName || !nextProductDescription || !nextPrice || !nextCategory || !nextDescription || !nextProductQuantity) {
       openNotification()
       return
     }
@@ -101,15 +119,15 @@ function ManageProduct() {
       price: +nextPrice,
       nameProduct: nextProductName,
       description: nextProductDescription,
-      quantity: +nextDescription,
+      quantity: +nextProductQuantity,
       image: null,
       volume: null,
       activeProduct: nextActiveProduct,
     })
 
-    await addProduct(
-      `/product/create-product/${nextCategory}`,
-      { ...requestOptions, body: productToAdd, method: "POST", headers: { 'Content-Type': 'application/json' } }
+    await authFetch(
+      `${API_ROOT}/product/create-product/${nextCategory}`,
+      { ...requestOptions, body: productToAdd, method: "POST", headers: { ...requestOptions.headers, 'Authorization': `Bearer ${accessToken}` } }
     )
     refreshProducts()
     clearAddInput()
@@ -138,7 +156,7 @@ function ManageProduct() {
       title: 'Hình ảnh',
       dataIndex: 'image',
       key: 'image',
-      render: (image: string) => <img src={image} />
+      render: (image: string) => <img style={{ maxWidth: '5rem', maxHeight: '5rem' }} src={image} />
     },
     {
       title: 'Giá niêm yết',
@@ -243,6 +261,8 @@ function ManageProduct() {
           />
           <label htmlFor="product-description">Chi tiết: </label>
           <Input value={nextProductDescription} type="text" placeholder='Thêm chi tiết' onChange={(e) => { setNextProductDescription(e.target.value) }} name='product-description' />
+          <label htmlFor="product-quantity">Số lượng: </label>
+          <Input value={nextProductQuantity} type="text" placeholder='Thêm số lượng' onChange={(e) => { setNextProductQuantity(e.target.value) }} name='product-quantity' />
           <label htmlFor="category">Loại sản phẩm</label>
           <select value={nextCategory} id="category" name="category" onChange={(e) => { setNextCategory(e.target.value) }}>
             <option value="" disabled selected>Chọn loại sơn</option>

@@ -1,12 +1,13 @@
 import useSWR from "swr"
 import { API_ROOT } from "../constant"
-import { Category, LoginBody, PagedResponse, Product, RequestOptions } from "../type"
+import { Category, Color, LoginBody, PagedResponse, Product, RequestOptions } from "../type"
 import useSWRMutation from "swr/mutation"
 
 export const requestOptions: RequestOptions = {
   method: "GET",
   headers: {
-    "Access-Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbklkIjoidGFrYWhpcm8ubWl5YW1vdG9Abm9yaXRzdS5jb20iLCJyb2xlIjowLCJsb2dpbkluZm9JZCI6MjgsImN1c3RvbWVySWQiOjY4LCJzdG9yZUNvZGUiOiJNaXlhbW90byIsImlhdCI6MTcxODMyNTI2MiwiZXhwIjoxNzE4NDExNjYyfQ.Qb8cpuRO6ZyPaHXIznrJq1HqmmkLLdhG9LHC0C9otcs"
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
   }
 }
 
@@ -52,6 +53,17 @@ export function useProducts(page: number, size = 20) {
   }
 }
 
+export function useColors() {
+  const { data, isLoading, error, mutate } = useSWR(`/color/get-color`, fetchColors)
+
+  return {
+    data,
+    isLoading,
+    error,
+    mutate,
+  }
+}
+
 export function useLogin() {
   const { data, error, trigger } = useSWRMutation('/auth/login', fetchLogin)
 
@@ -79,25 +91,13 @@ export async function fetchProducts(url: string) {
   return res.json() as Promise<PagedResponse<Product>>
 }
 
+export async function fetchColors(url: string) {
+  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
+
+  return res.json() as Promise<PagedResponse<Color>>
+}
+
 export async function fetchProductsById(url: string) {
-  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
-
-  return res.json() as Promise<Product>
-}
-
-export async function updateProduct(url: string, requestOptions: RequestOptions) {
-  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
-
-  return res.json() as Promise<Product>
-}
-
-export async function deleteProduct(url: string, requestOptions: RequestOptions) {
-  const res = await fetch(`${API_ROOT}${url}`, requestOptions)
-
-  return res.json() as Promise<Product>
-}
-
-export async function addProduct(url: string, requestOptions: RequestOptions) {
   const res = await fetch(`${API_ROOT}${url}`, requestOptions)
 
   return res.json() as Promise<Product>
