@@ -4,7 +4,7 @@ import { Table, Space, Button, Modal, notification, Input, Radio } from "antd"
 import { ColumnType } from 'antd/es/table'
 import { SmileOutlined } from '@ant-design/icons'
 import { Role, Staff } from '../../type'
-import { addStaff, deleteStaff, requestOptions, updateStaff, useRoles, useStaffs } from '../../hooks/useStaff'
+import { requestOptions, useRoles, useStaffs } from '../../hooks/useStaff'
 import { useAuthenticatedFetch } from '../../hooks/useAuthenticatedFetch'
 import { useUserStore } from '../../store/user'
 import { API_ROOT } from '../../constant'
@@ -129,7 +129,7 @@ function ManageStaff() {
       fullName: nextFullName,
     })
 
-    await addStaff(`${API_ROOT}/staff/create-staff/${nextRole}`, {
+    await authFetch(`${API_ROOT}/staff/create-staff/${nextRole}`, {
       ...requestOptions,
       body: staffToAdd,
       method: "POST",
