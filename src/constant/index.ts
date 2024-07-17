@@ -22,3 +22,5 @@ export const MAIN_COLORS = [
 ]
 
 export const API_ROOT = 'http://localhost:3002'
+
+export const ADMIN_ROLES = ['OWNER', 'SALES']

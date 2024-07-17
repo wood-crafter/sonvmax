@@ -6,20 +6,13 @@ import { SmileOutlined } from '@ant-design/icons'
 import { Role, Agent } from '../../type'
 import { requestOptions, useAgents, useRoles } from '../../hooks/useAgent'
 import { NumberToVND } from '../../helper'
-import { useNavigate } from 'react-router-dom'
 import { useAuthenticatedFetch } from '../../hooks/useAuthenticatedFetch'
 import { useUserStore } from '../../store/user'
 import { API_ROOT } from '../../constant'
 
 function ManageAgent() {
   const accessToken = useUserStore((state) => state.accessToken)
-  const roleName = useUserStore((state) => state.roleName)
   const authFetch = useAuthenticatedFetch()
-  const navigate = useNavigate()
-
-  if (roleName === 'AGENT') {
-    navigate('/home')
-  }
   const [api, contextHolder] = notification.useNotification()
   const { data: rolesResponse } = useRoles(1)
   const { data, mutate: refreshAgents } = useAgents(1)

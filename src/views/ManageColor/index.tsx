@@ -4,6 +4,8 @@ import type { UploadProps } from 'antd'
 import { Button, Upload, notification } from 'antd'
 import { useState } from 'react'
 import readXlsxFile from 'read-excel-file'
+import { useAuthenticatedFetch } from '../../hooks/useAuthenticatedFetch'
+import { useUserStore } from '../../store/user'
 
 const schema = {
   'price': {
@@ -29,6 +31,9 @@ const schema = {
 }
 
 function ManageColor() {
+  // TODO: Add download excel example
+  const accessToken = useUserStore((state) => state.accessToken)
+  const authFetch = useAuthenticatedFetch()
   const [api, contextHolder] = notification.useNotification()
   const [files, setFiles] = useState<any>([])
   const props: UploadProps = {

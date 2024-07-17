@@ -8,17 +8,10 @@ import { requestOptions, useRoles, useStaffs } from '../../hooks/useStaff'
 import { useAuthenticatedFetch } from '../../hooks/useAuthenticatedFetch'
 import { useUserStore } from '../../store/user'
 import { API_ROOT } from '../../constant'
-import { useNavigate } from 'react-router-dom'
 
 function ManageStaff() {
   const accessToken = useUserStore((state) => state.accessToken)
-  const roleName = useUserStore((state) => state.roleName)
   const authFetch = useAuthenticatedFetch()
-  const navigate = useNavigate()
-
-  if (roleName === 'AGENT') {
-    navigate('/home')
-  }
   const [api, contextHolder] = notification.useNotification()
   const { data: rolesResponse } = useRoles(1)
   const { data, mutate: refreshStaffs } = useStaffs(1)

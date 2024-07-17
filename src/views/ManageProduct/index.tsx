@@ -7,7 +7,6 @@ import { Category, Product } from '../../type'
 import { NumberToVND } from '../../helper'
 import { useCategories, useProducts, requestOptions } from '../../hooks/useProduct'
 import { useUserStore } from '../../store/user'
-import { useNavigate } from 'react-router-dom'
 import { useAuthenticatedFetch } from '../../hooks/useAuthenticatedFetch'
 import { API_ROOT } from '../../constant'
 
@@ -15,11 +14,6 @@ function ManageProduct() {
   const accessToken = useUserStore((state) => state.accessToken)
   const roleName = useUserStore((state) => state.roleName)
   const authFetch = useAuthenticatedFetch()
-  const navigate = useNavigate()
-
-  if (roleName === 'AGENT') {
-    navigate('/home')
-  }
   const [api, contextHolder] = notification.useNotification()
   const { data: categoryResponse } = useCategories(1)
   const { data, mutate: refreshProducts } = useProducts(1)
