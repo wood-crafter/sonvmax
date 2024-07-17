@@ -4,10 +4,22 @@ import { Table, Space, Button, Modal, notification, Input } from "antd"
 import { ColumnType } from 'antd/es/table'
 import { SmileOutlined } from '@ant-design/icons'
 import { Role, Agent } from '../../type'
-import { addAgent, deleteAgent, requestOptions, updateAgent, useAgents, useRoles } from '../../hooks/useAgent'
+import { requestOptions, useAgents, useRoles } from '../../hooks/useAgent'
 import { NumberToVND } from '../../helper'
+import { useNavigate } from 'react-router-dom'
+import { useAuthenticatedFetch } from '../../hooks/useAuthenticatedFetch'
+import { useUserStore } from '../../store/user'
+import { API_ROOT } from '../../constant'
 
 function ManageAgent() {
+  const accessToken = useUserStore((state) => state.accessToken)
+  const roleName = useUserStore((state) => state.roleName)
+  const authFetch = useAuthenticatedFetch()
+  const navigate = useNavigate()
+
+  if (roleName === 'AGENT') {
+    navigate('/home')
+  }
   const [api, contextHolder] = notification.useNotification()
   const { data: rolesResponse } = useRoles(1)
   const { data, mutate: refreshAgents } = useAgents(1)
@@ -55,9 +67,14 @@ function ManageAgent() {
     }
     const updateBody = JSON.stringify(updateData)
 
-    await updateAgent(
-      `/agent/update-agent/${currentEditing?.id}`,
-      { ...requestOptions, body: updateBody, method: "PUT", headers: { 'Content-Type': 'application/json' } }
+    await authFetch(
+      `${API_ROOT}/agent/update-agent/${currentEditing?.id}`,
+      {
+        ...requestOptions, body: updateBody, method: "PUT", headers: {
+          ...requestOptions.headers,
+          "Authorization": `Bearer ${accessToken}`
+        }
+      }
     )
   }
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -79,7 +96,14 @@ function ManageAgent() {
   };
 
   const handleDeleteRecord = async (record: Agent) => {
-    await deleteAgent(`/agent/remove-agent/${record.id}`, { ...requestOptions, method: 'DELETE' })
+    await authFetch(`${API_ROOT}/agent/remove-agent/${record.id}`, {
+      ...requestOptions,
+      method: 'DELETE',
+      headers: {
+        ...requestOptions.headers,
+        "Authorization": `Bearer ${accessToken}`
+      }
+    })
     refreshAgents()
   }
 
@@ -124,9 +148,14 @@ function ManageAgent() {
       accountDebit: nextAccountDebit,
     })
 
-    await addAgent(
-      `/agent/create-agent/${nextRole}`,
-      { ...requestOptions, body: agentToAdd, method: "POST", headers: { 'Content-Type': 'application/json' } }
+    await authFetch(
+      `${API_ROOT}/agent/create-agent/${nextRole}`,
+      {
+        ...requestOptions, body: agentToAdd, method: "POST", headers: {
+          ...requestOptions.headers,
+          "Authorization": `Bearer ${accessToken}`
+        }
+      }
     )
     refreshAgents()
     clearAddInput()
