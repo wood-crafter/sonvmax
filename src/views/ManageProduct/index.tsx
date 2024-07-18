@@ -12,7 +12,6 @@ import { API_ROOT } from '../../constant'
 
 function ManageProduct() {
   const accessToken = useUserStore((state) => state.accessToken)
-  const roleName = useUserStore((state) => state.roleName)
   const authFetch = useAuthenticatedFetch()
   const [api, contextHolder] = notification.useNotification()
   const { data: categoryResponse } = useCategories(1)
@@ -38,7 +37,7 @@ function ManageProduct() {
   const [nextProductQuantity, setNextProductQuantity] = useState('')
   const [nextPrice, setNextPrice] = useState('')
   const [nextDescription, setNextDescription] = useState('')
-  const [nextCategory, setNextCategory] = useState(categories ? categories[0].id : '')
+  const [nextCategory, setNextCategory] = useState(categories && categories[0] ? categories[0].id : '')
   const [nextActiveProduct, setNextActiveProduct] = useState(false)
 
   const [currentEditing, setCurrentEditing] = useState<Product | null>(null)

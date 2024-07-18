@@ -61,7 +61,7 @@ function Login() {
           </button>
         </div>
         <div className='login-form-inputs'>
-          <input type='email' placeholder='Email' value={email} onChange={(e) => { setEmail(e.target.value) }} />
+          <input type='text' placeholder='Email' value={email} onChange={(e) => { setEmail(e.target.value) }} />
           <input type='password' placeholder='Mật khẩu' value={password} onChange={(e) => { setPassword(e.target.value) }} />
         </div>
         <a className='forget-password'>Quên mật khẩu</a>

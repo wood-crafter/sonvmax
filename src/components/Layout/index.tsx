@@ -7,7 +7,6 @@ import { ADMIN_ROLES } from '../../constant'
 
 function Layout({ Child, hasNav, isManager }: { Child: React.ReactNode, hasNav: boolean, isManager: boolean }): React.ReactNode {
   const roleName = useUserStore((state) => state.roleName)
-  console.info(roleName)
   if (!hasNav) {
     return (
       <div className={isManager ? "ManagerLayout" : "Layout"}>
@@ -15,11 +14,11 @@ function Layout({ Child, hasNav, isManager }: { Child: React.ReactNode, hasNav: 
       </div>
     )
   }
-  // if (isManager && (!roleName || !ADMIN_ROLES.includes(roleName))) {
-  //   return (
-  //     <Navigate to='/home' replace={true} />
-  //   )
-  // }
+  if (isManager && (!roleName || !ADMIN_ROLES.includes(roleName))) {
+    return (
+      <Navigate to='/home' replace={true} />
+    )
+  }
   return (
     <div className={isManager ? "ManagerLayout" : "Layout"}>
       <Nav isManager={isManager} />
