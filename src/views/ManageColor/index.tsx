@@ -6,11 +6,17 @@ import { useState } from 'react'
 import readXlsxFile from 'read-excel-file'
 import { useAuthenticatedFetch } from '../../hooks/useAuthenticatedFetch'
 import { useUserStore } from '../../store/user'
+import { API_ROOT } from '../../constant'
+import { requestOptions } from '../../hooks/useProduct'
 
 const schema = {
   'price': {
     prop: 'price',
     type: Number
+  },
+  'type': {
+    prop: 'type',
+    type: String
   },
   'name': {
     prop: 'name',
@@ -54,7 +60,14 @@ function ManageColor() {
         notifyWrongFormatAddColor()
         return
       }
-      // TODO: add color
+      authFetch(`${API_ROOT}/color/import-color`, {
+        ...requestOptions, body: JSON.stringify({
+          colors: rows
+        }), method: "POST", headers: {
+          ...requestOptions.headers,
+          "Authorization": `Bearer ${accessToken}`
+        }
+      })
       setFiles([])
     })
   }
@@ -67,7 +80,14 @@ function ManageColor() {
         notifyWrongFormatAddColor()
         return
       }
-      // TODO: replace color
+      authFetch(`${API_ROOT}/color/import-color`, {
+        ...requestOptions, body: JSON.stringify({
+          colors: rows
+        }), method: "POST", headers: {
+          ...requestOptions.headers,
+          "Authorization": `Bearer ${accessToken}`
+        }
+      })
       setFiles([])
     })
   }

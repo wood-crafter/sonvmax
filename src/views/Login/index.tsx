@@ -1,10 +1,10 @@
 import { FormEventHandler, useState } from 'react'
 import './index.css'
 import { useLocation } from 'react-router-dom'
-import { useLogin } from '../../hooks/useProduct'
 import { useUserStore } from '../../store/user'
 import { useNavigate } from "react-router-dom"
 import { ADMIN_ROLES } from '../../constant'
+import { useLogin } from '../../hooks/useAuth'
 
 function Login() {
   const navigate = useNavigate()
