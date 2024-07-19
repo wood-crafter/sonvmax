@@ -73,10 +73,17 @@
 }
 
 .ProductDetail .same-type-colors-container {
-  width: 40%;
+  width: 100%;
 }
 
 .ProductDetail .same-type-colors-container {
   display: flex;
+  flex-direction: row;
   justify-content: space-around;
+}
+
+.ProductDetail .colors-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }

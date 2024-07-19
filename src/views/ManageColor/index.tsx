@@ -11,27 +11,27 @@ import { requestOptions } from '../../hooks/useProduct'
 
 const schema = {
   'price': {
-    prop: 'price',
+    prop: 'priceColor',
     type: Number
   },
   'type': {
-    prop: 'type',
+    prop: 'colorType',
     type: String
   },
   'name': {
-    prop: 'name',
+    prop: 'colorName',
     type: String
   },
   'R': {
-    prop: 'R',
+    prop: 'r',
     type: Number
   },
   'G': {
-    prop: 'G',
+    prop: 'g',
     type: Number
   },
   'B': {
-    prop: 'B',
+    prop: 'b',
     type: Number
   }
 }
@@ -62,7 +62,12 @@ function ManageColor() {
       }
       authFetch(`${API_ROOT}/color/import-color`, {
         ...requestOptions, body: JSON.stringify({
-          colors: rows
+          colors: rows.map(item => {
+            return {
+              ...item,
+              parentId: "null",
+            }
+          }).slice(0, 100)
         }), method: "POST", headers: {
           ...requestOptions.headers,
           "Authorization": `Bearer ${accessToken}`
@@ -82,7 +87,12 @@ function ManageColor() {
       }
       authFetch(`${API_ROOT}/color/import-color`, {
         ...requestOptions, body: JSON.stringify({
-          colors: rows
+          colors: rows.map(item => {
+            return {
+              ...item,
+              parentId: "null",
+            }
+          }).slice(0, 100)
         }), method: "POST", headers: {
           ...requestOptions.headers,
           "Authorization": `Bearer ${accessToken}`

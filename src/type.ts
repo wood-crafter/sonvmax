@@ -10,6 +10,8 @@ export type Product = {
   image: string | undefined
 }
 
+export type Color = any
+
 export type Category = {
   id: string
   name: string
@@ -79,7 +81,31 @@ export type RGB = {
   b: number
 }
 
+type parentRGB = [
+  r: number,
+  g: number,
+  b: number,
+]
+
 export type LoginBody = {
   username: string
   password: string
+}
+
+export type ChildColor = {
+  id: number
+  colorName: string
+  colorType: string
+  parentId: string
+  r: number
+  g: number
+  b: number
+  priceColor: number
+}
+
+export type ParentColor = {
+  name: string
+  rgb: parentRGB
+  childs: ChildColor[]
+  type: string
 }
