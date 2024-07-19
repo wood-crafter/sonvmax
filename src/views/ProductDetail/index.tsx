@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { ITEM_PER_ROW, MAIN_COLORS } from '../../constant'
+import { ITEM_PER_ROW } from '../../constant'
 import { useProductsById } from '../../hooks/useProduct'
 import { InputNumber } from 'antd';
 import './index.css'
-import { NumberToVND, compareBrightness, getClosestMainColor } from '../../helper'
+import { NumberToVND, compareBrightness } from '../../helper'
 import { useLocation } from 'react-router-dom';
 import { useColors } from '../../hooks/useColor';
 
@@ -25,6 +25,10 @@ function ProductDetail() {
 
   const handleBuyNow = () => {
 
+  }
+
+  const handlePickColor = (item: any) => {
+    console.info(item)
   }
 
   return (
@@ -58,7 +62,7 @@ function ProductDetail() {
           )}
           <div className='main-color-container' style={{ gridTemplateColumns: `repeat(${ITEM_PER_ROW}, 1fr)` }}>
             {currentChildColors && currentChildColors.map((item: any) => (
-              <div className='main-color-items' style={{ backgroundColor: `rgb(${item.r}, ${item.g}, ${item.b})` }}></div>
+              <div className='main-color-items' style={{ backgroundColor: `rgb(${item.r}, ${item.g}, ${item.b})` }} onClick={() => { handlePickColor(item) }}></div>
             ))
             }
           </div>

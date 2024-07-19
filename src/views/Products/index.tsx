@@ -2,17 +2,15 @@ import { useState } from 'react'
 import './index.css'
 import { Product } from '../../type'
 import { NumberToVND } from '../../helper'
-import { fetchProducts, useCategories, useProducts } from '../../hooks/useProduct'
+import { useProducts } from '../../hooks/useProduct'
 import { ITEM_PER_ROW } from '../../constant'
 import { Pagination } from "antd"
 import { Link } from 'react-router-dom'
 
 function Products() {
-  const { data: categoryResponse } = useCategories(1)
-  const { data, mutate: refreshProducts } = useProducts(1, 10)
+  const { data, mutate: _refreshProducts } = useProducts(1, 10)
   const products = data?.data ?? []
-  const categories = categoryResponse?.data
-  const [currentPage, setCurrentPage] = useState(1)
+  const [, setCurrentPage] = useState(1)
 
   const onPageChange = (newPage: number) => {
     setCurrentPage(newPage)
