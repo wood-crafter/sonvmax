@@ -1,7 +1,6 @@
 import useSWR from "swr"
 import { API_ROOT } from "../constant"
-import { Category, Color, LoginBody, PagedResponse, Product, RequestOptions } from "../type"
-import useSWRMutation from "swr/mutation"
+import { Category, PagedResponse, Product, RequestOptions } from "../type"
 
 export const requestOptions: RequestOptions = {
   method: "GET",
