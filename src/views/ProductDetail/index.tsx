@@ -1,17 +1,21 @@
 import { useState } from 'react'
 import { ITEM_PER_ROW } from '../../constant'
 import { useProductsById } from '../../hooks/useProduct'
-import { InputNumber } from 'antd';
+import { InputNumber, notification } from 'antd';
 import './index.css'
 import { NumberToVND, compareBrightness } from '../../helper'
 import { useLocation } from 'react-router-dom';
 import { useColors } from '../../hooks/useColor';
+import { SmileOutlined } from '@ant-design/icons'
 
 function ProductDetail() {
   const { data: colors } = useColors()
   const currentProductId = useLocation().pathname.split('/')[2]
   const [currentChildColors, setCurrentChildColors] = useState<any>([])
   const { data: product } = useProductsById(currentProductId)
+  const [currentColor, setCurrentColor] = useState(null)
+  const [numOfProduct, setNumOfProduct] = useState<any>(0)
+  const [api, contextHolder] = notification.useNotification()
 
   const handleChangeMainColor = (colorName: string, colorType: string) => {
     const colorInGroup = colors.find(it => it[0].type === colorType)
@@ -19,8 +23,20 @@ function ProductDetail() {
     setCurrentChildColors(nextChildColor?.childs.sort(compareBrightness))
   }
 
-  const handleAddToCart = () => {
+  const openNotification = (description: string) => {
+    api.open({
+      message: 'Thêm vào giỏ thất bại',
+      description: description,
+      icon: <SmileOutlined style={{ color: '#108ee9' }} />,
+    });
+  }
 
+  const handleAddToCart = () => {
+    if (!currentColor) {
+      openNotification('Vui lòng chọn màu')
+    } else if (numOfProduct < 1) {
+      openNotification('Số lượng không hợp lệ')
+    }
   }
 
   const handleBuyNow = () => {
@@ -28,11 +44,12 @@ function ProductDetail() {
   }
 
   const handlePickColor = (item: any) => {
-    console.info(item)
+    setCurrentColor(item)
   }
 
   return (
     <div className='ProductDetail'>
+      {contextHolder}
       <div className='body'>
         <div className='side-preview'><img src={product?.image}></img></div>
         <div className='main-preview'><img src={product?.image}></img></div>
@@ -69,7 +86,7 @@ function ProductDetail() {
           <h3 style={{ width: '100%' }}>Chi tiết</h3>
           <p className='full-width'>{product?.description}</p>
           <div className='add-to-cart'>
-            <InputNumber min={1} max={100000} defaultValue={1} changeOnWheel />
+            <InputNumber min={1} max={100000} defaultValue={1} value={numOfProduct} onChange={(value) => setNumOfProduct(value)} changeOnWheel />
             <button style={{ marginLeft: '1rem' }} onClick={handleAddToCart}>Thêm vào giỏ</button>
           </div>
           <button style={{ backgroundColor: 'black', color: 'white', flexGrow: '0', width: '100%', marginTop: '1rem' }} onClick={handleBuyNow}>Mua ngay</button>

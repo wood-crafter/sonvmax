@@ -21,6 +21,6 @@ export const MAIN_COLORS = [
   { name: "Cyan", rgb: [0, 255, 255] },
 ]
 
-export const API_ROOT = 'http://13.250.102.149:3002'
+export const API_ROOT = 'https://54.179.173.156'
 
 export const ADMIN_ROLES = ['OWNER', 'SALES']
