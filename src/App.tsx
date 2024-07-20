@@ -10,6 +10,7 @@ import ManageStaff from "./views/ManageStaff";
 import Products from "./views/Products";
 import ProductDetail from "./views/ProductDetail";
 import ManageColor from "./views/ManageColor";
+import { ManageRoles } from "./views/ManageRoles";
 
 const AppRoutes = () => {
   return (
@@ -75,7 +76,7 @@ const AppRoutes = () => {
           path="roles"
           element={
             <Layout hasNav isManager>
-              Manage Roles
+              <ManageRoles />
             </Layout>
           }
         />
