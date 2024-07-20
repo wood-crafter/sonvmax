@@ -2,9 +2,9 @@ export const HOME_TOP_BANNERS = [
   "https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/bg_cover_newa14d.jpg?1677557355750",
   "https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/bg_cover_new_2a14d.jpg?1677557355750",
   "https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/bg_cover_new_1a14d.jpg?1677557355750",
-]
+];
 
-export const ITEM_PER_ROW = 5
+export const ITEM_PER_ROW = 5;
 
 export const MAIN_COLORS = [
   { name: "Red", rgb: [255, 0, 0] },
@@ -19,8 +19,8 @@ export const MAIN_COLORS = [
   { name: "White", rgb: [255, 255, 255] },
   { name: "Black", rgb: [0, 0, 0] },
   { name: "Cyan", rgb: [0, 255, 255] },
-]
+];
 
-export const API_ROOT = 'https://18.136.134.77'
+export const API_ROOT = "https://18.136.134.77";
 
-export const ADMIN_ROLES = ['OWNER', 'SALES']
+export const ADMIN_ROLES = ["OWNER", "SALES"];
