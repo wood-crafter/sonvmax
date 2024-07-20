@@ -11,74 +11,107 @@ import Products from "./views/Products";
 import ProductDetail from "./views/ProductDetail";
 import ManageColor from "./views/ManageColor";
 
-type menuSetting = {
-  path: string;
-  element: React.ReactNode;
-  hasNav: boolean;
-  isManager: boolean;
-};
-
-const menus: menuSetting[] = [
-  { path: "/login", element: <Login />, hasNav: false, isManager: false },
-  { path: "/home", element: <Home />, hasNav: true, isManager: false },
-  {
-    path: "/forget_password",
-    element: <ForgetPassword />,
-    hasNav: false,
-    isManager: false,
-  },
-  {
-    path: "/manage/products",
-    element: <ManageProduct />,
-    hasNav: true,
-    isManager: true,
-  },
-  {
-    path: "/manage/agents",
-    element: <ManageAgent />,
-    hasNav: true,
-    isManager: true,
-  },
-  {
-    path: "/manage/staff",
-    element: <ManageStaff />,
-    hasNav: true,
-    isManager: true,
-  },
-  {
-    path: "/manage/color",
-    element: <ManageColor />,
-    hasNav: true,
-    isManager: true,
-  },
-  { path: "/products", element: <Products />, hasNav: true, isManager: false },
-  {
-    path: "/product_detail/*",
-    element: <ProductDetail />,
-    hasNav: true,
-    isManager: false,
-  },
-  { path: "/*", element: <Home />, hasNav: true, isManager: false },
-];
-
 const AppRoutes = () => {
   return (
     <Routes>
-      {menus.map((item) => {
-        return (
-          <Route
-            key={item.path}
-            path={item.path}
-            element={
-              <Layout
-                Child={item.element}
-                hasNav={item.hasNav}
-                isManager={item.isManager}
-              />
-            }
-          />
-        );
-      })}
+      <Route
+        path="/login"
+        element={
+          <Layout>
+            <Login />
+          </Layout>
+        }
+      />
+      <Route
+        path="/home"
+        element={
+          <Layout hasNav>
+            <Home />
+          </Layout>
+        }
+      />
+      <Route
+        path="/forget_password"
+        element={
+          <Layout>
+            <ForgetPassword />
+          </Layout>
+        }
+      />
+      <Route path="/manage/*">
+        <Route
+          path="products"
+          element={
+            <Layout hasNav isManager>
+              <ManageProduct />
+            </Layout>
+          }
+        />
+        <Route
+          path="agents"
+          element={
+            <Layout hasNav isManager>
+              <ManageAgent />
+            </Layout>
+          }
+        />
+        <Route
+          path="staff"
+          element={
+            <Layout hasNav isManager>
+              <ManageStaff />
+            </Layout>
+          }
+        />
+        <Route
+          path="color"
+          element={
+            <Layout hasNav isManager>
+              <ManageColor />
+            </Layout>
+          }
+        />
+        <Route
+          path="roles"
+          element={
+            <Layout hasNav isManager>
+              Manage Roles
+            </Layout>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <Layout hasNav isManager>
+              404 | Not Found
+            </Layout>
+          }
+        />
+      </Route>
+      <Route
+        path="/products"
+        element={
+          <Layout hasNav>
+            <Products />
+          </Layout>
+        }
+      />
+      <Route
+        path="/product_detail/*"
+        element={
+          <Layout hasNav>
+            <ProductDetail />
+          </Layout>
+        }
+      />
+      <Route
+        path="/*"
+        element={
+          <Layout hasNav>
+            <Home />
+          </Layout>
+        }
+      />
     </Routes>
   );
 };

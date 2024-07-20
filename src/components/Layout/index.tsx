@@ -1,30 +1,36 @@
-import './index.css'
-import React from "react"
-import Nav from "../../views/NavigationBar"
-import { useUserStore } from '../../store/user'
-import { Navigate } from 'react-router-dom'
-import { ADMIN_ROLES } from '../../constant'
+import "./index.css";
+import React from "react";
+import Nav from "../../views/NavigationBar";
+import { useUserStore } from "../../store/user";
+import { Navigate } from "react-router-dom";
+import { ADMIN_ROLES } from "../../constant";
 
-function Layout({ Child, hasNav, isManager }: { Child: React.ReactNode, hasNav: boolean, isManager: boolean }): React.ReactNode {
-  const roleName = useUserStore((state) => state.roleName)
+type LayoutProps = {
+  children: React.ReactNode;
+  hasNav?: boolean;
+  isManager?: boolean;
+};
+
+function Layout({
+  children,
+  hasNav = false,
+  isManager = false,
+}: LayoutProps): React.ReactNode {
+  const roleName = useUserStore((state) => state.roleName);
   if (!hasNav) {
     return (
-      <div className={isManager ? "ManagerLayout" : "Layout"}>
-        {Child}
-      </div>
-    )
+      <div className={isManager ? "ManagerLayout" : "Layout"}>{children}</div>
+    );
   }
   if (isManager && (!roleName || !ADMIN_ROLES.includes(roleName))) {
-    return (
-      <Navigate to='/home' replace={true} />
-    )
+    return <Navigate to="/home" replace={true} />;
   }
   return (
     <div className={isManager ? "ManagerLayout" : "Layout"}>
       <Nav isManager={isManager} />
-      {Child}
+      {children}
     </div>
-  )
+  );
 }
 
-export default Layout
+export default Layout;
