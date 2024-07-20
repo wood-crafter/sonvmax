@@ -10,3 +10,22 @@
   object-fit: cover;
   height: 60vh;
 }
+
+.Home .quality-certification-container {
+  display: flex;
+  width: 100vw;
+  justify-content: space-around;
+}
+
+.Home .quality-certification-container>img {
+  width: 20%;
+  transition: 1s ease;
+}
+
+.Home .quality-certification-container>img:hover {
+  cursor: pointer;
+  -webkit-transform: scale(1.2);
+  -ms-transform: scale(1.2);
+  transform: scale(1.2);
+  transition: 1s ease;
+}
