@@ -5,7 +5,7 @@ interface UserState {
   accessToken: string;
   roleName: string;
   setAccessToken: (accessToken: string) => void;
-  removeAccessToken: () => void;
+  clear: () => void;
 }
 
 export const useUserStore = create(
@@ -19,7 +19,7 @@ export const useUserStore = create(
 
         set(() => ({ roleName, accessToken }));
       },
-      removeAccessToken: () => set({ accessToken: "" }),
+      clear: () => set({ accessToken: "", roleName: "" }),
     }),
     {
       name: "@sonvmax/user-storage",
