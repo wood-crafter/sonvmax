@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal, Space, Spin, Table } from "antd";
+import { Button, Space, Spin, Table } from "antd";
 import { SmileOutlined } from "@ant-design/icons";
 import type { ColumnType } from "antd/es/table";
 import { useCallback, useMemo, useState } from "react";
@@ -7,11 +7,12 @@ import { useCreateRole, useDeleteRole, useRoles } from "../../hooks/useRoles";
 import type { Role } from "../../type";
 import "./index.css";
 import useNotification from "antd/es/notification/useNotification";
-import FormItem from "antd/es/form/FormItem";
 import { NotificationInstance } from "antd/es/notification/interface";
+import { EditRoleModal } from "./EditRoleModal";
 
 function useRoleTableColumns(
   api: NotificationInstance,
+  isLoading: boolean,
   requestRefresh: () => void
 ) {
   return useMemo(() => {
@@ -32,9 +33,9 @@ function useRoleTableColumns(
 
         render: (_, role: Role) => (
           <Space size="middle">
-            <Button onClick={() => {}}>Update</Button>
             <DeleteRoleButton
               id={role.id}
+              disabled={isLoading}
               onDeleted={() => {
                 api.success({
                   message: "Role deleted",
@@ -51,16 +52,17 @@ function useRoleTableColumns(
     ];
 
     return columns;
-  }, [api, requestRefresh]);
+  }, [api, isLoading, requestRefresh]);
 }
 
 type DeleteRoleButtonProps = {
   id: string;
+  disabled: boolean;
   onDeleted(): void;
 };
 
 function DeleteRoleButton(props: DeleteRoleButtonProps) {
-  const { id, onDeleted } = props;
+  const { id, disabled, onDeleted } = props;
 
   const { trigger, isMutating } = useDeleteRole();
 
@@ -68,7 +70,7 @@ function DeleteRoleButton(props: DeleteRoleButtonProps) {
     <Button
       type="default"
       danger
-      disabled={isMutating}
+      disabled={isMutating || disabled}
       onClick={async () => {
         await trigger({ id });
 
@@ -87,38 +89,27 @@ type AddRoleButtonProps = {
 function AddRoleButton(props: AddRoleButtonProps) {
   const { onAdded } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [roleName, setRoleName] = useState("");
   const { trigger } = useCreateRole();
 
-  const handleAddRole = useCallback(async () => {
-    await trigger({ roleName });
+  const handleAddRole = useCallback(
+    async (args: { roleName: string }) => {
+      const { roleName } = args;
+      await trigger({ roleName });
 
-    setIsModalOpen(false);
-    onAdded({ roleName });
-  }, [onAdded, roleName]);
+      setIsModalOpen(false);
+      onAdded({ roleName });
+    },
+    [onAdded]
+  );
 
   return (
     <>
       {isModalOpen && (
-        <Modal
-          title="Add role"
-          open={isModalOpen}
-          onOk={handleAddRole}
-          onCancel={() => {
-            setIsModalOpen(false);
-            setRoleName("");
-          }}
-        >
-          <Form>
-            <FormItem>
-              <Input
-                placeholder="Role name"
-                value={roleName}
-                onChange={(e) => setRoleName(e.target.value)}
-              />
-            </FormItem>
-          </Form>
-        </Modal>
+        <EditRoleModal
+          isOpen={isModalOpen}
+          onSubmit={handleAddRole}
+          onCancel={() => setIsModalOpen(false)}
+        />
       )}
       <Button
         type="primary"
@@ -133,7 +124,7 @@ function AddRoleButton(props: AddRoleButtonProps) {
 }
 
 export function ManageRoles() {
-  const { data, isLoading, mutate } = useRoles(1);
+  const { data, isLoading, isValidating, mutate } = useRoles(1);
   const [api, contextHolder] = useNotification();
 
   const roles = useMemo(() => {
@@ -155,7 +146,7 @@ export function ManageRoles() {
     [api]
   );
 
-  const columns = useRoleTableColumns(api, mutate);
+  const columns = useRoleTableColumns(api, isLoading || isValidating, mutate);
 
   if (isLoading) return <Spin />;
 

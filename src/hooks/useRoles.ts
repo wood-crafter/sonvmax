@@ -10,17 +10,10 @@ import useSWRMutation from "swr/mutation";
 export function useRoles(page: number, size = 20) {
   const authedFetch = useAuthenticatedFetch();
 
-  const { data, isLoading, error, mutate } = useSWR(
+  return useSWR(
     { url: `/role/get-role?page=${page}&size=${size}`, fetcher: authedFetch },
     fetchRoles
   );
-
-  return {
-    data,
-    isLoading,
-    error,
-    mutate,
-  };
 }
 
 async function fetchRoles({ url, fetcher }: FetchWithAuthOptions) {
