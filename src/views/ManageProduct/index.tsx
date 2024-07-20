@@ -157,7 +157,7 @@ function ManageProduct() {
 
   const handleSetNumberInput = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setter: any
+    setter: React.Dispatch<React.SetStateAction<string>>
   ) => {
     const { value: inputValue } = e.target;
     const reg = /^-?\d*(\.\d*)?$/;
