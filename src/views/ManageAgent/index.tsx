@@ -3,7 +3,7 @@ import "./index.css";
 import { Table, Space, Button, Modal, notification, Input } from "antd";
 import { ColumnType } from "antd/es/table";
 import { SmileOutlined } from "@ant-design/icons";
-import { Role, Agent } from "../../type";
+import { Agent } from "../../type";
 import { requestOptions, useAgents } from "../../hooks/useAgent";
 import { NumberToVND } from "../../helper";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
@@ -32,7 +32,6 @@ function ManageAgent() {
   const [accountDebit, setAccountDebit] = useState<string>("");
   const [accountHave, setAccountHave] = useState<string>("");
   const [rank, setRank] = useState<string>("");
-  const [role, setRole] = useState<string>("");
 
   const [nextAgentFullName, setNextAgentFullName] = useState("");
   const [nextAgentEmail, setNextAgentEmail] = useState("");
@@ -46,13 +45,12 @@ function ManageAgent() {
   const [nextAccountDebit, setNextAccountDebit] = useState<string>("");
   const [nextAccountHave, setNextAccountHave] = useState<string>("");
   const [nextRank, setNextRank] = useState<string>("");
-  const [nextRole, setNextRole] = useState<string>("");
 
   const [currentEditing, setCurrentEditing] = useState<Agent | null>(null);
   const handleUpdateAgent = async () => {
     const updateData = {
       ...currentEditing,
-      roleId: role,
+      roleId: roles?.find((it) => it.name === "AGENT")?.id,
       debitLimit: +debitLimit,
       accountDebit: +accountDebit,
       accountHave: +accountHave,
@@ -113,7 +111,6 @@ function ManageAgent() {
     setNextAccountDebit("");
     setNextAccountHave("");
     setNextRank("");
-    setNextRole(roles ? roles[0].id : "");
   };
 
   const handleAddOk = async () => {
@@ -129,8 +126,7 @@ function ManageAgent() {
       !nextDebitLimit ||
       !nextAccountHave ||
       !nextAccountDebit ||
-      !nextRank ||
-      !nextRole
+      !nextRank
     ) {
       openNotification();
       return;
@@ -138,27 +134,32 @@ function ManageAgent() {
     const agentToAdd = JSON.stringify({
       email: nextAgentEmail,
       username: nextAgentUsername,
-      password: nextAgentPassword,
-      rank: nextRank,
+      password: "",
+      rank: +nextRank,
       address: nextAgentAddress,
       taxCode: nextAgentTaxCode,
       phoneNumber: nextAgentPhoneNumber,
       fullName: nextAgentFullName,
       agentName: nextAgentName,
-      debitLimit: nextDebitLimit,
-      accountHave: nextAccountHave,
-      accountDebit: nextAccountDebit,
+      debitLimit: +nextDebitLimit,
+      accountHave: +nextAccountHave,
+      accountDebit: +nextAccountDebit,
     });
 
-    await authFetch(`${API_ROOT}/agent/create-agent/${nextRole}`, {
-      ...requestOptions,
-      body: agentToAdd,
-      method: "POST",
-      headers: {
-        ...requestOptions.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    await authFetch(
+      `${API_ROOT}/agent/create-agent/${
+        roles?.find((it) => it.name === "AGENT")?.id
+      }`,
+      {
+        ...requestOptions,
+        body: agentToAdd,
+        method: "POST",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     refreshAgents();
     clearAddInput();
   };
@@ -307,24 +308,6 @@ function ManageAgent() {
               placeholder={currentEditing.rank.toString()}
               maxLength={16}
             />
-            <label htmlFor="role">Vai trò:</label>
-            <select
-              value={role}
-              id="role"
-              name="role"
-              onChange={(e) => {
-                setRole(e.target.value);
-              }}
-            >
-              {roles &&
-                roles.map((role: Role) => {
-                  return (
-                    <option key={role.id} value={role.id}>
-                      {role.name}
-                    </option>
-                  );
-                })}
-            </select>
           </div>
         )}
       </Modal>
@@ -451,27 +434,6 @@ function ManageAgent() {
             }}
             maxLength={16}
           />
-          <label htmlFor="role">Vai trò</label>
-          <select
-            value={nextRole}
-            id="category"
-            name="category"
-            onChange={(e) => {
-              setNextRole(e.target.value);
-            }}
-          >
-            <option value="" disabled selected>
-              Chọn vai trò
-            </option>
-            {roles &&
-              roles.map((role: Role) => {
-                return (
-                  <option key={role.id} value={role.id}>
-                    {role.name}
-                  </option>
-                );
-              })}
-          </select>
         </div>
       </Modal>
     </div>

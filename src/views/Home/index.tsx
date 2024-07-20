@@ -2,7 +2,7 @@ import "./index.css";
 import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { HOME_TOP_BANNERS, ITEM_PER_ROW } from "../../constant";
-import { Divider } from "antd";
+import { Button, Divider } from "antd";
 import { useProducts } from "../../hooks/useProduct";
 import { Product } from "../../type";
 import { Link } from "react-router-dom";
@@ -93,7 +93,7 @@ function Home() {
         className="product-cards"
         style={{ gridTemplateColumns: `repeat(${ITEM_PER_ROW}, 1fr)` }}
       >
-        {products.map((item: Product) => {
+        {products.slice(0, 8).map((item: Product) => {
           return (
             <div key={item.id} className="grid-item">
               <Link to={`/product_detail/${item.id}`}>
@@ -112,6 +112,20 @@ function Home() {
           );
         })}
       </div>
+      <Link to={"/products"}>
+        <Button>Xem tất cả</Button>
+      </Link>
+
+      <Divider
+        style={{
+          color: "#f5a507",
+          fontSize: "33px",
+          marginTop: "3rem",
+          marginBottom: "3rem",
+        }}
+      >
+        Tin tức
+      </Divider>
     </div>
   );
 }
