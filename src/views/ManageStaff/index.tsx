@@ -254,14 +254,13 @@ function ManageStaff() {
                 setRole(e.target.value);
               }}
             >
-              {roles &&
-                roles.map((role: Role) => {
-                  return (
-                    <option key={role.id} value={role.id}>
-                      {role.name}
-                    </option>
-                  );
-                })}
+              {roles?.map((role: Role) => {
+                return (
+                  <option key={role.id} value={role.id}>
+                    {role.name}
+                  </option>
+                );
+              })}
             </select>
           </div>
         )}
