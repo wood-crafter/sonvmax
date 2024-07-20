@@ -34,11 +34,13 @@ function ManageProduct() {
     });
   };
   const [productName, setProductName] = useState<string>("");
+  const [image, setImage] = useState<string | undefined>("");
   const [price, setPrice] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [activeProduct, setActiveProduct] = useState(false);
   const [nextProductName, setNextProductName] = useState("");
+  const [nextImage, setNextImage] = useState<string>("");
   const [nextProductDescription, setNextProductDescription] = useState("");
   const [nextProductQuantity, setNextProductQuantity] = useState("");
   const [nextPrice, setNextPrice] = useState("");
@@ -57,6 +59,7 @@ function ManageProduct() {
       nameProduct: productName,
       description: description,
       activeProduct: activeProduct,
+      image: image,
     };
     const updateBody = JSON.stringify(updateData);
 
@@ -83,6 +86,7 @@ function ManageProduct() {
     setDescription(record.description);
     setCategory(record.categoryId);
     setActiveProduct(record.activeProduct);
+    setImage(record.image);
     setIsModalOpen(true);
   };
 
@@ -110,6 +114,7 @@ function ManageProduct() {
 
   const clearAddInput = () => {
     setNextProductName("");
+    setNextImage("");
     setDescription("");
     setNextPrice("");
     setNextProductDescription("");
@@ -123,7 +128,8 @@ function ManageProduct() {
       !nextPrice ||
       !nextCategory ||
       !nextDescription ||
-      !nextProductQuantity
+      !nextProductQuantity ||
+      !nextImage
     ) {
       openNotification();
       return;
@@ -133,7 +139,7 @@ function ManageProduct() {
       nameProduct: nextProductName,
       description: nextProductDescription,
       quantity: +nextProductQuantity,
-      image: null,
+      image: nextImage,
       volume: null,
       activeProduct: nextActiveProduct,
     });
@@ -265,6 +271,16 @@ function ManageProduct() {
               placeholder={currentEditing.price.toString()}
               maxLength={16}
             />
+            <label htmlFor="product-name">Ảnh sản phẩm: </label>
+            <Input
+              value={image}
+              type="text"
+              placeholder={currentEditing.image}
+              onChange={(e) => {
+                setImage(e.target.value);
+              }}
+              name="product-name"
+            />
             <label htmlFor="description">Chi tiết sản phẩm: </label>
             <Input
               name="description"
@@ -335,6 +351,16 @@ function ManageProduct() {
             }}
             placeholder={"Thêm giá"}
             maxLength={16}
+          />
+          <label htmlFor="product-name">Ảnh sản phẩm: </label>
+          <Input
+            value={nextImage}
+            type="text"
+            placeholder="Thêm ảnh sản phẩm"
+            onChange={(e) => {
+              setNextImage(e.target.value);
+            }}
+            name="product-name"
           />
           <label htmlFor="descrition">Chi tiết sản phẩm: </label>
           <Input
