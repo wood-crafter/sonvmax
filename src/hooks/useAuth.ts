@@ -12,6 +12,7 @@ export async function fetchLogin(url: string, { arg: body }: { arg: LoginBody })
   })
 
   return res.json() as Promise<{
+    message: string
     accessToken: string
   }>
 }
