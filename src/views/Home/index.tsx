@@ -1,7 +1,7 @@
 import { Button, Divider } from "antd";
 import { Carousel } from "react-responsive-carousel";
 import { Link } from "react-router-dom";
-import { HOME_TOP_BANNERS, ITEM_PER_ROW } from "../../constant";
+import { HOME_TOP_BANNERS } from "../../constant";
 import { NumberToVND } from "../../helper";
 import { useProducts } from "../../hooks/useProduct";
 import { Product } from "../../type";
@@ -35,15 +35,12 @@ type TopProductGridProps = {
 
 function TopProductGrid({ products }: TopProductGridProps) {
   return (
-    <div
-      className="product-cards"
-      style={{ gridTemplateColumns: `repeat(${ITEM_PER_ROW}, 1fr)` }}
-    >
+    <div className="top-product-grid">
       {products.slice(0, 8).map((item: Product) => {
         return (
           <div key={item.id} className="grid-item">
-            <Link to={`/product_detail/${item.id}`}>
-              <img src={item.image} style={{ height: "70%", width: "100%" }} />
+            <Link to={`/product_detail/${item.id}`} className="product-link">
+              <img src={item.image} />
             </Link>
             <div className="overlay">
               <div className="product-card-info">
@@ -58,6 +55,17 @@ function TopProductGrid({ products }: TopProductGridProps) {
   );
 }
 
+function QualityCertificates() {
+  return (
+    <div className="quality-certification-container">
+      <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_1a14d.jpg?1677557355750" />
+      <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_2a14d.png?1677557355750" />
+      <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_3a14d.jpg?1677557355750" />
+      <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_4a14d.jpg?1677557355750" />
+    </div>
+  );
+}
+
 function Home() {
   const { data } = useProducts(1, 10);
   const products = data?.data;
@@ -66,12 +74,7 @@ function Home() {
     <div className="Home">
       <TopBanners />
       <Divider className="Home-divider">Chứng nhận chất lượng</Divider>
-      <div className="quality-certification-container">
-        <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_1a14d.jpg?1677557355750" />
-        <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_2a14d.png?1677557355750" />
-        <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_3a14d.jpg?1677557355750" />
-        <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_4a14d.jpg?1677557355750" />
-      </div>
+      <QualityCertificates />
 
       <Divider className="Home-divider">Sản phẩm nổi bật</Divider>
       <TopProductGrid products={products ?? []} />

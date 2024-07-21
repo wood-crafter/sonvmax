@@ -10,7 +10,7 @@
   margin: 2rem;
 }
 
-.grid-item {
+.Products .grid-item {
   padding: 1rem;
   max-height: 20rem;
   max-width: 14rem;
@@ -18,7 +18,7 @@
   border-radius: 1rem;
 }
 
-.grid-item:hover {
+.Products .grid-item:hover {
   border: 1px solid rgb(212, 212, 212);
   border-radius: 1rem;
   cursor: pointer;
