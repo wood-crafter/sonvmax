@@ -41,13 +41,13 @@ function TopProductGrid({ products }: TopProductGridProps) {
           <div key={item.id} className="grid-item">
             <Link to={`/product_detail/${item.id}`} className="product-link">
               <img src={item.image} />
-            </Link>
-            <div className="overlay">
-              <div className="product-card-info">
-                <div>{item.nameProduct}</div>
-                <div>Giá từ: {NumberToVND.format(item.price)}</div>
+              <div className="overlay">
+                <div className="product-card-info">
+                  <div>{item.nameProduct}</div>
+                  <div>Giá từ: {NumberToVND.format(item.price)}</div>
+                </div>
               </div>
-            </div>
+            </Link>
           </div>
         );
       })}
@@ -80,6 +80,7 @@ function Home() {
       <TopProductGrid products={products ?? []} />
 
       <Divider className="Home-divider">Tất cả sản phẩm</Divider>
+      <TopProductGrid products={products ?? []} />
       {/* <MultiCarousel
         autoPlay
         infinite
