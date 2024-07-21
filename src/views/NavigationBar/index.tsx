@@ -72,10 +72,6 @@ const managerItems: MenuItem[] = [
     key: "invoice",
   },
   {
-    label: "Quản lý phiếu",
-    key: "ticket",
-  },
-  {
     label: "Hồ sơ",
     key: "profile",
   },
