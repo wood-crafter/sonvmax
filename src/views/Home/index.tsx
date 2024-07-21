@@ -1,12 +1,16 @@
 import { Button, Divider } from "antd";
 import { Carousel } from "react-responsive-carousel";
 import { Link } from "react-router-dom";
+import { Autoplay, Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { HOME_TOP_BANNERS } from "../../constant";
 import { NumberToVND } from "../../helper";
 import { useProducts } from "../../hooks/useProduct";
 import { Product } from "../../type";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import "swiper/css";
+import "swiper/css/navigation";
 
 import "./index.css";
 
@@ -80,28 +84,22 @@ function Home() {
       <TopProductGrid products={products ?? []} />
 
       <Divider className="Home-divider">Tất cả sản phẩm</Divider>
-      <TopProductGrid products={products ?? []} />
-      {/* <MultiCarousel
-        autoPlay
-        infinite
-        responsive={{
-          desktop: {
-            breakpoint: { max: 3000, min: 1024 },
-            items: 3,
-            slidesToSlide: 3,
-          },
-        }}
+      <Swiper
+        spaceBetween={10}
+        slidesPerView={3}
+        modules={[Navigation, Autoplay]}
+        navigation
+        loop
+        autoplay={{ delay: 3000 }}
       >
         {products?.map((item) => (
-          <div className="swiper-slide-top-product" key={item.id}>
-            <img
-              src={`${item.image}`}
-              style={{ height: "100%", width: "20%" }}
-            />
-          </div>
+          <SwiperSlide key={item.id}>
+            <div className="swiper-slide-top-product">
+              <img src={`${item.image}`} />
+            </div>
+          </SwiperSlide>
         ))}
-      </MultiCarousel> */}
-
+      </Swiper>
       <Link to="/products">
         <Button>Xem tất cả</Button>
       </Link>
