@@ -26,9 +26,9 @@ function Layout({
     return <Navigate to="/home" replace={true} />;
   }
   return (
-    <div className={isManager ? "ManagerLayout" : "Layout"}>
+    <div className={`${isManager ? "ManagerLayout" : "Layout"} Layout-wrapper`}>
       <Nav isManager={isManager} />
-      {children}
+      <main>{children}</main>
     </div>
   );
 }
