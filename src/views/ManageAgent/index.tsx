@@ -44,7 +44,6 @@ function ManageAgent() {
   const [nextAgentFullName, setNextAgentFullName] = useState("");
   const [nextAgentEmail, setNextAgentEmail] = useState("");
   const [nextAgentUsername, setNextAgentUsername] = useState("");
-  const [nextAgentPassword, setNextAgentPassword] = useState("");
   const [nextAgentAddress, setNextAgentAddress] = useState("");
   const [nextAgentPhoneNumber, setNextAgentPhoneNumber] = useState("");
   const [nextAgentName, setNextAgentName] = useState("");
@@ -110,7 +109,6 @@ function ManageAgent() {
     setNextAgentFullName("");
     setNextAgentName("");
     setNextAgentUsername("");
-    setNextAgentPassword("");
     setNextAgentAddress("");
     setNextAgentPhoneNumber("");
     setNextAgentTaxCode("");
@@ -128,7 +126,6 @@ function ManageAgent() {
       !nextAgentAddress ||
       !nextAgentName ||
       !nextAgentUsername ||
-      !nextAgentPassword ||
       !nextAgentPhoneNumber ||
       !nextAgentTaxCode ||
       !nextDebitLimit ||
@@ -198,6 +195,11 @@ function ManageAgent() {
       title: "Email",
       dataIndex: "email",
       key: "email",
+    },
+    {
+      title: "Tên đăng nhập",
+      dataIndex: "username",
+      key: "username",
     },
     {
       title: "Công nợ tối đa",
@@ -329,7 +331,7 @@ function ManageAgent() {
         )}
       </Modal>
       <Modal
-        title="Thêm khách hàng"
+        title="Thêm đại lý"
         open={isAddModalOpen}
         onOk={handleAddOk}
         onCancel={handleAddCancel}
@@ -364,16 +366,6 @@ function ManageAgent() {
               setNextAgentUsername(e.target.value);
             }}
             name="agent-username"
-          />
-          <label htmlFor="agent-password">Mật khẩu đại lý: </label>
-          <Input
-            value={nextAgentPassword}
-            type="text"
-            placeholder="Thêm tên mật khẩu đại lý"
-            onChange={(e) => {
-              setNextAgentPassword(e.target.value);
-            }}
-            name="agent-password"
           />
           <label htmlFor="agent-address">Địa chỉ đại lý: </label>
           <Input
