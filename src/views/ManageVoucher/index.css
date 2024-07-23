@@ -1,0 +1,8 @@
+.ManageVoucher {
+  flex-grow: 1;
+}
+
+.ManageVoucher .modal-update-container {
+  display: flex;
+  flex-direction: column;
+}
