@@ -1,8 +1,16 @@
 import { useState } from "react";
 import "./index.css";
-import { Table, Space, Button, Modal, notification, Input } from "antd";
+import {
+  Table,
+  Space,
+  Button,
+  Modal,
+  notification,
+  Input,
+  Popconfirm,
+} from "antd";
 import { ColumnType } from "antd/es/table";
-import { SmileOutlined } from "@ant-design/icons";
+import { SmileOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Agent } from "../../type";
 import { requestOptions, useAgents } from "../../hooks/useAgent";
 import { NumberToVND } from "../../helper";
@@ -16,7 +24,7 @@ function ManageAgent() {
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const { data: rolesResponse } = useRoles(1);
-  const { data, mutate: refreshAgents } = useAgents(1);
+  const { data, mutate: refreshAgents } = useAgents(1, 20, accessToken);
   const agents = data?.data ?? [];
   const roles = rolesResponse?.data;
 
@@ -234,7 +242,16 @@ function ManageAgent() {
       render: (_, record: Agent) => (
         <Space size="middle">
           <Button onClick={() => showModal(record)}>Update</Button>
-          <Button onClick={() => handleDeleteRecord(record)}>Delete</Button>
+          <Popconfirm
+            title="Xoá đại lý"
+            description="Bạn chắc chắn muốn xoá đại lý này?"
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+            onConfirm={() => handleDeleteRecord(record)}
+            okText="Xoá"
+            cancelText="Huỷ"
+          >
+            <Button>Delete</Button>
+          </Popconfirm>
         </Space>
       ),
     },

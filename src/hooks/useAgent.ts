@@ -10,10 +10,10 @@ export const requestOptions: RequestOptions = {
   },
 };
 
-export function useAgents(page: number, size = 20) {
+export function useAgents(page: number, size = 20, accessToken: string) {
   const { data, isLoading, error, mutate } = useSWR(
     `/agent/get-agent?page=${page}&size=${size}`,
-    fetchAgents
+    (url: string) => fetchAgents(url, {...requestOptions, headers: {...requestOptions.headers, "Authorization": `Bearer ${accessToken}`}})
   );
 
   return {
@@ -24,7 +24,7 @@ export function useAgents(page: number, size = 20) {
   };
 }
 
-export async function fetchAgents(url: string) {
+export async function fetchAgents(url: string, requestOptions: RequestOptions) {
   const res = await fetch(`${API_ROOT}${url}`, requestOptions);
 
   return res.json() as Promise<PagedResponse<Agent>>;
