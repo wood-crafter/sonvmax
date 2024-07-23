@@ -1,8 +1,17 @@
 import { useState } from "react";
 import "./index.css";
-import { Table, Space, Button, Modal, notification, Input, Radio } from "antd";
+import {
+  Table,
+  Space,
+  Button,
+  Modal,
+  notification,
+  Input,
+  Radio,
+  Popconfirm,
+} from "antd";
 import { ColumnType } from "antd/es/table";
-import { SmileOutlined } from "@ant-design/icons";
+import { SmileOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Role, Staff } from "../../type";
 import { requestOptions, useStaffs } from "../../hooks/useStaff";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
@@ -42,7 +51,6 @@ function ManageStaff() {
   const [currentEditing, setCurrentEditing] = useState<Staff | null>(null);
   const handleUpdateAgent = async () => {
     const updateData = {
-      ...currentEditing,
       roleId: role,
       gender: +gender,
       isActive: isActive,
@@ -186,7 +194,16 @@ function ManageStaff() {
       render: (_, record: Staff) => (
         <Space size="middle">
           <Button onClick={() => showModal(record)}>Update</Button>
-          <Button onClick={() => handleDeleteRecord(record)}>Delete</Button>
+          <Popconfirm
+            title="Xoá sản phẩm"
+            description="Bạn chắc chắn muốn xoá sản phẩm này?"
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+            onConfirm={() => handleDeleteRecord(record)}
+            okText="Xoá"
+            cancelText="Huỷ"
+          >
+            <Button>Delete</Button>
+          </Popconfirm>
         </Space>
       ),
     },
