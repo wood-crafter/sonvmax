@@ -223,7 +223,7 @@ function ManageStaff() {
       </Button>
       <Table columns={columns} dataSource={staffs} />
       <Modal
-        title="Sửa thông nhân viên"
+        title="Sửa thông tin nhân viên"
         open={isModalOpen}
         onOk={handleConfirmUpdate}
         onCancel={handleCancelUpdate}
