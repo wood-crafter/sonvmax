@@ -27,7 +27,7 @@ function ManageProduct() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
-  const { data: categoryResponse } = useCategories(1);
+  const { data: categoryResponse } = useCategories(1, 20, accessToken);
   const { data, mutate: refreshProducts } = useProducts(1);
   const products = useMemo(
     () => data?.data.map((it) => ({ key: it.id, ...it })),
@@ -62,13 +62,13 @@ function ManageProduct() {
   const [currentEditing, setCurrentEditing] = useState<Product | null>(null);
   const handleUpdateProduct = async () => {
     const updateData = {
-      ...currentEditing,
       categoryId: category,
       price: +price,
       nameProduct: productName,
       description: description,
       activeProduct: activeProduct,
       image: image,
+      id: currentEditing?.id,
     };
     const updateBody = JSON.stringify(updateData);
 

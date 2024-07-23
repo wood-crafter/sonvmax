@@ -4,7 +4,6 @@ export type Product = {
   nameProduct: string
   price: number
   description: string
-  volume: number | undefined
   activeProduct: boolean
   quantity: number
   image: string | undefined
