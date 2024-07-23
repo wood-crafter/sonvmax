@@ -1,8 +1,17 @@
 import { useMemo, useState } from "react";
 import "./index.css";
-import { Table, Space, Button, Modal, notification, Input, Radio } from "antd";
+import {
+  Table,
+  Space,
+  Button,
+  Modal,
+  notification,
+  Input,
+  Radio,
+  Popconfirm,
+} from "antd";
 import type { ColumnType } from "antd/es/table";
-import { SmileOutlined } from "@ant-design/icons";
+import { SmileOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Category, Product } from "../../type";
 import { NumberToVND } from "../../helper";
 import {
@@ -224,7 +233,16 @@ function ManageProduct() {
       render: (_, record: Product) => (
         <Space size="middle">
           <Button onClick={() => showModal(record)}>Update</Button>
-          <Button onClick={() => handleDeleteRecord(record)}>Delete</Button>
+          <Popconfirm
+            title="Xoá sản phẩm"
+            description="Bạn chắc chắn muốn xoá sản phẩm này?"
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+            onConfirm={() => handleDeleteRecord(record)}
+            okText="Xoá"
+            cancelText="Huỷ"
+          >
+            <Button>Delete</Button>
+          </Popconfirm>
         </Space>
       ),
     },
