@@ -74,6 +74,15 @@ export type Staff = {
   role: Role
 }
 
+export type Voucher = {
+  id: string
+  code: string
+  activeVoucher: boolean
+  discountAmount: number
+  createdAt: string
+  permissions: number
+}
+
 export type RGB = {
   r: number
   g: number
