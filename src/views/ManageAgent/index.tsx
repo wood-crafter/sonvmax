@@ -24,7 +24,7 @@ function ManageAgent() {
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const { data: rolesResponse } = useRoles(1);
-  const { data, mutate: refreshAgents } = useAgents(1, 20, accessToken);
+  const { data, mutate: refreshAgents } = useAgents(1);
   const agents = data?.data ?? [];
   const roles = rolesResponse?.data;
 

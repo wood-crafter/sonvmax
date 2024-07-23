@@ -1,6 +1,7 @@
 import useSWR from "swr";
 import { API_ROOT } from "../constant";
 import type { PagedResponse, Agent, RequestOptions } from "../type";
+import { FetchWithAuthOptions, useAuthenticatedFetch } from "./useAuthenticatedFetch";
 
 export const requestOptions: RequestOptions = {
   method: "GET",
@@ -10,10 +11,11 @@ export const requestOptions: RequestOptions = {
   },
 };
 
-export function useAgents(page: number, size = 20, accessToken: string) {
+export function useAgents(page: number, size = 20) {
+  const fetcher = useAuthenticatedFetch();
   const { data, isLoading, error, mutate } = useSWR(
-    `/agent/get-agent?page=${page}&size=${size}`,
-    (url: string) => fetchAgents(url, {...requestOptions, headers: {...requestOptions.headers, "Authorization": `Bearer ${accessToken}`}})
+    { url: `/agent/get-agent?page=${page}&size=${size}`, fetcher },
+    fetchAgents
   );
 
   return {
@@ -24,8 +26,8 @@ export function useAgents(page: number, size = 20, accessToken: string) {
   };
 }
 
-export async function fetchAgents(url: string, requestOptions: RequestOptions) {
-  const res = await fetch(`${API_ROOT}${url}`, requestOptions);
+export async function fetchAgents({url, fetcher} : FetchWithAuthOptions) {
+  const res = await fetcher(`${API_ROOT}${url}`, {...requestOptions});
 
   return res.json() as Promise<PagedResponse<Agent>>;
 }

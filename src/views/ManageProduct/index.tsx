@@ -27,7 +27,7 @@ function ManageProduct() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
-  const { data: categoryResponse } = useCategories(1, 20, accessToken);
+  const { data: categoryResponse } = useCategories(1);
   const { data, mutate: refreshProducts } = useProducts(1);
   const products = useMemo(
     () => data?.data.map((it) => ({ key: it.id, ...it })),
