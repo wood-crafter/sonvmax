@@ -11,6 +11,7 @@ import Products from "./views/Products";
 import ProductDetail from "./views/ProductDetail";
 import ManageColor from "./views/ManageColor";
 import { ManageRoles } from "./views/ManageRoles";
+import ManageVoucher from "./views/ManageVoucher";
 
 const AppRoutes = () => {
   return (
@@ -77,6 +78,14 @@ const AppRoutes = () => {
           element={
             <Layout hasNav isManager>
               <ManageRoles />
+            </Layout>
+          }
+        />
+        <Route
+          path="voucher"
+          element={
+            <Layout hasNav isManager>
+              <ManageVoucher />
             </Layout>
           }
         />
