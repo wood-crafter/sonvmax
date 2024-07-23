@@ -1,6 +1,5 @@
 import { FormEventHandler, useState } from "react";
 import "./index.css";
-import { useLocation } from "react-router-dom";
 import { useUserStore } from "../../store/user";
 import { useNavigate } from "react-router-dom";
 import { ADMIN_ROLES } from "../../constant";
@@ -8,8 +7,6 @@ import { useLogin } from "../../hooks/useAuth";
 
 function Login() {
   const navigate = useNavigate();
-  const location = useLocation().pathname;
-  const [isLogin, setIsLogin] = useState(location === "/login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -52,27 +49,7 @@ function Login() {
   return (
     <div className="Login">
       <form className="login-form-container" onSubmit={handleLogin}>
-        <div className="login-form-title">
-          {isLogin ? "Đăng nhập" : "Đăng ký"}
-        </div>
-        <div className="signin-signout-switcher">
-          <button
-            className={isLogin ? "button-switcher-active" : ""}
-            onClick={() => {
-              setIsLogin(true);
-            }}
-          >
-            Đăng nhập
-          </button>
-          <button
-            className={isLogin ? "" : "button-switcher-active"}
-            onClick={() => {
-              setIsLogin(false);
-            }}
-          >
-            Đăng ký
-          </button>
-        </div>
+        <div className="login-form-title">Đăng nhập</div>
         <div className="login-form-inputs">
           <input
             type="text"
@@ -96,10 +73,7 @@ function Login() {
           Đăng nhập
         </button>
         {error && <div style={{ color: "red" }}>{error}</div>}
-        <div className="no-account">
-          <h5>{isLogin ? "Chưa có tài khoản?" : "Đã có tài khoản"}</h5>
-          <a>{isLogin ? "Đăng ký ngay" : "Đăng nhập"}</a>
-        </div>
+        <div className="no-account"></div>
       </form>
     </div>
   );
