@@ -21,7 +21,7 @@ function ProductDetail() {
   >([]);
   const { data: product } = useProductsById(currentProductId);
   const [currentColor, setCurrentColor] = useState<Color | null>(null);
-  const [numOfProduct, setNumOfProduct] = useState(0);
+  const [numOfProduct, setNumOfProduct] = useState(1);
   const [api, contextHolder] = notification.useNotification();
 
   const handleChangeMainColor = (colorName: string, colorType: string) => {
