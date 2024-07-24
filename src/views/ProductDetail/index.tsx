@@ -54,10 +54,10 @@ function ProductDetail() {
 
   const isCurrentColor = (item: Color) => {
     return (
-      item.type === currentColor.type &&
-      item.r === currentColor.r &&
-      item.g === currentColor.g &&
-      item.b === currentColor.b
+      item?.type === currentColor?.type &&
+      item?.r === currentColor?.r &&
+      item?.g === currentColor?.g &&
+      item?.b === currentColor?.b
     );
   };
 
