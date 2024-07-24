@@ -11,7 +11,11 @@ import {
   Popconfirm,
 } from "antd";
 import { ColumnType } from "antd/es/table";
-import { SmileOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import {
+  SmileOutlined,
+  QuestionCircleOutlined,
+  FrownOutlined,
+} from "@ant-design/icons";
 import { Role, Staff } from "../../type";
 import { requestOptions, useStaffs } from "../../hooks/useStaff";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
@@ -28,11 +32,26 @@ function ManageStaff() {
   const staffs = data?.data ?? [];
   const roles = rolesResponse?.data;
 
-  const openNotification = () => {
+  const missingAddPropsNotification = () => {
     api.open({
       message: "Tạo thất bại",
       description: "Vui lòng điền đủ thông tin",
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
+  const addSuccessNotification = () => {
+    api.open({
+      message: "Tạo thành công",
+      description: "",
       icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+  const addFailNotification = (status: number, statusText: string) => {
+    api.open({
+      message: "Tạo thất bại",
+      description: `Mã lỗi: ${status} ${statusText}`,
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
     });
   };
 
@@ -117,7 +136,7 @@ function ManageStaff() {
       !nextPhoneNumber ||
       !nextRole
     ) {
-      openNotification();
+      missingAddPropsNotification();
       return;
     }
     const staffToAdd = JSON.stringify({
@@ -130,15 +149,23 @@ function ManageStaff() {
       fullName: nextFullName,
     });
 
-    await authFetch(`${API_ROOT}/staff/create-staff/${nextRole}`, {
-      ...requestOptions,
-      body: staffToAdd,
-      method: "POST",
-      headers: {
-        ...requestOptions.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const createResponse = await authFetch(
+      `${API_ROOT}/staff/create-staff/${nextRole}`,
+      {
+        ...requestOptions,
+        body: staffToAdd,
+        method: "POST",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    if (createResponse.status !== 201) {
+      addFailNotification(createResponse.status, createResponse.statusText);
+    } else {
+      addSuccessNotification();
+    }
     refreshStaffs();
     clearAddInput();
   };

@@ -10,7 +10,11 @@ import {
   Popconfirm,
 } from "antd";
 import { ColumnType } from "antd/es/table";
-import { SmileOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import {
+  SmileOutlined,
+  QuestionCircleOutlined,
+  FrownOutlined,
+} from "@ant-design/icons";
 import { Agent } from "../../type";
 import { requestOptions, useAgents } from "../../hooks/useAgent";
 import { NumberToVND } from "../../helper";
@@ -28,11 +32,26 @@ function ManageAgent() {
   const agents = data?.data ?? [];
   const roles = rolesResponse?.data;
 
-  const openNotification = () => {
+  const missingAddPropsNotification = () => {
     api.open({
       message: "Tạo thất bại",
       description: "Vui lòng điền đủ thông tin",
       icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
+  const addSuccessNotification = () => {
+    api.open({
+      message: "Tạo thành công",
+      description: "",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+  const addFailNotification = (status: number, statusText: string) => {
+    api.open({
+      message: "Tạo thất bại",
+      description: `Mã lỗi: ${status} ${statusText}`,
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
     });
   };
 
@@ -133,7 +152,7 @@ function ManageAgent() {
       !nextAccountDebit ||
       !nextRank
     ) {
-      openNotification();
+      missingAddPropsNotification();
       return;
     }
     const agentToAdd = JSON.stringify({
@@ -151,7 +170,7 @@ function ManageAgent() {
       accountDebit: +nextAccountDebit,
     });
 
-    await authFetch(
+    const createResponse = await authFetch(
       `${API_ROOT}/agent/create-agent/${
         roles?.find((it) => it.name === "AGENT")?.id
       }`,
@@ -165,6 +184,11 @@ function ManageAgent() {
         },
       }
     );
+    if (createResponse.status !== 201) {
+      addFailNotification(createResponse.status, createResponse.statusText);
+    } else {
+      addSuccessNotification();
+    }
     refreshAgents();
     clearAddInput();
   };

@@ -9,9 +9,14 @@ import {
   Input,
   Radio,
   Popconfirm,
+  Spin,
 } from "antd";
 import { ColumnType } from "antd/es/table";
-import { SmileOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import {
+  SmileOutlined,
+  QuestionCircleOutlined,
+  FrownOutlined,
+} from "@ant-design/icons";
 import { Voucher } from "../../type";
 import { requestOptions } from "../../hooks/useStaff";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
@@ -23,14 +28,29 @@ function ManageVoucher() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
-  const { data, mutate: refreshVouchers } = useVouchers(1);
+  const { data, isLoading, mutate: refreshVouchers } = useVouchers(1);
   const voucher = data?.data ?? [];
 
-  const openNotification = () => {
+  const missingAddPropsNotification = () => {
     api.open({
       message: "Tạo thất bại",
       description: "Vui lòng điền đủ thông tin",
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
+  const addSuccessNotification = () => {
+    api.open({
+      message: "Tạo thành công",
+      description: "",
       icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+  const addFailNotification = (status: number, statusText: string) => {
+    api.open({
+      message: "Tạo thất bại",
+      description: `Mã lỗi: ${status} ${statusText}`,
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
     });
   };
 
@@ -110,7 +130,7 @@ function ManageVoucher() {
 
   const handleAddOk = async () => {
     if (!nextCode || !nextDiscountAmount) {
-      openNotification();
+      missingAddPropsNotification();
       return;
     }
     const voucherToAdd = JSON.stringify({
@@ -120,15 +140,23 @@ function ManageVoucher() {
       permissions: nextPermissions,
     });
 
-    await authFetch(`${API_ROOT}/voucher/create-voucher`, {
-      ...requestOptions,
-      body: voucherToAdd,
-      method: "POST",
-      headers: {
-        ...requestOptions.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const createResponse = await authFetch(
+      `${API_ROOT}/voucher/create-voucher`,
+      {
+        ...requestOptions,
+        body: voucherToAdd,
+        method: "POST",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    if (createResponse.status !== 201) {
+      addFailNotification(createResponse.status, createResponse.statusText);
+    } else {
+      addSuccessNotification();
+    }
     refreshVouchers();
     clearAddInput();
   };
@@ -185,6 +213,8 @@ function ManageVoucher() {
       ),
     },
   ];
+
+  if (isLoading) return <Spin />;
 
   return (
     <div className="ManageVoucher">
