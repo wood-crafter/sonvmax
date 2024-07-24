@@ -6,13 +6,14 @@ import {
 } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { Button, Upload, notification } from "antd";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import readXlsxFile from "read-excel-file";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { API_ROOT } from "../../constant";
 import { requestOptions } from "../../hooks/useProduct";
 import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
+import { RcFile } from "antd/es/upload";
 
 const schema = {
   price: {
@@ -46,11 +47,11 @@ function ManageColor() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
-  const [files, setFiles] = useState<any>([]);
+  const [files, setFiles] = useState<RcFile[]>([]);
   const openNotification = (
     message: string,
     description: string,
-    icon: any
+    icon: ReactNode
   ) => {
     api.open({
       message,
@@ -115,7 +116,7 @@ function ManageColor() {
   };
 
   const handleReplaceColors = () => {
-    readXlsxFile(files, { schema }).then(async (readInfo) => {
+    readXlsxFile(files[0], { schema }).then(async (readInfo) => {
       const { rows } = readInfo;
 
       if (!rows.length) {
