@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./index.css";
 import {
   Table,
@@ -9,10 +9,15 @@ import {
   Input,
   Radio,
   Popconfirm,
+  Spin,
 } from "antd";
 import type { ColumnType } from "antd/es/table";
-import { SmileOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { Category, Product } from "../../type";
+import {
+  SmileOutlined,
+  FrownOutlined,
+  QuestionCircleOutlined,
+} from "@ant-design/icons";
+import { Category, PagedResponse, Product } from "../../type";
 import { NumberToVND } from "../../helper";
 import {
   useCategories,
@@ -22,32 +27,53 @@ import {
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { API_ROOT } from "../../constant";
+import { KeyedMutator } from "swr";
 
-function ManageProduct() {
-  const accessToken = useUserStore((state) => state.accessToken);
-  const authFetch = useAuthenticatedFetch();
-  const [api, contextHolder] = notification.useNotification();
-  const { data: categoryResponse } = useCategories(1);
-  const { data, mutate: refreshProducts } = useProducts(1);
-  const products = useMemo(
-    () => data?.data.map((it) => ({ key: it.id, ...it })),
-    [data?.data]
-  );
-  const categories = categoryResponse?.data;
+type AddProductButtonProps = {
+  categories: Category[] | undefined;
+  handleSetNumberInput: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => void;
+  refreshProducts: KeyedMutator<PagedResponse<Product>>;
+  accessToken: string;
+  authFetch: (
+    input: RequestInfo | URL,
+    init?: RequestInit
+  ) => Promise<Response>;
+  missingAddPropNoti: () => void;
+  addSuccessNoti: () => void;
+  addFailNoti: (status: number, statusText: string) => void;
+};
 
-  const openNotification = () => {
-    api.open({
-      message: "Tạo thất bại",
-      description: "Vui lòng điền đủ thông tin",
-      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
-    });
-  };
-  const [productName, setProductName] = useState<string>("");
-  const [image, setImage] = useState<string | undefined>("");
-  const [price, setPrice] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [category, setCategory] = useState<string>("");
-  const [activeProduct, setActiveProduct] = useState(false);
+type UpdateProductModalProps = {
+  categories: Category[] | undefined;
+  isModalOpen: boolean;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  currentEditing: Product;
+  authFetch: (
+    input: RequestInfo | URL,
+    init?: RequestInit
+  ) => Promise<Response>;
+  accessToken: string;
+  refreshProducts: KeyedMutator<PagedResponse<Product>>;
+  handleSetNumberInput: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => void;
+};
+
+function AddProductButton(props: AddProductButtonProps) {
+  const {
+    categories,
+    handleSetNumberInput,
+    refreshProducts,
+    accessToken,
+    authFetch,
+    missingAddPropNoti,
+    addSuccessNoti,
+    addFailNoti,
+  } = props;
   const [nextProductName, setNextProductName] = useState("");
   const [nextImage, setNextImage] = useState<string>("");
   const [nextProductDescription, setNextProductDescription] = useState("");
@@ -58,76 +84,14 @@ function ManageProduct() {
     categories && categories[0] ? categories[0].id : ""
   );
   const [nextActiveProduct, setNextActiveProduct] = useState(false);
-
-  const [currentEditing, setCurrentEditing] = useState<Product | null>(null);
-  const handleUpdateProduct = async () => {
-    const updateData = {
-      categoryId: category,
-      price: +price,
-      nameProduct: productName,
-      description: description,
-      activeProduct: activeProduct,
-      image: image,
-      id: currentEditing?.id,
-    };
-    const updateBody = JSON.stringify(updateData);
-
-    await authFetch(
-      `${API_ROOT}/product/update-product/${currentEditing?.id}`,
-      {
-        ...requestOptions,
-        body: updateBody,
-        method: "PUT",
-        headers: {
-          ...requestOptions.headers,
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-  };
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-  const showModal = (record: Product) => {
-    setCurrentEditing(record);
-    setProductName(record.nameProduct);
-    setPrice(record.price.toString());
-    setDescription(record.description);
-    setCategory(record.categoryId);
-    setActiveProduct(record.activeProduct);
-    setImage(record.image);
-    setIsModalOpen(true);
-  };
-
-  const handleOk = async () => {
-    await handleUpdateProduct();
-    refreshProducts();
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleDeleteRecord = async (record: Product) => {
-    await authFetch(`${API_ROOT}/product/remove-product/${record.id}`, {
-      ...requestOptions,
-      method: "DELETE",
-      headers: {
-        ...requestOptions.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    refreshProducts();
-  };
-
   const clearAddInput = () => {
     setNextProductName("");
     setNextImage("");
-    setDescription("");
+    setNextDescription("");
     setNextPrice("");
     setNextProductDescription("");
-    setCategory(categories ? categories[0].id : "");
+    setNextCategory(categories ? categories[0].id : "");
   };
 
   const handleAddOk = async () => {
@@ -140,7 +104,7 @@ function ManageProduct() {
       !nextProductQuantity ||
       !nextImage
     ) {
-      openNotification();
+      missingAddPropNoti();
       return;
     }
     const productToAdd = JSON.stringify({
@@ -153,199 +117,43 @@ function ManageProduct() {
       activeProduct: nextActiveProduct,
     });
 
-    await authFetch(`${API_ROOT}/product/create-product/${nextCategory}`, {
-      ...requestOptions,
-      body: productToAdd,
-      method: "POST",
-      headers: {
-        ...requestOptions.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const createResponse = await authFetch(
+      `${API_ROOT}/product/create-product/${nextCategory}`,
+      {
+        ...requestOptions,
+        body: productToAdd,
+        method: "POST",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    if (createResponse.status !== 201) {
+      addFailNoti(createResponse.status, createResponse.statusText);
+    } else {
+      addSuccessNoti();
+    }
     refreshProducts();
     clearAddInput();
   };
-
   const handleAddCancel = () => {
-    setIsAddModalOpen(false);
+    setIsModalOpen(false);
   };
-
-  const handleSetNumberInput = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setter: React.Dispatch<React.SetStateAction<string>>
-  ) => {
-    const { value: inputValue } = e.target;
-    const reg = /^-?\d*(\.\d*)?$/;
-    if (reg.test(inputValue) || inputValue === "" || inputValue === "-") {
-      setter(inputValue);
-    }
-  };
-
-  const columns: ColumnType<Product>[] = [
-    {
-      title: "Tên sản phẩm",
-      dataIndex: "nameProduct",
-      key: "nameProduct",
-      sorter: (a, b) => a.nameProduct.localeCompare(b.nameProduct),
-    },
-    {
-      title: "Hình ảnh",
-      dataIndex: "image",
-      key: "image",
-      render: (image: string) => (
-        <img style={{ maxWidth: "5rem", maxHeight: "5rem" }} src={image} />
-      ),
-    },
-    {
-      title: "Giá niêm yết",
-      dataIndex: "price",
-      key: "price",
-      sorter: (a, b) => +a.price - +b.price,
-      render: (price: number) => <div>{NumberToVND.format(price)}</div>,
-    },
-    {
-      title: "Chi tiết",
-      dataIndex: "description",
-      key: "description",
-    },
-    {
-      title: "Loại sản phẩm",
-      dataIndex: "categoryId",
-      key: "categoryId",
-      render: (value: string) => (
-        <div>{categories?.find((it) => it.id === value)?.name}</div>
-      ),
-      sorter: (a, b) => a.categoryId.localeCompare(b.categoryId),
-    },
-    {
-      title: "Hoạt động",
-      dataIndex: "activeProduct",
-      key: "activeProduct",
-      render: (isActive: boolean) => (
-        <p style={{ color: isActive ? "green" : "red" }}>
-          {isActive ? "Hoạt động" : "Tạm dừng"}
-        </p>
-      ),
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record: Product) => (
-        <Space size="middle">
-          <Button onClick={() => showModal(record)}>Update</Button>
-          <Popconfirm
-            title="Xoá sản phẩm"
-            description="Bạn chắc chắn muốn xoá sản phẩm này?"
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            onConfirm={() => handleDeleteRecord(record)}
-            okText="Xoá"
-            cancelText="Huỷ"
-          >
-            <Button>Delete</Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
-
   return (
-    <div className="ManageProduct">
-      {contextHolder}
+    <>
       <Button
         onClick={() => {
-          setIsAddModalOpen(true);
+          setIsModalOpen(true);
         }}
         type="primary"
         style={{ marginBottom: 16 }}
       >
         Thêm sản phẩm
       </Button>
-      <Table columns={columns} dataSource={products} />
-      <Modal
-        title="Sửa sản phẩm"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        {currentEditing && (
-          <div className="modal-update-container">
-            <label htmlFor="product-name">Tên sản phẩm: </label>
-            <Input
-              value={productName}
-              type="text"
-              placeholder={currentEditing.nameProduct}
-              onChange={(e) => {
-                setProductName(e.target.value);
-              }}
-              name="product-name"
-            />
-            <label htmlFor="price">Giá niêm yết: </label>
-            <Input
-              name="price"
-              value={price}
-              onChange={(e) => {
-                handleSetNumberInput(e, setPrice);
-              }}
-              placeholder={currentEditing.price.toString()}
-              maxLength={16}
-            />
-            <label htmlFor="product-name">Ảnh sản phẩm: </label>
-            <Input
-              value={image}
-              type="text"
-              placeholder={currentEditing.image}
-              onChange={(e) => {
-                setImage(e.target.value);
-              }}
-              name="product-name"
-            />
-            <label htmlFor="description">Chi tiết sản phẩm: </label>
-            <Input
-              name="description"
-              value={description}
-              onChange={(e) => {
-                setDescription(e.target.value);
-              }}
-              placeholder={currentEditing.description}
-              maxLength={256}
-            />
-            <label htmlFor="category">Loại sản phẩm</label>
-            <select
-              value={category}
-              id="category"
-              name="category"
-              onChange={(e) => {
-                setCategory(e.target.value);
-              }}
-            >
-              {categories?.map((category: Category) => {
-                return (
-                  <option
-                    key={category.id}
-                    id={category.id}
-                    value={category.id}
-                  >
-                    {category.name}
-                  </option>
-                );
-              })}
-            </select>
-            <Radio.Group
-              onChange={(e) => {
-                setActiveProduct(e.target.value);
-              }}
-              value={activeProduct}
-            >
-              <Radio value={true}>Hoạt động</Radio>
-              <Radio value={false}>Tạm dừng</Radio>
-            </Radio.Group>
-          </div>
-        )}
-      </Modal>
-
       <Modal
         title="Thêm sản phẩm"
-        open={isAddModalOpen}
+        open={isModalOpen}
         onOk={handleAddOk}
         onCancel={handleAddCancel}
       >
@@ -441,6 +249,321 @@ function ManageProduct() {
           </Radio.Group>
         </div>
       </Modal>
+    </>
+  );
+}
+
+function UpdateProductModal(props: UpdateProductModalProps) {
+  const {
+    isModalOpen,
+    setIsModalOpen,
+    currentEditing,
+    authFetch,
+    accessToken,
+    refreshProducts,
+    handleSetNumberInput,
+    categories,
+  } = props;
+
+  const [productName, setProductName] = useState<string>("");
+  const [image, setImage] = useState<string | undefined>("");
+  const [price, setPrice] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
+  const [activeProduct, setActiveProduct] = useState(false);
+
+  useEffect(() => {
+    setProductName(currentEditing.nameProduct);
+    setPrice(currentEditing.price.toString());
+    setDescription(currentEditing.description);
+    setCategory(currentEditing.categoryId);
+    setActiveProduct(currentEditing.activeProduct);
+    setImage(currentEditing.image);
+  }, [currentEditing]);
+
+  const handleUpdateProduct = async () => {
+    const updateData = {
+      categoryId: category,
+      price: +price,
+      nameProduct: productName,
+      description: description,
+      activeProduct: activeProduct,
+      image: image,
+      id: currentEditing?.id,
+    };
+    const updateBody = JSON.stringify(updateData);
+
+    await authFetch(
+      `${API_ROOT}/product/update-product/${currentEditing?.id}`,
+      {
+        ...requestOptions,
+        body: updateBody,
+        method: "PUT",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+  };
+
+  const handleOk = async () => {
+    await handleUpdateProduct();
+    refreshProducts();
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  return (
+    <Modal
+      title="Sửa sản phẩm"
+      open={isModalOpen}
+      onOk={handleOk}
+      onCancel={handleCancel}
+    >
+      {currentEditing && (
+        <div className="modal-update-container">
+          <label htmlFor="product-name">Tên sản phẩm: </label>
+          <Input
+            value={productName}
+            type="text"
+            placeholder={currentEditing.nameProduct}
+            onChange={(e) => {
+              setProductName(e.target.value);
+            }}
+            name="product-name"
+          />
+          <label htmlFor="price">Giá niêm yết: </label>
+          <Input
+            name="price"
+            value={price}
+            onChange={(e) => {
+              handleSetNumberInput(e, setPrice);
+            }}
+            placeholder={currentEditing.price.toString()}
+            maxLength={16}
+          />
+          <label htmlFor="product-name">Ảnh sản phẩm: </label>
+          <Input
+            value={image}
+            type="text"
+            placeholder={currentEditing.image}
+            onChange={(e) => {
+              setImage(e.target.value);
+            }}
+            name="product-name"
+          />
+          <label htmlFor="description">Chi tiết sản phẩm: </label>
+          <Input
+            name="description"
+            value={description}
+            onChange={(e) => {
+              setDescription(e.target.value);
+            }}
+            placeholder={currentEditing.description}
+            maxLength={256}
+          />
+          <label htmlFor="category">Loại sản phẩm</label>
+          <select
+            value={category}
+            id="category"
+            name="category"
+            onChange={(e) => {
+              setCategory(e.target.value);
+            }}
+          >
+            {categories?.map((category: Category) => {
+              return (
+                <option key={category.id} id={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              );
+            })}
+          </select>
+          <Radio.Group
+            onChange={(e) => {
+              setActiveProduct(e.target.value);
+            }}
+            value={activeProduct}
+          >
+            <Radio value={true}>Hoạt động</Radio>
+            <Radio value={false}>Tạm dừng</Radio>
+          </Radio.Group>
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+function ManageProduct() {
+  const accessToken = useUserStore((state) => state.accessToken);
+  const authFetch = useAuthenticatedFetch();
+  const [api, contextHolder] = notification.useNotification();
+  const { data: categoryResponse } = useCategories(1);
+  const { data, isLoading, mutate: refreshProducts } = useProducts(1);
+  const products = useMemo(
+    () => data?.data.map((it) => ({ key: it.id, ...it })),
+    [data?.data]
+  );
+  const categories = categoryResponse?.data;
+
+  const missingAddPropsNotification = () => {
+    api.open({
+      message: "Tạo thất bại",
+      description: "Vui lòng điền đủ thông tin",
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+  const addSuccessNotification = () => {
+    api.open({
+      message: "Tạo thành công",
+      description: "",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+  const addFailNotification = (status: number, statusText: string) => {
+    api.open({
+      message: "Tạo thất bại",
+      description: `Mã lỗi: ${status} ${statusText}`,
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+  const [currentEditing, setCurrentEditing] = useState<Product>({
+    id: "",
+    nameProduct: "",
+    price: 0,
+    description: "",
+    categoryId: "",
+    activeProduct: false,
+    image: "",
+    quantity: 0,
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = (record: Product) => {
+    setCurrentEditing(record);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteRecord = async (record: Product) => {
+    await authFetch(`${API_ROOT}/product/remove-product/${record.id}`, {
+      ...requestOptions,
+      method: "DELETE",
+      headers: {
+        ...requestOptions.headers,
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    refreshProducts();
+  };
+
+  const handleSetNumberInput = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    const { value: inputValue } = e.target;
+    const reg = /^-?\d*(\.\d*)?$/;
+    if (reg.test(inputValue) || inputValue === "" || inputValue === "-") {
+      setter(inputValue);
+    }
+  };
+
+  const columns: ColumnType<Product>[] = [
+    {
+      title: "Tên sản phẩm",
+      dataIndex: "nameProduct",
+      key: "nameProduct",
+      sorter: (a, b) => a.nameProduct.localeCompare(b.nameProduct),
+    },
+    {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      render: (image: string) => (
+        <img style={{ maxWidth: "5rem", maxHeight: "5rem" }} src={image} />
+      ),
+    },
+    {
+      title: "Giá niêm yết",
+      dataIndex: "price",
+      key: "price",
+      sorter: (a, b) => +a.price - +b.price,
+      render: (price: number) => <div>{NumberToVND.format(price)}</div>,
+    },
+    {
+      title: "Chi tiết",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Loại sản phẩm",
+      dataIndex: "categoryId",
+      key: "categoryId",
+      render: (value: string) => (
+        <div>{categories?.find((it) => it.id === value)?.name}</div>
+      ),
+      sorter: (a, b) => a.categoryId.localeCompare(b.categoryId),
+    },
+    {
+      title: "Hoạt động",
+      dataIndex: "activeProduct",
+      key: "activeProduct",
+      render: (isActive: boolean) => (
+        <p style={{ color: isActive ? "green" : "red" }}>
+          {isActive ? "Hoạt động" : "Tạm dừng"}
+        </p>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record: Product) => (
+        <Space size="middle">
+          <Button onClick={() => showModal(record)}>Update</Button>
+          <Popconfirm
+            title="Xoá sản phẩm"
+            description="Bạn chắc chắn muốn xoá sản phẩm này?"
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+            onConfirm={() => handleDeleteRecord(record)}
+            okText="Xoá"
+            cancelText="Huỷ"
+          >
+            <Button>Delete</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
+  if (isLoading) return <Spin />;
+
+  return (
+    <div className="ManageProduct">
+      {contextHolder}
+      <AddProductButton
+        addSuccessNoti={addSuccessNotification}
+        addFailNoti={addFailNotification}
+        missingAddPropNoti={missingAddPropsNotification}
+        categories={categories}
+        handleSetNumberInput={handleSetNumberInput}
+        refreshProducts={refreshProducts}
+        accessToken={accessToken}
+        authFetch={authFetch}
+      />
+      <Table columns={columns} dataSource={products} />
+      <UpdateProductModal
+        categories={categories}
+        handleSetNumberInput={handleSetNumberInput}
+        refreshProducts={refreshProducts}
+        accessToken={accessToken}
+        authFetch={authFetch}
+        currentEditing={currentEditing}
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+      />
     </div>
   );
 }
