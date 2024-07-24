@@ -23,6 +23,12 @@ import { useUserStore } from "../../store/user";
 import { API_ROOT } from "../../constant";
 import { useRoles } from "../../hooks/useRoles";
 
+type UpdateData = {
+  gender: number;
+  isActive: boolean;
+  roleId?: string;
+};
+
 function ManageStaff() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
@@ -69,11 +75,14 @@ function ManageStaff() {
 
   const [currentEditing, setCurrentEditing] = useState<Staff | null>(null);
   const handleUpdateAgent = async () => {
-    const updateData = {
-      roleId: role,
+    const updateData: UpdateData = {
       gender: +gender,
       isActive: isActive,
     };
+
+    if (role) {
+      updateData.roleId = role;
+    }
     const updateBody = JSON.stringify(updateData);
 
     await authFetch(`${API_ROOT}/staff/update-staff/${currentEditing?.id}`, {
