@@ -4,6 +4,7 @@ import Nav from "../../views/NavigationBar";
 import { useUserStore } from "../../store/user";
 import { Navigate } from "react-router-dom";
 import { ADMIN_ROLES } from "../../constant";
+import Footer from "../../views/Footer";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ function Layout({
     <div className={`${isManager ? "ManagerLayout" : "Layout"} Layout-wrapper`}>
       <Nav isManager={isManager} />
       <main>{children}</main>
+      {!isManager && <Footer />}
     </div>
   );
 }

@@ -1,0 +1,38 @@
+.Footer {
+  background-color: #7c2d82;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.Footer .about {
+  display: flex;
+  flex-direction: row;
+  width: calc(100% - 4rem);
+  justify-content: space-around;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  border-bottom: 1px solid black;
+}
+
+.Footer .credit {
+  width: calc(100% - 4rem);
+  margin-left: 2rem;
+  margin-right: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Footer .about-column {
+  max-width: 18%;
+}
+
+.Footer .link {
+  color: white;
+}
+
+.Footer .link:hover {
+  color: #f5a515;
+}
