@@ -28,6 +28,7 @@ import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { API_ROOT } from "../../constant";
 import { KeyedMutator } from "swr";
+import TextArea from "antd/es/input/TextArea";
 
 type AddProductButtonProps = {
   categories: Category[] | undefined;
@@ -199,13 +200,13 @@ function AddProductButton(props: AddProductButtonProps) {
             maxLength={256}
           />
           <label htmlFor="product-description">Chi tiết: </label>
-          <Input
+          <TextArea
             value={nextProductDescription}
-            type="text"
             placeholder="Thêm chi tiết"
             onChange={(e) => {
               setNextProductDescription(e.target.value);
             }}
+            autoSize={{ minRows: 5, maxRows: 30 }}
             name="product-description"
           />
           <label htmlFor="product-quantity">Số lượng: </label>
@@ -357,14 +358,14 @@ function UpdateProductModal(props: UpdateProductModalProps) {
             name="product-name"
           />
           <label htmlFor="description">Chi tiết sản phẩm: </label>
-          <Input
+          <TextArea
             name="description"
             value={description}
             onChange={(e) => {
               setDescription(e.target.value);
             }}
             placeholder={currentEditing.description}
-            maxLength={256}
+            autoSize={{ minRows: 5, maxRows: 30 }}
           />
           <label htmlFor="category">Loại sản phẩm</label>
           <select
