@@ -4,7 +4,6 @@
   justify-content: center;
   width: 100vw;
   height: 100vh;
-  background-image: linear-gradient(to bottom left, rgb(194, 162, 222), rgb(213, 183, 183));
 }
 
 .Login .login-form-container {

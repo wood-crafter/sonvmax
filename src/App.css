@@ -5,5 +5,8 @@
   min-height: 100vh;
   padding: 0;
   margin: 0;
-  background-color: white;
+}
+
+body {
+  background: url(https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/bg-banner.jpg);
 }
