@@ -1,16 +1,20 @@
 import { useState } from "react";
-import { ITEM_PER_ROW } from "../../constant";
-import { useProductsById } from "../../hooks/useProduct";
+import { API_ROOT, ITEM_PER_ROW } from "../../constant";
+import { requestOptions, useProductsById } from "../../hooks/useProduct";
 import { InputNumber, notification } from "antd";
 import "./index.css";
 import { NumberToVND, compareBrightness } from "../../helper";
 import { useLocation } from "react-router-dom";
 import { useColors } from "../../hooks/useColor";
-import { SmileOutlined } from "@ant-design/icons";
+import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import { Color } from "../../type";
+import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
+import { useUserStore } from "../../store/user";
 
 function ProductDetail() {
   const { data: colors } = useColors();
+  const accessToken = useUserStore((state) => state.accessToken);
+  const authFetch = useAuthenticatedFetch();
   const currentProductId = useLocation().pathname.split("/")[2];
   const [currentMainColorSelecting, setCurrentMainColorSelecting] =
     useState("");
@@ -24,6 +28,30 @@ function ProductDetail() {
   const [numOfProduct, setNumOfProduct] = useState(1);
   const [api, contextHolder] = notification.useNotification();
 
+  const RequestLoginNotification = () => {
+    api.open({
+      message: "Tạo đơn hàng thất bại",
+      description: "Vui lòng đăng nhập trước",
+      icon: <FrownOutlined style={{ color: "red" }} />,
+    });
+  };
+
+  const createCartSuccess = () => {
+    api.open({
+      message: "Tạo đơn hàng thành công",
+      description: "Đơn hàng đã tạo",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
+  const createCartFail = (description: string) => {
+    api.open({
+      message: "Tạo đơn hàng thất bại",
+      description: description,
+      icon: <FrownOutlined style={{ color: "red" }} />,
+    });
+  };
+
   const handleChangeMainColor = (colorName: string, colorType: string) => {
     const colorInGroup = colors.find((it) => it[0].type === colorType);
     const nextChildColor = colorInGroup?.find((it) => it.name === colorName);
@@ -34,19 +62,45 @@ function ProductDetail() {
     api.open({
       message: "Thêm vào giỏ thất bại",
       description: description,
-      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+      icon: <FrownOutlined style={{ color: "red" }} />,
     });
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    if (!accessToken) {
+      RequestLoginNotification();
+    }
+
     if (!currentColor) {
       openNotification("Vui lòng chọn màu");
     } else if (numOfProduct < 1) {
       openNotification("Số lượng không hợp lệ");
     }
-  };
 
-  const handleBuyNow = () => {};
+    const cartBody = {
+      quantity: numOfProduct,
+      colorId: currentColor.id,
+    };
+
+    const createResponse = await authFetch(
+      `${API_ROOT}/order/create-order-product/${currentProductId}`,
+      {
+        ...requestOptions,
+        body: JSON.stringify(cartBody),
+        method: "POST",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (createResponse.status === 201) {
+      createCartSuccess();
+    } else {
+      createCartFail(createResponse.statusText);
+    }
+  };
 
   const handlePickColor = (item: Color) => {
     setCurrentColor(item);
@@ -169,18 +223,6 @@ function ProductDetail() {
               Thêm vào giỏ
             </button>
           </div>
-          <button
-            style={{
-              backgroundColor: "black",
-              color: "white",
-              flexGrow: "0",
-              width: "100%",
-              marginTop: "1rem",
-            }}
-            onClick={handleBuyNow}
-          >
-            Mua ngay
-          </button>
         </div>
       </div>
     </div>
