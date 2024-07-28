@@ -97,9 +97,18 @@ function ProductDetail() {
 
     if (createResponse.status === 201) {
       createCartSuccess();
+      resetOrderInfo();
     } else {
       createCartFail(createResponse.statusText);
     }
+  };
+
+  const resetOrderInfo = () => {
+    setCurrentColor(null);
+    setNumOfProduct(1);
+    setCurrentMainColorSelecting("");
+    setCurrentTypeColorSelecting("");
+    setCurrentChildColors([]);
   };
 
   const handlePickColor = (item: Color) => {
