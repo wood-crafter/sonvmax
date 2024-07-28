@@ -5,7 +5,6 @@ export type Product = {
   price: number
   description: string
   activeProduct: boolean
-  quantity: number
   image: string | undefined
 }
 

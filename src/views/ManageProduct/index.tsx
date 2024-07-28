@@ -78,7 +78,6 @@ function AddProductButton(props: AddProductButtonProps) {
   const [nextProductName, setNextProductName] = useState("");
   const [nextImage, setNextImage] = useState<string>("");
   const [nextProductDescription, setNextProductDescription] = useState("");
-  const [nextProductQuantity, setNextProductQuantity] = useState("");
   const [nextPrice, setNextPrice] = useState("");
   const [nextDescription, setNextDescription] = useState("");
   const [nextCategory, setNextCategory] = useState(
@@ -102,7 +101,6 @@ function AddProductButton(props: AddProductButtonProps) {
       !nextPrice ||
       !nextCategory ||
       !nextDescription ||
-      !nextProductQuantity ||
       !nextImage
     ) {
       missingAddPropNoti();
@@ -112,7 +110,6 @@ function AddProductButton(props: AddProductButtonProps) {
       price: +nextPrice,
       nameProduct: nextProductName,
       description: nextProductDescription,
-      quantity: +nextProductQuantity,
       image: nextImage,
       volume: null,
       activeProduct: nextActiveProduct,
@@ -209,16 +206,7 @@ function AddProductButton(props: AddProductButtonProps) {
             autoSize={{ minRows: 5, maxRows: 30 }}
             name="product-description"
           />
-          <label htmlFor="product-quantity">Số lượng: </label>
-          <Input
-            value={nextProductQuantity}
-            type="text"
-            placeholder="Thêm số lượng"
-            onChange={(e) => {
-              setNextProductQuantity(e.target.value);
-            }}
-            name="product-quantity"
-          />
+
           <label htmlFor="category">Loại sản phẩm</label>
           <select
             value={nextCategory}
@@ -440,7 +428,6 @@ function ManageProduct() {
     categoryId: "",
     activeProduct: false,
     image: "",
-    quantity: 0,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
