@@ -107,6 +107,14 @@ function UserCart() {
     });
   };
 
+  const noProductInOrder = () => {
+    api.open({
+      message: "Không thể mua",
+      description: `Vui lòng thêm sản phẩm vào đơn`,
+      icon: <FrownOutlined style={{ color: "red" }} />,
+    });
+  };
+
   const handleChangeCheckedProduct = (e: CheckboxChangeEvent, id: string) => {
     if (e.target.checked) {
       setCartsChecked((prev) => {
@@ -122,6 +130,10 @@ function UserCart() {
   };
 
   const handleOrder = async () => {
+    if (cartsChecked.length < 1) {
+      noProductInOrder();
+      return;
+    }
     const orderBody = {
       orderProductIds: currentCart
         ?.filter((it) => cartsChecked.includes(it.id))
@@ -221,7 +233,6 @@ function UserCart() {
             backgroundColor: "black",
           }}
           onClick={handleOrder}
-          disabled={cartsChecked.length < 1}
         >
           Mua ngay
         </button>
