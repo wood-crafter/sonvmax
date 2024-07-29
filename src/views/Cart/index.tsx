@@ -199,7 +199,9 @@ function UserCart() {
               </div>
               <div className="cart-item-product-info">
                 <div>{item.product.nameProduct}</div>
-                <div style={{ color: "red" }}>{item.product.price}</div>
+                <div style={{ color: "red" }}>
+                  {NumberToVND.format(item.product.price)}
+                </div>
                 <div>x{item.quantity}</div>
               </div>
               <DebouncedInputNumber
