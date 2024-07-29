@@ -10,13 +10,16 @@ type LayoutProps = {
   children: React.ReactNode;
   hasNav?: boolean;
   isManager?: boolean;
+  requiredLogin?: boolean;
 };
 
 function Layout({
   children,
   hasNav = false,
   isManager = false,
+  requiredLogin = false,
 }: LayoutProps): React.ReactNode {
+  const accessToken = useUserStore((state) => state.accessToken);
   const roleName = useUserStore((state) => state.roleName);
   if (!hasNav) {
     return (
@@ -24,6 +27,9 @@ function Layout({
     );
   }
   if (isManager && (!roleName || !ADMIN_ROLES.includes(roleName))) {
+    return <Navigate to="/home" replace={true} />;
+  }
+  if (requiredLogin && !accessToken) {
     return <Navigate to="/home" replace={true} />;
   }
   return (

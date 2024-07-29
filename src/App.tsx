@@ -36,7 +36,7 @@ const AppRoutes = () => {
       <Route
         path="/cart"
         element={
-          <Layout hasNav>
+          <Layout hasNav requiredLogin>
             <UserCart />
           </Layout>
         }

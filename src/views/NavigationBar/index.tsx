@@ -36,10 +36,6 @@ const items: MenuItem[] = [
     label: "Tư vấn",
     key: "advise",
   },
-  {
-    label: <Link to="/cart">Giỏ hàng</Link>,
-    key: "cart",
-  },
 ];
 
 const managerItems: MenuItem[] = [
@@ -89,6 +85,10 @@ function Nav({ isManager = false }: { isManager: boolean }) {
   const getMenuItem = (accessToken: string, basicMenu: MenuItem[]) => {
     const nextMenuItems = [...basicMenu];
     if (accessToken) {
+      nextMenuItems.push({
+        label: <Link to="/cart">Giỏ hàng</Link>,
+        key: "cart",
+      });
       nextMenuItems.push({
         label: <div onClick={logout}>Đăng xuất</div>,
         key: "logout",
