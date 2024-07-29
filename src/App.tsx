@@ -13,6 +13,7 @@ import ManageColor from "./views/ManageColor";
 import { ManageRoles } from "./views/ManageRoles";
 import ManageVoucher from "./views/ManageVoucher";
 import UserCart from "./views/Cart";
+import { ACCOUTANT, OWNER, SALES, STOCKER } from "./constant";
 
 const AppRoutes = () => {
   return (
@@ -53,7 +54,11 @@ const AppRoutes = () => {
         <Route
           path="products"
           element={
-            <Layout hasNav isManager>
+            <Layout
+              hasNav
+              isManager
+              roleAllow={[OWNER.role, STOCKER.role, ACCOUTANT.role]}
+            >
               <ManageProduct />
             </Layout>
           }
@@ -61,7 +66,11 @@ const AppRoutes = () => {
         <Route
           path="agents"
           element={
-            <Layout hasNav isManager>
+            <Layout
+              hasNav
+              isManager
+              roleAllow={[OWNER.role, ACCOUTANT.role, SALES.role]}
+            >
               <ManageAgent />
             </Layout>
           }
@@ -69,7 +78,7 @@ const AppRoutes = () => {
         <Route
           path="staff"
           element={
-            <Layout hasNav isManager>
+            <Layout hasNav isManager roleAllow={[OWNER.role]}>
               <ManageStaff />
             </Layout>
           }
@@ -77,7 +86,7 @@ const AppRoutes = () => {
         <Route
           path="color"
           element={
-            <Layout hasNav isManager>
+            <Layout hasNav isManager roleAllow={[OWNER.role, STOCKER.role]}>
               <ManageColor />
             </Layout>
           }
@@ -85,7 +94,7 @@ const AppRoutes = () => {
         <Route
           path="roles"
           element={
-            <Layout hasNav isManager>
+            <Layout hasNav isManager roleAllow={[OWNER.role]}>
               <ManageRoles />
             </Layout>
           }
@@ -93,7 +102,7 @@ const AppRoutes = () => {
         <Route
           path="voucher"
           element={
-            <Layout hasNav isManager>
+            <Layout hasNav isManager roleAllow={[OWNER.role, ACCOUTANT.role]}>
               <ManageVoucher />
             </Layout>
           }

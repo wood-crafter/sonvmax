@@ -23,4 +23,24 @@ export const MAIN_COLORS = [
 
 export const API_ROOT = "https://vmaxpaint.com";
 
-export const ADMIN_ROLES = ["OWNER", "SALES"];
+export const ADMIN_ROLES = ["OWNER", "SALES", "ACCOUTANT", "STOCKER"];
+
+export const OWNER = {
+  role: 'OWNER',
+  defaultPath: '/manage/products'
+}
+
+export const SALES = {
+  role: 'SALES',
+  defaultPath: '/manage/agents'
+}
+
+export const ACCOUTANT = {
+  role: 'ACCOUTANT',
+  defaultPath: '/manage/products'
+}
+
+export const STOCKER = {
+  role: 'STOCKER',
+  defaultPath: '/manage/products'
+}
