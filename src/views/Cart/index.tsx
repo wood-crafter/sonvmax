@@ -89,6 +89,21 @@ function UserCart() {
       icon: <FrownOutlined style={{ color: "#108ee9" }} />,
     });
   };
+
+  const deleteSuccessNotification = () => {
+    api.open({
+      message: "Xoá thành công",
+      description: "",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+  const deleteFailNotification = (status: number, statusText: string) => {
+    api.open({
+      message: "Xoá thất bại",
+      description: `Mã lỗi: ${status} ${statusText}`,
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
   const handleOrder = async () => {
     const orderBody = {
       orderProductIds: currentCart?.map((it) => it.id),
@@ -108,6 +123,27 @@ function UserCart() {
       addSuccessNotification();
     } else {
       addFailNotification(orderRes.status, orderRes.statusText);
+    }
+  };
+
+  const handleDeleteCart = async (id: string) => {
+    const deleteRes = await authFetch(
+      `${API_ROOT}/order/remove-order-product/${id}`,
+      {
+        ...requestOptions,
+        method: "DELETE",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (deleteRes.ok) {
+      deleteSuccessNotification();
+      refreshCart();
+    } else {
+      deleteFailNotification(deleteRes.status, deleteRes.statusText);
     }
   };
 
@@ -140,7 +176,14 @@ function UserCart() {
               <div className="cart-item-total">
                 Tổng: {NumberToVND.format(item.product.price * item.quantity)}
               </div>
-              <div className="cart-item-delete">Xoá</div>
+              <div
+                className="cart-item-delete"
+                onClick={() => {
+                  handleDeleteCart(item.id);
+                }}
+              >
+                Xoá
+              </div>
             </div>
           );
         })}
