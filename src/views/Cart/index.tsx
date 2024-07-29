@@ -76,6 +76,7 @@ function UserCart() {
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const [cartsChecked, setCartsChecked] = useState<string[]>([]);
+  const [total, setTotal] = useState(0);
 
   const addSuccessNotification = () => {
     api.open({
@@ -179,6 +180,13 @@ function UserCart() {
     }
   };
 
+  useEffect(() => {
+    const currentTotal = currentCart
+      ?.filter((item) => cartsChecked.includes(item.id))
+      ?.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    setTotal(currentTotal ? currentTotal : 0);
+  }, [cartsChecked.length]);
+
   return (
     <div className="Cart">
       {contextHolder}
@@ -226,6 +234,21 @@ function UserCart() {
             </div>
           );
         })}
+      <div
+        style={{
+          width: "calc(100% - 2rem)",
+          marginRight: "2rem",
+          marginTop: "2rem",
+          marginBottom: "2rem",
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+        Tổng đơn hàng:{" "}
+        <div style={{ color: "red", marginLeft: "0.5rem" }}>
+          {NumberToVND.format(total)}
+        </div>
+      </div>
       {currentCart ? (
         <button
           style={{
