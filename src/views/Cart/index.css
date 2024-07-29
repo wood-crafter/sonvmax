@@ -1,6 +1,7 @@
 .Cart {
   display: flex;
   flex-direction: column;
+  color: black;
 }
 
 .Cart .cart-item {
