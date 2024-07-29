@@ -108,6 +108,8 @@ function UserCart() {
     const orderBody = {
       orderProductIds: currentCart?.map((it) => it.id),
       voucherIds: [],
+      description: ".",
+      status: 0,
     };
     const orderRes = await authFetch(`${API_ROOT}/order/create-order`, {
       ...requestOptions,
@@ -121,6 +123,7 @@ function UserCart() {
 
     if (orderRes.ok) {
       addSuccessNotification();
+      refreshCart();
     } else {
       addFailNotification(orderRes.status, orderRes.statusText);
     }
