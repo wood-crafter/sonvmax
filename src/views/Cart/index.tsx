@@ -190,50 +190,53 @@ function UserCart() {
   return (
     <div className="Cart">
       {contextHolder}
-      {currentCart &&
-        currentCart.map((item: Cart) => {
-          return (
-            <div key={item.id} className="cart-item">
-              <Checkbox
-                onChange={(e) => {
-                  handleChangeCheckedProduct(e, item.id);
-                }}
-              />
-              <div className="cart-item-image-container">
-                <img
-                  src={item.product.image}
-                  style={{ width: "100%", height: "100%" }}
+      {currentCart && (
+        <div className="cart-container">
+          {currentCart.map((item: Cart) => {
+            return (
+              <div key={item.id} className="cart-item">
+                <Checkbox
+                  onChange={(e) => {
+                    handleChangeCheckedProduct(e, item.id);
+                  }}
                 />
-              </div>
-              <div className="cart-item-product-info">
-                <div>{item.product.nameProduct}</div>
-                <div style={{ color: "red" }}>
-                  {NumberToVND.format(item.product.price)}
+                <div className="cart-item-image-container">
+                  <img
+                    src={item.product.image}
+                    style={{ width: "100%", height: "100%" }}
+                  />
                 </div>
-                <div>x{item.quantity}</div>
+                <div className="cart-item-product-info">
+                  <div>{item.product.nameProduct}</div>
+                  <div style={{ color: "red" }}>
+                    {NumberToVND.format(item.product.price)}
+                  </div>
+                  <div>x{item.quantity}</div>
+                </div>
+                <DebouncedInputNumber
+                  refreshCart={refreshCart}
+                  className="cart-item-num-of-product"
+                  id={item.id}
+                  min={1}
+                  max={100000}
+                  defaultValue={item.quantity}
+                />
+                <div className="cart-item-total">
+                  Tổng: {NumberToVND.format(item.product.price * item.quantity)}
+                </div>
+                <div
+                  className="cart-item-delete"
+                  onClick={() => {
+                    handleDeleteCart(item.id);
+                  }}
+                >
+                  Xoá
+                </div>
               </div>
-              <DebouncedInputNumber
-                refreshCart={refreshCart}
-                className="cart-item-num-of-product"
-                id={item.id}
-                min={1}
-                max={100000}
-                defaultValue={item.quantity}
-              />
-              <div className="cart-item-total">
-                Tổng: {NumberToVND.format(item.product.price * item.quantity)}
-              </div>
-              <div
-                className="cart-item-delete"
-                onClick={() => {
-                  handleDeleteCart(item.id);
-                }}
-              >
-                Xoá
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+      )}
       <div
         style={{
           width: "calc(100% - 2rem)",
@@ -244,7 +247,7 @@ function UserCart() {
           justifyContent: "flex-end",
         }}
       >
-        Tổng đơn hàng:{" "}
+        Tổng đơn hàng:
         <div style={{ color: "red", marginLeft: "0.5rem" }}>
           {NumberToVND.format(total)}
         </div>
