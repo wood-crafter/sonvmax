@@ -38,6 +38,7 @@
 
 .Cart .cart-item-total {
   margin-right: 2rem;
+  width: 15rem;
 }
 
 .Cart .cart-item-num-of-product {

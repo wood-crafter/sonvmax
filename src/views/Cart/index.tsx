@@ -1,4 +1,4 @@
-import { InputNumber, notification } from "antd";
+import { Checkbox, InputNumber, notification } from "antd";
 import { useCart } from "../../hooks/useCart";
 import { Cart, PagedResponse } from "../../type";
 import "./index.css";
@@ -11,6 +11,7 @@ import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { NumberToVND } from "../../helper";
 import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import { KeyedMutator } from "swr";
+import { CheckboxChangeEvent } from "antd/es/checkbox";
 
 type DebouncedInputNumberProps = {
   defaultValue: number;
@@ -74,6 +75,7 @@ function UserCart() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
+  const [cartsChecked, setCartsChecked] = useState<string[]>([]);
 
   const addSuccessNotification = () => {
     api.open({
@@ -104,12 +106,27 @@ function UserCart() {
       icon: <FrownOutlined style={{ color: "#108ee9" }} />,
     });
   };
+
+  const handleChangeCheckedProduct = (e: CheckboxChangeEvent, id: string) => {
+    if (e.target.checked) {
+      setCartsChecked((prev) => {
+        const next = [...prev, id];
+        return next;
+      });
+    } else {
+      setCartsChecked((prev) => {
+        const next = prev.filter((item) => item !== id);
+        return next;
+      });
+    }
+  };
+
   const handleOrder = async () => {
     const orderBody = {
-      orderProductIds: currentCart?.map((it) => it.id),
+      orderProductIds: currentCart
+        ?.filter((it) => cartsChecked.includes(it.id))
+        ?.map((it) => it.id),
       voucherIds: [],
-      description: ".",
-      status: 0,
     };
     const orderRes = await authFetch(`${API_ROOT}/order/create-order`, {
       ...requestOptions,
@@ -157,6 +174,11 @@ function UserCart() {
         currentCart.map((item: Cart) => {
           return (
             <div key={item.id} className="cart-item">
+              <Checkbox
+                onChange={(e) => {
+                  handleChangeCheckedProduct(e, item.id);
+                }}
+              />
               <div className="cart-item-image-container">
                 <img
                   src={item.product.image}
@@ -199,6 +221,7 @@ function UserCart() {
             backgroundColor: "black",
           }}
           onClick={handleOrder}
+          disabled={cartsChecked.length < 1}
         >
           Mua ngay
         </button>
