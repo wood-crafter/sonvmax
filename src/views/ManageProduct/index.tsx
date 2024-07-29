@@ -79,7 +79,6 @@ function AddProductButton(props: AddProductButtonProps) {
   const [nextImage, setNextImage] = useState<string>("");
   const [nextProductDescription, setNextProductDescription] = useState("");
   const [nextPrice, setNextPrice] = useState("");
-  const [nextDescription, setNextDescription] = useState("");
   const [nextCategory, setNextCategory] = useState(
     categories && categories[0] ? categories[0].id : ""
   );
@@ -88,7 +87,6 @@ function AddProductButton(props: AddProductButtonProps) {
   const clearAddInput = () => {
     setNextProductName("");
     setNextImage("");
-    setNextDescription("");
     setNextPrice("");
     setNextProductDescription("");
     setNextCategory(categories ? categories[0].id : "");
@@ -100,7 +98,6 @@ function AddProductButton(props: AddProductButtonProps) {
       !nextProductDescription ||
       !nextPrice ||
       !nextCategory ||
-      !nextDescription ||
       !nextImage
     ) {
       missingAddPropNoti();
@@ -185,16 +182,6 @@ function AddProductButton(props: AddProductButtonProps) {
               setNextImage(e.target.value);
             }}
             name="product-name"
-          />
-          <label htmlFor="descrition">Chi tiết sản phẩm: </label>
-          <Input
-            name="descrition"
-            value={nextDescription}
-            onChange={(e) => {
-              setNextDescription(e.target.value);
-            }}
-            placeholder={"Thêm chi tiết"}
-            maxLength={256}
           />
           <label htmlFor="product-description">Chi tiết: </label>
           <TextArea
