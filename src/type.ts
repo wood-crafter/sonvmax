@@ -116,3 +116,16 @@ export type ParentColor = {
   childs: ChildColor[]
   type: string
 }
+
+export type Cart = {
+  id: string;
+  orderId: string | null;
+  productId: string;
+  colorId: number | null;
+  staffId: string;
+  agentId: string;
+  quantity: number;
+  price: number;
+  product: Product;
+  colors: Color | null;
+}

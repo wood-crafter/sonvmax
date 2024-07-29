@@ -12,6 +12,7 @@ import ProductDetail from "./views/ProductDetail";
 import ManageColor from "./views/ManageColor";
 import { ManageRoles } from "./views/ManageRoles";
 import ManageVoucher from "./views/ManageVoucher";
+import UserCart from "./views/Cart";
 
 const AppRoutes = () => {
   return (
@@ -29,6 +30,14 @@ const AppRoutes = () => {
         element={
           <Layout hasNav>
             <Home />
+          </Layout>
+        }
+      />
+      <Route
+        path="/cart"
+        element={
+          <Layout hasNav>
+            <UserCart />
           </Layout>
         }
       />

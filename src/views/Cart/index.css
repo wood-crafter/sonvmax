@@ -1,0 +1,9 @@
+.Cart {
+  display: flex;
+  flex-direction: column;
+}
+
+.Cart .cart-item {
+  border: 1px solid black;
+  width: 100%
+}

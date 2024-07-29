@@ -37,8 +37,8 @@ const items: MenuItem[] = [
     key: "advise",
   },
   {
-    label: "Hợp tác",
-    key: "cooperate",
+    label: <Link to="/cart">Giỏ hàng</Link>,
+    key: "cart",
   },
 ];
 
