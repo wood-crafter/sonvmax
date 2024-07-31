@@ -80,17 +80,6 @@ function ManageOrder() {
     }
   };
 
-  // const handleSetNumberInput = (
-  //   e: React.ChangeEvent<HTMLInputElement>,
-  //   setter: React.Dispatch<React.SetStateAction<string>>
-  // ) => {
-  //   const { value: inputValue } = e.target;
-  //   const reg = /^-?\d*(\.\d*)?$/;
-  //   if (reg.test(inputValue) || inputValue === "" || inputValue === "-") {
-  //     setter(inputValue);
-  //   }
-  // };
-
   const getStatusMenu = (record: Order) => (
     <Menu>
       <Menu.Item
@@ -128,6 +117,13 @@ function ManageOrder() {
       >
         Giao thành công
       </Menu.Item>
+      <Menu.Item
+        key="-1"
+        icon={<UserOutlined />}
+        onClick={() => updateOrder({ id: record.id, status: -1 })}
+      >
+        Huỷ bỏ
+      </Menu.Item>
     </Menu>
   );
 
@@ -143,6 +139,8 @@ function ManageOrder() {
         return "Đang giao";
       case 4:
         return "Giao thành công";
+      case -1:
+        return "Huỷ bỏ";
     }
   };
 
