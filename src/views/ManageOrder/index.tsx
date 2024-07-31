@@ -1,11 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import "./index.css";
-import { Table, Space, Button, notification, Spin, Dropdown, Menu } from "antd";
+import {
+  Table,
+  Space,
+  Button,
+  notification,
+  Spin,
+  Dropdown,
+  Menu,
+  Input,
+  Popconfirm,
+} from "antd";
 import type { ColumnType } from "antd/es/table";
 import {
   SmileOutlined,
   FrownOutlined,
-  QuestionCircleOutlined,
   DownOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -42,6 +51,10 @@ function ManageOrder() {
     [data?.data]
   );
 
+  const [editingRow, setEditingRow] = useState<string | null>(null);
+  const [description, setDescription] = useState<string>("");
+  const [confirmBy, setConfirmBy] = useState<string>("");
+
   const updateOrder = async (UpdateProps: UpdateProps) => {
     const { id, status, description, confirmBy, voucherId } = UpdateProps;
     const updateOrderProps: UpdateOrderProps = {};
@@ -58,7 +71,7 @@ function ManageOrder() {
       updateOrderProps.confirmBy = confirmBy;
     }
 
-    if (confirmBy) {
+    if (voucherId) {
       updateOrderProps.voucherId = voucherId;
     }
 
@@ -77,7 +90,26 @@ function ManageOrder() {
 
     if (updateResponse.ok) {
       refreshOrder();
+      updateSuccessNotification();
+    } else {
+      updateFailNotification();
     }
+  };
+
+  const updateSuccessNotification = () => {
+    api.open({
+      message: "Cập nhận đơn hàng",
+      description: "Cập nhật đơn hàng thành công",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
+  const updateFailNotification = () => {
+    api.open({
+      message: "Cập nhận đơn hàng",
+      description: "Cập nhật đơn hàng thất bại",
+      icon: <FrownOutlined style={{ color: "red" }} />,
+    });
   };
 
   const getStatusMenu = (record: Order) => (
@@ -161,11 +193,37 @@ function ManageOrder() {
       title: "Chi tiết đơn",
       dataIndex: "description",
       key: "description",
+      render: (_, record: Order) => {
+        const isEditing = editingRow === record.id;
+        return isEditing ? (
+          <Space size="middle">
+            <Input
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </Space>
+        ) : (
+          <div>{record.description}</div>
+        );
+      },
     },
     {
       title: "Nhân viên duyệt",
       dataIndex: "confirmBy",
       key: "confirmBy",
+      render: (_, record: Order) => {
+        const isEditing = editingRow === record.id;
+        return isEditing ? (
+          <Space size="middle">
+            <Input
+              value={confirmBy}
+              onChange={(e) => setConfirmBy(e.target.value)}
+            />
+          </Space>
+        ) : (
+          <div>{record.confirmBy}</div>
+        );
+      },
     },
     {
       title: "Cập nhật ngày",
@@ -173,19 +231,57 @@ function ManageOrder() {
       key: "updatedAt",
     },
     {
+      title: "Trạng thái",
+      key: "status",
+      render: (_, record: Order) => (
+        <Dropdown overlay={getStatusMenu(record)}>
+          <Button>
+            <Space>
+              {statusToText(record.status)}
+              <DownOutlined />
+            </Space>
+          </Button>
+        </Dropdown>
+      ),
+    },
+    {
       title: "Action",
       key: "action",
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       render: (_, record: Order) => (
         <Space size="middle">
-          <Dropdown overlay={getStatusMenu(record)}>
-            <Button>
-              <Space>
-                {statusToText(record.status)}
-                <DownOutlined />
-              </Space>
-            </Button>
-          </Dropdown>
+          {editingRow === record.id ? (
+            <>
+              <Popconfirm
+                title="Xác nhận cập nhật?"
+                onConfirm={async () => {
+                  await updateOrder({
+                    id: record.id,
+                    description,
+                    confirmBy,
+                  });
+                  setEditingRow(null);
+                  refreshOrder();
+                }}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button type="primary">Xác nhận</Button>
+              </Popconfirm>
+              <Button onClick={() => setEditingRow(null)}>Huỷ</Button>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={() => {
+                  setEditingRow(record.id);
+                  setDescription(record.description || "");
+                  setConfirmBy(record.confirmBy || "");
+                }}
+              >
+                Sửa
+              </Button>
+            </>
+          )}
         </Space>
       ),
     },
