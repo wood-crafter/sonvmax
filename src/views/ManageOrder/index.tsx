@@ -10,6 +10,7 @@ import {
   Menu,
   Input,
   Popconfirm,
+  Modal,
 } from "antd";
 import type { ColumnType } from "antd/es/table";
 import {
@@ -54,6 +55,8 @@ function ManageOrder() {
   const [editingRow, setEditingRow] = useState<string | null>(null);
   const [description, setDescription] = useState<string>("");
   const [confirmBy, setConfirmBy] = useState<string>("");
+  const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
+  const [openOrderDetail, setOpenOrderDetail] = useState(false);
 
   const updateOrder = async (UpdateProps: UpdateProps) => {
     const { id, status, description, confirmBy, voucherId } = UpdateProps;
@@ -181,6 +184,18 @@ function ManageOrder() {
       title: "id",
       dataIndex: "id",
       key: "id",
+      render: (id: string, record: Order) => (
+        <div
+          className="order-id"
+          style={{ color: "blue" }}
+          onClick={() => {
+            setCurrentOrder(record);
+            setOpenOrderDetail(true);
+          }}
+        >
+          {id}
+        </div>
+      ),
     },
     {
       title: "Tổng thanh toán",
@@ -293,6 +308,18 @@ function ManageOrder() {
     <div className="ManageOrder">
       {contextHolder}
       <Table columns={columns} dataSource={orders} />
+      <Modal
+        title="Chi tiết đơn hàng"
+        open={openOrderDetail}
+        onOk={() => {
+          setOpenOrderDetail(false);
+        }}
+        onCancel={() => {
+          setOpenOrderDetail(false);
+        }}
+      >
+        {JSON.stringify(currentOrder)}
+      </Modal>
     </div>
   );
 }

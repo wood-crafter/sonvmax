@@ -11,9 +11,9 @@ export const requestOptions: RequestOptions = {
   }
 }
 
-export function useOrders() {
+export function useOrders(page = 1, size = 99999) {
   const fetcher = useAuthenticatedFetch();
-  const { data, isLoading, error, mutate } = useSWR({ url: `/order/get-order`, fetcher }, fetchOrders)
+  const { data, isLoading, error, mutate } = useSWR({ url: `/order/get-order?page=${page}&size=${size}`, fetcher }, fetchOrders)
 
   return {
     data,
