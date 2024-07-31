@@ -17,6 +17,19 @@ export type Category = {
   products: Product[]
 }
 
+export type Order = {
+  id: string
+  status: number
+  totalAmount: number
+  confirmBy: string
+  description: string | null
+  confirmDate: Date | null
+  createdAt: Date
+  updateAt: Date
+  orderProducts: Product[]
+  voucherOrders: {code: string, discountAmount: number}[]
+}
+
 export type PagedResponse<T> = {
   message: string
   page: number

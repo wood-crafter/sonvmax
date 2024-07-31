@@ -14,6 +14,7 @@ import { ManageRoles } from "./views/ManageRoles";
 import ManageVoucher from "./views/ManageVoucher";
 import UserCart from "./views/Cart";
 import { ACCOUTANT, OWNER, SALES, STOCKER } from "./constant";
+import ManageOrder from "./views/ManageOrder";
 
 const AppRoutes = () => {
   return (
@@ -60,6 +61,18 @@ const AppRoutes = () => {
               roleAllow={[OWNER.role, STOCKER.role, ACCOUTANT.role]}
             >
               <ManageProduct />
+            </Layout>
+          }
+        />
+        <Route
+          path="orders"
+          element={
+            <Layout
+              hasNav
+              isManager
+              roleAllow={[OWNER.role, STOCKER.role, ACCOUTANT.role]}
+            >
+              <ManageOrder />
             </Layout>
           }
         />

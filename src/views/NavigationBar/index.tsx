@@ -56,7 +56,7 @@ const managerItems: MenuItem[] = [
     key: "voucher",
   },
   {
-    label: "Quản lý đơn",
+    label: <Link to="/manage/orders">Quản lý đơn</Link>,
     key: "order",
   },
   {
