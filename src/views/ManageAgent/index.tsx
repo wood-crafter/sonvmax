@@ -267,7 +267,7 @@ function ManageAgent() {
       key: "action",
       render: (_, record: Agent) => (
         <Space size="middle">
-          <Button onClick={() => showModal(record)}>Update</Button>
+          <Button onClick={() => showModal(record)}>Sửa</Button>
           <Popconfirm
             title="Xoá đại lý"
             description="Bạn chắc chắn muốn xoá đại lý này?"
@@ -276,7 +276,7 @@ function ManageAgent() {
             okText="Xoá"
             cancelText="Huỷ"
           >
-            <Button>Delete</Button>
+            <Button>Xoá</Button>
           </Popconfirm>
         </Space>
       ),

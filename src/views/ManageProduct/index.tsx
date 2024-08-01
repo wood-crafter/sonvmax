@@ -497,7 +497,7 @@ function ManageProduct() {
       key: "action",
       render: (_, record: Product) => (
         <Space size="middle">
-          <Button onClick={() => showModal(record)}>Update</Button>
+          <Button onClick={() => showModal(record)}>Sửa</Button>
           <Popconfirm
             title="Xoá sản phẩm"
             description="Bạn chắc chắn muốn xoá sản phẩm này?"
@@ -506,7 +506,7 @@ function ManageProduct() {
             okText="Xoá"
             cancelText="Huỷ"
           >
-            <Button>Delete</Button>
+            <Button>Xoá</Button>
           </Popconfirm>
         </Space>
       ),

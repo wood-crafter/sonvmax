@@ -14,7 +14,7 @@ export function EditRoleModal(props: EditRoleModalProps) {
 
   return (
     <Modal
-      title="Add role"
+      title="Thêm vị trí"
       open={isOpen}
       onOk={() => onSubmit({ roleName })}
       onCancel={onCancel}
@@ -22,7 +22,7 @@ export function EditRoleModal(props: EditRoleModalProps) {
       <Form>
         <FormItem>
           <Input
-            placeholder="Role name"
+            placeholder="Tên vị trí"
             value={roleName}
             onChange={(e) => setRoleName(e.target.value)}
           />

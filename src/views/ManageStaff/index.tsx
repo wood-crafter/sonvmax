@@ -229,16 +229,16 @@ function ManageStaff() {
       key: "action",
       render: (_, record: Staff) => (
         <Space size="middle">
-          <Button onClick={() => showModal(record)}>Update</Button>
+          <Button onClick={() => showModal(record)}>Sửa</Button>
           <Popconfirm
-            title="Xoá sản phẩm"
-            description="Bạn chắc chắn muốn xoá sản phẩm này?"
+            title="Xoá nhân viên"
+            description="Bạn chắc chắn muốn xoá nhân viên này?"
             icon={<QuestionCircleOutlined style={{ color: "red" }} />}
             onConfirm={() => handleDeleteRecord(record)}
             okText="Xoá"
             cancelText="Huỷ"
           >
-            <Button>Delete</Button>
+            <Button>Xoá</Button>
           </Popconfirm>
         </Space>
       ),
