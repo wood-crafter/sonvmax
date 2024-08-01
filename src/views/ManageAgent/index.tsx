@@ -28,7 +28,7 @@ function ManageAgent() {
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const { data: rolesResponse } = useRoles(1);
-  const { data, mutate: refreshAgents } = useAgents(1);
+  const { data, mutate: refreshAgents } = useAgents(1, 9999);
   const agents = data?.data ?? [];
   const roles = rolesResponse?.data;
 
@@ -232,6 +232,7 @@ function ManageAgent() {
       render: (debitLimit: number) => (
         <div>{NumberToVND.format(debitLimit)}</div>
       ),
+      sorter: (a, b) => a.debitLimit - b.debitLimit,
     },
     {
       title: "Công nợ hiện tại",
@@ -240,6 +241,7 @@ function ManageAgent() {
       render: (accountDebit: number) => (
         <div>{NumberToVND.format(accountDebit)}</div>
       ),
+      sorter: (a, b) => a.accountDebit - b.accountDebit,
     },
     {
       title: "Tài khoản hiện có",
@@ -248,19 +250,13 @@ function ManageAgent() {
       render: (accountHave: number) => (
         <div>{NumberToVND.format(accountHave)}</div>
       ),
+      sorter: (a, b) => a.accountHave - b.accountHave,
     },
     {
       title: "Xếp hạng",
       dataIndex: "rank",
       key: "rank",
-    },
-    {
-      title: "Vai trò",
-      dataIndex: "roleId",
-      key: "roleId",
-      render: (value: string) => (
-        <div>{roles?.find((it) => it.id === value)?.name}</div>
-      ),
+      sorter: (a, b) => a.rank - b.rank,
     },
     {
       title: "Action",

@@ -239,11 +239,18 @@ function ManageOrder() {
           <div>{record.confirmBy}</div>
         );
       },
+      sorter: (a, b) => {
+        if (!a.confirmBy) return -1;
+        if (!b.confirmBy) return 1;
+        return a.confirmBy.localeCompare(b.confirmBy);
+      },
     },
     {
       title: "Cập nhật ngày",
       dataIndex: "updatedAt",
       key: "updatedAt",
+      sorter: (a, b) =>
+        new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
     },
     {
       title: "Trạng thái",
@@ -258,6 +265,7 @@ function ManageOrder() {
           </Button>
         </Dropdown>
       ),
+      sorter: (a, b) => a.status - b.status,
     },
     {
       title: "Action",
@@ -318,7 +326,15 @@ function ManageOrder() {
           setOpenOrderDetail(false);
         }}
       >
-        {JSON.stringify(currentOrder)}
+        {currentOrder &&
+          currentOrder.orderProductSnapshots?.map((it) => {
+            return (
+              <div key={it.id} className="product-order">
+                <div>{it.nameProduct}</div>
+                <div>{NumberToVND.format(it.price)}</div>
+              </div>
+            );
+          })}
       </Modal>
     </div>
   );

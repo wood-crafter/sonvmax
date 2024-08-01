@@ -187,11 +187,16 @@ function ManageVoucher() {
           {activeVoucher ? "Hoạt động" : "Tạm dừng"}
         </p>
       ),
+      sorter: (a, b) => {
+        if (!a.activeVoucher && b.activeVoucher) return -1;
+        return 1;
+      },
     },
     {
       title: "Chấp nhận",
       dataIndex: "permissions",
       key: "permissions",
+      sorter: (a, b) => a.permissions - b.permissions,
     },
     {
       title: "Action",

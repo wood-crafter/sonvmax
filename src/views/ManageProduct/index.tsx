@@ -491,6 +491,10 @@ function ManageProduct() {
           {isActive ? "Hoạt động" : "Tạm dừng"}
         </p>
       ),
+      sorter: (a, b) => {
+        if (!a.activeProduct && b.activeProduct) return -1;
+        return 1;
+      },
     },
     {
       title: "Action",

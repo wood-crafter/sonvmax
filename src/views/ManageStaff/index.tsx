@@ -209,12 +209,17 @@ function ManageStaff() {
           {isActive ? "Hoạt động" : "Tạm dừng"}
         </p>
       ),
+      sorter: (a, b) => {
+        if (!a.isActive && b.isActive) return -1;
+        return 1;
+      },
     },
     {
       title: "Giới tính",
       dataIndex: "gender",
       key: "gender",
       render: (gender: number) => <div>{gender === 1 ? "Nam" : "Nữ"}</div>,
+      sorter: (a, b) => a.gender - b.gender,
     },
     {
       title: "Vai trò",
@@ -223,6 +228,7 @@ function ManageStaff() {
       render: (value: string) => (
         <div>{roles?.find((it) => it.id === value)?.name}</div>
       ),
+      sorter: (a, b) => a.roleId.localeCompare(b.roleId),
     },
     {
       title: "Action",
