@@ -1,22 +1,75 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import "./index.css";
-import { Table, notification, Spin, Modal } from "antd";
+import { Table, notification, Spin, Space, Popconfirm, Button } from "antd";
 import type { ColumnType } from "antd/es/table";
 import { Order } from "../../type";
 import { NumberToVND } from "../../helper";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useOrders } from "../../hooks/useOrder";
+import { QuestionCircleOutlined, SmileOutlined } from "@ant-design/icons";
+import { API_ROOT } from "../../constant";
+import { requestOptions } from "../../hooks/useProduct";
 
 function OrderHistory() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
-  const { data, isLoading, mutate: refreshOrder } = useOrders();
+  const { data, isLoading } = useOrders();
   const orders = useMemo(
     () => data?.data.map((it) => ({ key: it.id, ...it })),
     [data?.data]
   );
+
+  const cloneCartSuccess = () => {
+    api.open({
+      message: "Tạo lại đơn hàng thành công",
+      description: "Đơn hàng đã tạo",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
+  const cloneCartFail = () => {
+    api.open({
+      message: "Tạo lại đơn hàng lỗi",
+      description: "Đơn hàng lỗi một phần",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
+  const handleReAddToCart = async (order: Order) => {
+    const orderPromises: Promise<Response>[] = [];
+    order.orderProductSnapshots.forEach((it) => {
+      const cartBody = {
+        quantity: it.quantity,
+        colorId: it.colorId,
+      };
+
+      orderPromises.push(
+        authFetch(`${API_ROOT}/order/create-order-product/${it.productId}`, {
+          ...requestOptions,
+          body: JSON.stringify(cartBody),
+          method: "POST",
+          headers: {
+            ...requestOptions.headers,
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+      );
+    });
+
+    Promise.allSettled(orderPromises).then((results) => {
+      const allSuccessful = results.every(
+        (result) => result.status === "fulfilled"
+      );
+
+      if (allSuccessful) {
+        cloneCartSuccess();
+      } else {
+        cloneCartFail();
+      }
+    });
+  };
 
   const statusToText = (status: number) => {
     switch (status) {
@@ -44,11 +97,6 @@ function OrderHistory() {
       render: (price: number) => <div>{NumberToVND.format(price)}</div>,
     },
     {
-      title: "Chi tiết đơn",
-      dataIndex: "description",
-      key: "description",
-    },
-    {
       title: "Nhân viên duyệt",
       dataIndex: "confirmBy",
       key: "confirmBy",
@@ -67,6 +115,24 @@ function OrderHistory() {
         return <div>{statusToText(record.status)}</div>;
       },
       sorter: (a, b) => a.status - b.status,
+    },
+    {
+      title: "",
+      key: "action",
+      render: (_, record: Order) => (
+        <Space size="middle">
+          <Popconfirm
+            title="Thêm lại vào giỏ"
+            description="Bạn chắc chắn muốn thêm lại vào giỏ?"
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+            onConfirm={() => handleReAddToCart(record)}
+            okText="Thêm"
+            cancelText="Huỷ"
+          >
+            <Button>Mua lại</Button>
+          </Popconfirm>
+        </Space>
+      ),
     },
   ];
 
