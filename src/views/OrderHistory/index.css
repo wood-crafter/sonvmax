@@ -1,0 +1,7 @@
+.ManageOrder .order-id:hover {
+  cursor: pointer
+}
+
+.product-order {
+  display: flex;
+}

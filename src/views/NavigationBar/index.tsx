@@ -17,6 +17,7 @@ import {
   PercentageOutlined,
   TruckOutlined,
   ProfileOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -115,6 +116,11 @@ function Nav({ isManager = false }: { isManager: boolean }) {
           label: <Link to="/cart">Giỏ hàng</Link>,
           key: "cart",
           icon: <ShoppingCartOutlined />,
+        });
+        nextMenuItems.push({
+          label: <Link to="/order/history">Lịch sử mua</Link>,
+          key: "orderHistory",
+          icon: <HistoryOutlined />,
         });
       }
       nextMenuItems.push({

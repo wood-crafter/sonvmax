@@ -15,6 +15,7 @@ import ManageVoucher from "./views/ManageVoucher";
 import UserCart from "./views/Cart";
 import { ACCOUTANT, OWNER, SALES, STOCKER } from "./constant";
 import ManageOrder from "./views/ManageOrder";
+import OrderHistory from "./views/OrderHistory";
 
 const AppRoutes = () => {
   return (
@@ -40,6 +41,14 @@ const AppRoutes = () => {
         element={
           <Layout hasNav requiredLogin>
             <UserCart />
+          </Layout>
+        }
+      />
+      <Route
+        path="/order/history"
+        element={
+          <Layout hasNav requiredLogin>
+            <OrderHistory />
           </Layout>
         }
       />
