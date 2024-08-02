@@ -140,6 +140,7 @@ function Nav({ isManager = false }: { isManager: boolean }) {
   };
   return (
     <Menu
+      className={`${isManager ? "" : "home-menubar"}`}
       onClick={onClick}
       selectedKeys={[current]}
       mode={isManager ? "vertical" : "horizontal"}
@@ -148,6 +149,13 @@ function Nav({ isManager = false }: { isManager: boolean }) {
           ? getMenuItem(accessToken, managerItems)
           : getMenuItem(accessToken, items)
       }
+      style={{
+        backgroundImage: `${
+          isManager
+            ? ""
+            : "linear-gradient(to right, rgb(255,128,51) , rgb(94,59,140))"
+        }`,
+      }}
     />
   );
 }
