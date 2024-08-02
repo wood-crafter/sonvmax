@@ -8,13 +8,13 @@ import { Pagination } from "antd";
 import { Link } from "react-router-dom";
 
 function Products() {
-  const { data } = useProducts(1, 10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, mutate: refreshProducts } = useProducts(currentPage, 10);
   const products = data?.data ?? [];
-  const [, setCurrentPage] = useState(1);
 
   const onPageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    // refreshProducts(`/product/get-product?page=${newPage}&size=${10}`, fetchProducts(`/product/get-product?page=${newPage}&size=${10}`))
+    refreshProducts();
   };
   return (
     <div className="Products">
