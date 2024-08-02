@@ -237,21 +237,23 @@ function UserCart() {
           })}
         </div>
       )}
-      <div
-        style={{
-          width: "calc(100% - 2rem)",
-          marginRight: "2rem",
-          marginTop: "2rem",
-          marginBottom: "2rem",
-          display: "flex",
-          justifyContent: "flex-end",
-        }}
-      >
-        Tổng đơn hàng:
-        <div style={{ color: "red", marginLeft: "0.5rem" }}>
-          {NumberToVND.format(total)}
+      {currentCart && (
+        <div
+          style={{
+            width: "calc(100% - 2rem)",
+            marginRight: "2rem",
+            marginTop: "2rem",
+            marginBottom: "2rem",
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          Tổng đơn hàng:
+          <div style={{ color: "red", marginLeft: "0.5rem" }}>
+            {NumberToVND.format(total)}
+          </div>
         </div>
-      </div>
+      )}
       {currentCart ? (
         <button
           style={{
