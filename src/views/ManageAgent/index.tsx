@@ -259,7 +259,7 @@ function ManageAgent() {
       sorter: (a, b) => a.rank - b.rank,
     },
     {
-      title: "Action",
+      title: "",
       key: "action",
       render: (_, record: Agent) => (
         <Space size="middle">

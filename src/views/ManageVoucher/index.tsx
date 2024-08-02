@@ -199,7 +199,7 @@ function ManageVoucher() {
       sorter: (a, b) => a.permissions - b.permissions,
     },
     {
-      title: "Action",
+      title: "",
       key: "action",
       render: (_, record: Voucher) => (
         <Space size="middle">

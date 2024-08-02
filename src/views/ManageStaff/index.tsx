@@ -231,7 +231,7 @@ function ManageStaff() {
       sorter: (a, b) => a.roleId.localeCompare(b.roleId),
     },
     {
-      title: "Action",
+      title: "",
       key: "action",
       render: (_, record: Staff) => (
         <Space size="middle">

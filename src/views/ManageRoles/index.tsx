@@ -28,7 +28,7 @@ function useRoleTableColumns(
         sorter: (a, b) => a.name.localeCompare(b.name),
       },
       {
-        title: "Action",
+        title: "",
         key: "action",
 
         render: (_, role: Role) => (

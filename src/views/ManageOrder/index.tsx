@@ -268,7 +268,7 @@ function ManageOrder() {
       sorter: (a, b) => a.status - b.status,
     },
     {
-      title: "Action",
+      title: "",
       key: "action",
       render: (_, record: Order) => (
         <Space size="middle">
