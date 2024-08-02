@@ -25,8 +25,8 @@ export type Order = {
   description: string | null
   confirmDate: Date | null
   createdAt: Date
-  updateAt: Date
-  orderProducts: Product[]
+  updatedAt: Date
+  orderProductSnapshots: any[]
   voucherOrders: {code: string, discountAmount: number}[]
 }
 
@@ -61,7 +61,7 @@ export type Agent = {
   accountHave: number
   accountDebit: number
   address: string
-  orders: any[]
+  orders: Order[]
   invoice: any[]
   transactions: any[]
   role: Role
@@ -70,7 +70,7 @@ export type Agent = {
 export type Role = {
   id: string
   name: string
-  staff: any[]
+  staff: Staff[]
   agent: Agent[]
 }
 
