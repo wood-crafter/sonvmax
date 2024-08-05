@@ -255,7 +255,7 @@ function UserCart() {
           </div>
         </div>
       )}
-      {currentCart?.length !== 0 ? (
+      {currentCart && currentCart?.length !== 0 ? (
         <button
           style={{
             marginLeft: "1rem",
@@ -268,7 +268,16 @@ function UserCart() {
           Mua ngay
         </button>
       ) : (
-        <div>Chưa có sản phẩm nào</div>
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          Chưa có sản phẩm nào
+        </div>
       )}
     </div>
   );

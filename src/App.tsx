@@ -147,6 +147,14 @@ const AppRoutes = () => {
         }
       />
       <Route
+        path="/products"
+        element={
+          <Layout hasNav>
+            <Products />
+          </Layout>
+        }
+      />
+      <Route
         path="/product_detail/*"
         element={
           <Layout hasNav>

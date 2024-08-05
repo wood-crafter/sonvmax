@@ -1,7 +1,4 @@
-.ManageOrder .order-id:hover {
-  cursor: pointer
-}
-
-.product-order {
-  display: flex;
+.OrderHistory {
+  margin-top: 1rem;
+  min-height: calc(100vh - 6rem);
 }
