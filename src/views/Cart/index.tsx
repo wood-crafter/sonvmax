@@ -154,6 +154,7 @@ function UserCart() {
     if (orderRes.ok) {
       addSuccessNotification();
       refreshCart();
+      setTotal(0);
     } else {
       addFailNotification(orderRes.status, orderRes.statusText);
     }
@@ -237,7 +238,7 @@ function UserCart() {
           })}
         </div>
       )}
-      {currentCart && (
+      {!!currentCart?.length && (
         <div
           style={{
             width: "calc(100% - 2rem)",
@@ -254,7 +255,7 @@ function UserCart() {
           </div>
         </div>
       )}
-      {currentCart ? (
+      {currentCart?.length !== 0 ? (
         <button
           style={{
             marginLeft: "1rem",
