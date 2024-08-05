@@ -1,32 +1,30 @@
 import { useState } from "react";
-import { API_ROOT, ITEM_PER_ROW } from "../../constant";
+import { API_ROOT } from "../../constant";
 import { requestOptions, useProductsById } from "../../hooks/useProduct";
-import { InputNumber, notification } from "antd";
+import { Button, InputNumber, notification } from "antd";
 import "./index.css";
-import { NumberToVND, compareBrightness } from "../../helper";
+import { NumberToVND } from "../../helper";
 import { useLocation } from "react-router-dom";
-import { useColors } from "../../hooks/useColor";
 import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import { Color } from "../../type";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
+import { ColorResult, SketchPicker } from "react-color";
+import ColorTable from "../../components/ColorTable";
 
 function ProductDetail() {
-  const { data: colors } = useColors();
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const currentProductId = useLocation().pathname.split("/")[2];
-  const [currentMainColorSelecting, setCurrentMainColorSelecting] =
-    useState("");
-  const [currentTypeColorSelecting, setCurrentTypeColorSelecting] =
-    useState("");
-  const [currentChildColors, setCurrentChildColors] = useState<
-    Color[] | undefined
-  >([]);
   const { data: product } = useProductsById(currentProductId);
-  const [currentColor, setCurrentColor] = useState<Color | null>(null);
+  const [currentColor, setCurrentColor] = useState<Color | null>({
+    r: 255,
+    g: 255,
+    b: 255,
+  });
   const [numOfProduct, setNumOfProduct] = useState(1);
   const [api, contextHolder] = notification.useNotification();
+  const [isColorModalOpen, setIsColorModalOpen] = useState(false);
 
   const RequestLoginNotification = () => {
     api.open({
@@ -52,12 +50,6 @@ function ProductDetail() {
     });
   };
 
-  const handleChangeMainColor = (colorName: string, colorType: string) => {
-    const colorInGroup = colors.find((it) => it[0].type === colorType);
-    const nextChildColor = colorInGroup?.find((it) => it.name === colorName);
-    setCurrentChildColors(nextChildColor?.childs.sort(compareBrightness));
-  };
-
   const openNotification = (description: string) => {
     api.open({
       message: "Thêm vào giỏ thất bại",
@@ -79,7 +71,11 @@ function ProductDetail() {
 
     const cartBody = {
       quantity: numOfProduct,
-      colorId: currentColor.id,
+      rgb: {
+        r: currentColor.r,
+        g: currentColor.g,
+        b: currentColor.b,
+      },
     };
 
     const createResponse = await authFetch(
@@ -104,29 +100,35 @@ function ProductDetail() {
   };
 
   const resetOrderInfo = () => {
-    setCurrentColor(null);
+    setCurrentColor({
+      r: 255,
+      g: 255,
+      b: 255,
+    });
     setNumOfProduct(1);
-    setCurrentMainColorSelecting("");
-    setCurrentTypeColorSelecting("");
-    setCurrentChildColors([]);
   };
 
-  const handlePickColor = (item: Color) => {
-    setCurrentColor(item);
+  const handleChangeColorComplete = (color: ColorResult) => {
+    setCurrentColor(color.rgb);
   };
 
-  const isCurrentColor = (item: Color) => {
-    return (
-      item?.type === currentColor?.type &&
-      item?.r === currentColor?.r &&
-      item?.g === currentColor?.g &&
-      item?.b === currentColor?.b
-    );
-  };
+  function getBrightness(r: number, g: number, b: number): number {
+    return (r * 299 + g * 587 + b * 114) / 1000;
+  }
+
+  function getTextColorForBackground(r: number, g: number, b: number): string {
+    const brightness = getBrightness(r, g, b);
+    return brightness > 128 ? "black" : "white";
+  }
 
   return (
     <div className="ProductDetail">
       {contextHolder}
+      <ColorTable
+        setCurrentColor={setCurrentColor}
+        isOpen={isColorModalOpen}
+        setIsOpen={setIsColorModalOpen}
+      />
       <div className="body">
         <div className="side-preview">
           <img src={product?.image}></img>
@@ -139,83 +141,41 @@ function ProductDetail() {
           <p className="full-width">
             {NumberToVND.format(product?.price ?? 0)}
           </p>
-          {colors.length !== 0 && (
-            <div className="colors-container">
-              {colors.map((it) => {
-                return (
-                  <div
-                    key={`colorHolder${it[0].type}`}
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      width: "100%",
-                      alignItems: "start",
-                      marginRight: "1rem",
-                      marginLeft: "1rem",
-                    }}
-                  >
-                    <h5
-                      style={{
-                        color: `${
-                          it[0].type === currentTypeColorSelecting
-                            ? "rgb(208, 38, 26)"
-                            : ""
-                        }`,
-                      }}
-                    >
-                      {it[0].type}
-                    </h5>
-                    <div className="same-type-colors-container">
-                      {it.map((item) => (
-                        <div
-                          key={item.name}
-                          className="main-color-items"
-                          onClick={() => {
-                            setCurrentTypeColorSelecting(item.type);
-                            setCurrentMainColorSelecting(
-                              `${item.type}-${item.rgb[0]}${item.rgb[1]}${item.rgb[2]}`
-                            );
-                            handleChangeMainColor(item.name, item.type);
-                          }}
-                          style={{
-                            backgroundColor: `rgb(${item.rgb[0]}, ${item.rgb[1]}, ${item.rgb[2]})`,
-                            border: `${
-                              currentMainColorSelecting ===
-                              `${item.type}-${item.rgb[0]}${item.rgb[1]}${item.rgb[2]}`
-                                ? "1px solid black"
-                                : "0.2px solid gray"
-                            }`,
-                          }}
-                        ></div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
           <div
-            className="main-color-container"
-            style={{ gridTemplateColumns: `repeat(${ITEM_PER_ROW}, 1fr)` }}
+            style={{
+              width: "100%",
+              display: "flex",
+            }}
           >
-            {currentChildColors &&
-              currentChildColors.map((item: Color) => (
-                <div
-                  key={item.type}
-                  className="child-color"
-                  style={{
-                    backgroundColor: `rgb(${item.r}, ${item.g}, ${item.b})`,
-                    border: `${
-                      isCurrentColor(item)
-                        ? "1px solid black"
-                        : "1px solid white"
-                    }`,
-                  }}
-                  onClick={() => {
-                    handlePickColor(item);
-                  }}
-                ></div>
-              ))}
+            <div style={{ marginRight: "0.5rem" }}>
+              <Button
+                style={{ width: "100%", marginBottom: "0.5rem" }}
+                onClick={() => setIsColorModalOpen(!isColorModalOpen)}
+              >
+                Mở bảng màu
+              </Button>
+              <SketchPicker
+                disableAlpha
+                color={currentColor}
+                onChangeComplete={handleChangeColorComplete}
+              />
+            </div>
+            <div
+              style={{
+                flexGrow: "1",
+                backgroundColor: `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: `${getTextColorForBackground(
+                  currentColor.r,
+                  currentColor.g,
+                  currentColor.b
+                )}`,
+              }}
+            >
+              {`rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`}
+            </div>
           </div>
           <h3 style={{ width: "100%" }}>Chi tiết</h3>
           <p className="full-width">{product?.description}</p>

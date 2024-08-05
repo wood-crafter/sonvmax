@@ -11,7 +11,7 @@ export const requestOptions: RequestOptions = {
   }
 }
 
-export function useCategories(page: number, size = 20) {
+export function useCategories(page: number, size = 999) {
   const fetcher = useAuthenticatedFetch();
   const { data, isLoading, error, mutate } = useSWR({ url: `/category/get-category?page=${page}&size=${size}`, fetcher }, fetchCategories)
 
