@@ -141,16 +141,29 @@ function ProductDetail() {
           <h3 className="full-width">{product?.nameProduct}</h3>
           <p className="full-width">
             {level && (
-              <div style={{ color: "red", textDecoration: "line-through" }}>
-                {NumberToVND.format(product?.price ?? 0)}
+              <div
+                style={{
+                  fontSize: "20px",
+                  color: "red",
+                  fontWeight: "bold",
+                  textDecoration: "line-through",
+                }}
+              >
+                {NumberToVND.format(numOfProduct * (product?.price ?? 0))}
               </div>
             )}
-            <div>
+            <div
+              style={{
+                fontSize: "20px",
+                fontWeight: "bold",
+              }}
+            >
               {level
                 ? NumberToVND.format(
-                    ((product?.price ?? 0) * (100 - +level)) / 100
+                    ((product?.price ?? 0) * numOfProduct * (100 - +level)) /
+                      100
                   )
-                : NumberToVND.format(product?.price ?? 0)}
+                : NumberToVND.format(numOfProduct * (product?.price ?? 0))}
             </div>
           </p>
           <div

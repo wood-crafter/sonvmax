@@ -36,13 +36,32 @@ function Products() {
             <Link to={`/product_detail/${item.id}`}>
               <img src={item.image} style={{ height: "70%", width: "100%" }} />
             </Link>
-            <div>{item.nameProduct}</div>
+            <div
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {item.nameProduct}
+            </div>
             {level && (
-              <div style={{ color: "red", textDecoration: "line-through" }}>
+              <div
+                style={{
+                  fontSize: "20px",
+                  color: "red",
+                  textDecoration: "line-through",
+                  fontWeight: "bold",
+                }}
+              >
                 {NumberToVND.format(item.price)}
               </div>
             )}
-            <div>
+            <div
+              style={{
+                fontSize: "20px",
+                fontWeight: "bold",
+              }}
+            >
               {level
                 ? NumberToVND.format((item.price * (100 - +level)) / 100)
                 : NumberToVND.format(item.price)}
