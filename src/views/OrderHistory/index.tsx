@@ -1,6 +1,15 @@
-import { useMemo } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useMemo, useState } from "react";
 import "./index.css";
-import { Table, notification, Spin, Space, Popconfirm, Button } from "antd";
+import {
+  Table,
+  notification,
+  Spin,
+  Space,
+  Popconfirm,
+  Button,
+  Modal,
+} from "antd";
 import type { ColumnType } from "antd/es/table";
 import { Order } from "../../type";
 import { NumberToVND } from "../../helper";
@@ -16,6 +25,7 @@ function OrderHistory() {
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const { data, isLoading } = useOrders();
+  const [currentOrder, setCurrentOrder] = useState<any>(null);
   const orders = useMemo(
     () => data?.data.map((it) => ({ key: it.id, ...it })),
     [data?.data]
@@ -136,12 +146,67 @@ function OrderHistory() {
     },
   ];
 
+  const orderColumns: ColumnType<any>[] = [
+    {
+      title: "Tên sản phẩm",
+      key: "productDetails",
+      render: (record) => {
+        return <div>{record.productDetails.productName}</div>;
+      },
+    },
+    {
+      title: "Ảnh sản phẩm",
+      key: "image",
+      render: (record) => {
+        return (
+          <div style={{ maxHeight: "80%", maxWidth: "8rem" }}>
+            <img
+              src={record.productDetails.image}
+              style={{ width: "100%", height: "100%" }}
+            />
+          </div>
+        );
+      },
+    },
+    {
+      title: "Giá",
+      key: "price",
+      render: (record) => {
+        return <div>{NumberToVND.format(record.price)}</div>;
+      },
+    },
+    {
+      title: "Số lượng",
+      key: "quantity",
+      render: (record) => {
+        return <div>{record.quantity}</div>;
+      },
+    },
+  ];
+
   if (isLoading) return <Spin />;
 
   return (
     <div className="OrderHistory">
       {contextHolder}
-      <Table columns={columns} dataSource={orders} />
+      <Table
+        columns={columns}
+        dataSource={orders}
+        onRow={(record) => ({
+          onDoubleClick: () => {
+            setCurrentOrder(record.orderProductSnapshots);
+          },
+        })}
+      />
+      <Modal
+        title="Bảng màu"
+        open={!!currentOrder}
+        onOk={() => setCurrentOrder(null)}
+        onCancel={() => setCurrentOrder(null)}
+        width={"100%"}
+      >
+        <Table columns={orderColumns} dataSource={currentOrder} />
+      </Modal>
     </div>
   );
 }
