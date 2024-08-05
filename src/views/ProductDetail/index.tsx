@@ -13,6 +13,7 @@ import { ColorResult, SketchPicker } from "react-color";
 import ColorTable from "../../components/ColorTable";
 
 function ProductDetail() {
+  const level = useUserStore((state) => state.level);
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const currentProductId = useLocation().pathname.split("/")[2];
@@ -139,7 +140,18 @@ function ProductDetail() {
         <div className="detail">
           <h3 className="full-width">{product?.nameProduct}</h3>
           <p className="full-width">
-            {NumberToVND.format(product?.price ?? 0)}
+            {level && (
+              <div style={{ color: "red", textDecoration: "line-through" }}>
+                {NumberToVND.format(product?.price ?? 0)}
+              </div>
+            )}
+            <div>
+              {level
+                ? NumberToVND.format(
+                    ((product?.price ?? 0) * (100 - +level)) / 100
+                  )
+                : NumberToVND.format(product?.price ?? 0)}
+            </div>
           </p>
           <div
             style={{

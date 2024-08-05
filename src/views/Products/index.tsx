@@ -7,8 +7,10 @@ import { ITEM_PER_ROW } from "../../constant";
 import { Pagination } from "antd";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { useUserStore } from "../../store/user";
 
 function Products() {
+  const level = useUserStore((state) => state.level);
   const { categoryId } = useParams<{ categoryId: string }>();
   const [currentPage, setCurrentPage] = useState(1);
   const { data, mutate: refreshProducts } = useProducts(
@@ -35,7 +37,16 @@ function Products() {
               <img src={item.image} style={{ height: "70%", width: "100%" }} />
             </Link>
             <div>{item.nameProduct}</div>
-            <div>{NumberToVND.format(item.price)}</div>
+            {level && (
+              <div style={{ color: "red", textDecoration: "line-through" }}>
+                {NumberToVND.format(item.price)}
+              </div>
+            )}
+            <div>
+              {level
+                ? NumberToVND.format((item.price * (100 - +level)) / 100)
+                : NumberToVND.format(item.price)}
+            </div>
           </div>
         ))}
       </div>
