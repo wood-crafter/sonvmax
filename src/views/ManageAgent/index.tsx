@@ -8,6 +8,7 @@ import {
   notification,
   Input,
   Popconfirm,
+  Select,
 } from "antd";
 import { ColumnType } from "antd/es/table";
 import {
@@ -22,6 +23,8 @@ import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { API_ROOT } from "../../constant";
 import { useRoles } from "../../hooks/useRoles";
+
+const { Option } = Select;
 
 function ManageAgent() {
   const accessToken = useUserStore((state) => state.accessToken);
@@ -338,15 +341,16 @@ function ManageAgent() {
               maxLength={16}
             />
             <label htmlFor="rank">Xếp hạng: </label>
-            <Input
-              name="rank"
+            <Select
               value={rank}
-              onChange={(e) => {
-                handleSetNumberInput(e, setRank);
-              }}
+              onChange={(value) => setRank(value)}
               placeholder={currentEditing.rank.toString()}
-              maxLength={16}
-            />
+              style={{ width: "100%" }}
+            >
+              <Option value="1">1</Option>
+              <Option value="2">2</Option>
+              <Option value="3">3</Option>
+            </Select>
           </div>
         )}
       </Modal>
@@ -455,14 +459,15 @@ function ManageAgent() {
             maxLength={16}
           />
           <label htmlFor="rank">Xếp hạng: </label>
-          <Input
-            name="rank"
+          <Select
             value={nextRank}
-            onChange={(e) => {
-              handleSetNumberInput(e, setNextRank);
-            }}
-            maxLength={16}
-          />
+            onChange={(value) => setNextRank(value)}
+            style={{ width: "100%" }}
+          >
+            <Option value="1">1</Option>
+            <Option value="2">2</Option>
+            <Option value="3">3</Option>
+          </Select>
         </div>
       </Modal>
     </div>
