@@ -165,17 +165,35 @@ function ManageOrder() {
   const statusToText = (status: number) => {
     switch (status) {
       case 0:
-        return "Đã đặt";
+        return {
+          text: "Đã đặt",
+          color: "black",
+        };
       case 1:
-        return "Xác nhận";
+        return {
+          text: "Xác nhận",
+          color: "orange",
+        };
       case 2:
-        return "Đang chuẩn bị";
+        return {
+          text: "Đang chuẩn bị",
+          color: "blue",
+        };
       case 3:
-        return "Đang giao";
+        return {
+          text: "Đang giao",
+          color: "purple",
+        };
       case 4:
-        return "Giao thành công";
+        return {
+          text: "Giao thành công",
+          color: "green",
+        };
       case -1:
-        return "Huỷ bỏ";
+        return {
+          text: "Huỷ bỏ",
+          color: "red",
+        };
     }
   };
 
@@ -254,16 +272,19 @@ function ManageOrder() {
     {
       title: "Trạng thái",
       key: "status",
-      render: (_, record: Order) => (
-        <Dropdown overlay={getStatusMenu(record)}>
-          <Button>
-            <Space>
-              {statusToText(record.status)}
-              <DownOutlined />
-            </Space>
-          </Button>
-        </Dropdown>
-      ),
+      render: (_, record: Order) => {
+        const status = statusToText(record.status);
+        return (
+          <Dropdown overlay={getStatusMenu(record)}>
+            <Button>
+              <Space style={{ color: status?.color }}>
+                {status?.text}
+                <DownOutlined />
+              </Space>
+            </Button>
+          </Dropdown>
+        );
+      },
       sorter: (a, b) => a.status - b.status,
     },
     {

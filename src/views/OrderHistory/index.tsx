@@ -84,17 +84,35 @@ function OrderHistory() {
   const statusToText = (status: number) => {
     switch (status) {
       case 0:
-        return "Đã đặt";
+        return {
+          text: "Đã đặt",
+          color: "black",
+        };
       case 1:
-        return "Xác nhận";
+        return {
+          text: "Xác nhận",
+          color: "orange",
+        };
       case 2:
-        return "Đang chuẩn bị";
+        return {
+          text: "Đang chuẩn bị",
+          color: "blue",
+        };
       case 3:
-        return "Đang giao";
+        return {
+          text: "Đang giao",
+          color: "purple",
+        };
       case 4:
-        return "Giao thành công";
+        return {
+          text: "Giao thành công",
+          color: "green",
+        };
       case -1:
-        return "Huỷ bỏ";
+        return {
+          text: "Huỷ bỏ",
+          color: "red",
+        };
     }
   };
 
@@ -122,7 +140,8 @@ function OrderHistory() {
       title: "Trạng thái",
       key: "status",
       render: (_, record: Order) => {
-        return <div>{statusToText(record.status)}</div>;
+        const status = statusToText(record.status);
+        return <div style={{ color: status?.color }}>{status?.text}</div>;
       },
       sorter: (a, b) => a.status - b.status,
     },
