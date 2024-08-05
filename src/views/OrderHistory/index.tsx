@@ -199,7 +199,7 @@ function OrderHistory() {
         })}
       />
       <Modal
-        title="Bảng màu"
+        title="Xem chi tiết đơn"
         open={!!currentOrder}
         onOk={() => setCurrentOrder(null)}
         onCancel={() => setCurrentOrder(null)}

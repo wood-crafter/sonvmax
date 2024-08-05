@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from "react";
 import "./index.css";
 import {
@@ -55,8 +56,7 @@ function ManageOrder() {
   const [editingRow, setEditingRow] = useState<string | null>(null);
   const [description, setDescription] = useState<string>("");
   const [confirmBy, setConfirmBy] = useState<string>("");
-  const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
-  const [openOrderDetail, setOpenOrderDetail] = useState(false);
+  const [currentOrder, setCurrentOrder] = useState<any>(null);
 
   const updateOrder = async (UpdateProps: UpdateProps) => {
     const { id, status, description, confirmBy, voucherId } = UpdateProps;
@@ -189,8 +189,7 @@ function ManageOrder() {
           className="order-id"
           style={{ color: "blue" }}
           onClick={() => {
-            setCurrentOrder(record);
-            setOpenOrderDetail(true);
+            setCurrentOrder(record.orderProductSnapshots);
           }}
         >
           {id}
@@ -310,6 +309,44 @@ function ManageOrder() {
     },
   ];
 
+  const orderColumns: ColumnType<any>[] = [
+    {
+      title: "Tên sản phẩm",
+      key: "productDetails",
+      render: (record) => {
+        return <div>{record.productDetails.productName}</div>;
+      },
+    },
+    {
+      title: "Ảnh sản phẩm",
+      key: "image",
+      render: (record) => {
+        return (
+          <div style={{ maxHeight: "80%", maxWidth: "8rem" }}>
+            <img
+              src={record.productDetails.image}
+              style={{ width: "100%", height: "100%" }}
+            />
+          </div>
+        );
+      },
+    },
+    {
+      title: "Giá",
+      key: "price",
+      render: (record) => {
+        return <div>{NumberToVND.format(record.price)}</div>;
+      },
+    },
+    {
+      title: "Số lượng",
+      key: "quantity",
+      render: (record) => {
+        return <div>{record.quantity}</div>;
+      },
+    },
+  ];
+
   if (isLoading) return <Spin />;
 
   return (
@@ -317,24 +354,13 @@ function ManageOrder() {
       {contextHolder}
       <Table columns={columns} dataSource={orders} />
       <Modal
-        title="Chi tiết đơn hàng"
-        open={openOrderDetail}
-        onOk={() => {
-          setOpenOrderDetail(false);
-        }}
-        onCancel={() => {
-          setOpenOrderDetail(false);
-        }}
+        title="Xem chi tiết đơn"
+        open={!!currentOrder}
+        onOk={() => setCurrentOrder(null)}
+        onCancel={() => setCurrentOrder(null)}
+        width={"100%"}
       >
-        {currentOrder &&
-          currentOrder.orderProductSnapshots?.map((it) => {
-            return (
-              <div key={it.id} className="product-order">
-                <div>{it.nameProduct}</div>
-                <div>{NumberToVND.format(it.price)}</div>
-              </div>
-            );
-          })}
+        <Table columns={orderColumns} dataSource={currentOrder} />
       </Modal>
     </div>
   );
