@@ -215,6 +215,11 @@ function ManageOrder() {
       ),
     },
     {
+      title: "Đại lý",
+      dataIndex: "agentName",
+      key: "agentName",
+    },
+    {
       title: "Tổng thanh toán",
       dataIndex: "totalAmount",
       key: "totalAmount",
@@ -222,7 +227,7 @@ function ManageOrder() {
       render: (price: number) => <div>{NumberToVND.format(price)}</div>,
     },
     {
-      title: "Chi tiết đơn",
+      title: "Ghi chú",
       dataIndex: "description",
       key: "description",
       render: (_, record: Order) => {
