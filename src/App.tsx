@@ -139,7 +139,7 @@ const AppRoutes = () => {
         />
       </Route>
       <Route
-        path="/products"
+        path="/products/:categoryId"
         element={
           <Layout hasNav>
             <Products />

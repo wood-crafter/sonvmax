@@ -6,10 +6,12 @@ import { useProducts } from "../../hooks/useProduct";
 import { ITEM_PER_ROW } from "../../constant";
 import { Pagination } from "antd";
 import { Link } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 
 function Products() {
+  // const { categoryId } = useParams<{ categoryId: string }>();
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, mutate: refreshProducts } = useProducts(currentPage, 10);
+  const { data, mutate: refreshProducts } = useProducts("", currentPage, 10);
   const products = data?.data ?? [];
 
   const onPageChange = (newPage: number) => {

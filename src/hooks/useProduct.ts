@@ -29,7 +29,17 @@ export async function fetchCategories({url, fetcher} : FetchWithAuthOptions) {
   return res.json() as Promise<PagedResponse<Category>>
 }
 
-export function useProducts(page: number, size = 20) {
+export function useProducts(categoryId: string | undefined, page: number, size = 20) {
+  if (categoryId) {
+    const { data, isLoading, error, mutate } = useSWR(`/product/get-products-by-category/${categoryId}?page=${page}&size=${size}`, fetchProducts)
+
+    return {
+      data,
+      isLoading,
+      error,
+      mutate,
+    }
+  }
   const { data, isLoading, error, mutate } = useSWR(`/product/get-product?page=${page}&size=${size}`, fetchProducts)
 
   return {

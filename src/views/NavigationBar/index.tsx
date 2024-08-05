@@ -1,7 +1,7 @@
 import "./index.css";
 import type { MenuProps } from "antd";
 import { Menu } from "antd";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../../store/user";
 import {
@@ -19,42 +19,9 @@ import {
   ProfileOutlined,
   HistoryOutlined,
 } from "@ant-design/icons";
+import { useCategories } from "../../hooks/useProduct";
 
 type MenuItem = Required<MenuProps>["items"][number];
-
-const items: MenuItem[] = [
-  {
-    label: "Danh mục sản phẩm",
-    key: "productCollection",
-    icon: <UnorderedListOutlined />,
-  },
-  {
-    label: <Link to="/home">Trang chủ</Link>,
-    key: "home",
-    icon: <HomeOutlined />,
-  },
-  {
-    label: "Giới thiệu",
-    key: "introduce",
-  },
-  {
-    label: "Tin tức",
-    key: "news",
-  },
-  {
-    label: <Link to="/products">Sản phẩm</Link>,
-    key: "products",
-    icon: <BgColorsOutlined />,
-  },
-  {
-    label: "Dự án",
-    key: "project",
-  },
-  {
-    label: "Tư vấn",
-    key: "advise",
-  },
-];
 
 const managerItems: MenuItem[] = [
   {
@@ -104,6 +71,7 @@ const managerItems: MenuItem[] = [
 ];
 
 function Nav({ isManager = false }: { isManager: boolean }) {
+  const { data: categoryResponse } = useCategories(1);
   const accessToken = useUserStore((state) => state.accessToken);
   const logout = useUserStore((state) => state.clear);
   const [current, setCurrent] = useState("mail");
@@ -138,6 +106,34 @@ function Nav({ isManager = false }: { isManager: boolean }) {
   const onClick: MenuProps["onClick"] = (e) => {
     setCurrent(e.key);
   };
+
+  const items = useMemo(() => {
+    return [
+      {
+        label: "Danh mục sản phẩm",
+        key: "productCollection",
+        icon: <UnorderedListOutlined />,
+        children: categoryResponse
+          ? categoryResponse.data.map((it) => {
+              return {
+                label: <Link to={`/products/${it.id}`}>{it.name}</Link>,
+                key: it.id,
+              };
+            })
+          : [],
+      },
+      {
+        label: <Link to="/home">Trang chủ</Link>,
+        key: "home",
+        icon: <HomeOutlined />,
+      },
+      {
+        label: <Link to="/products">Sản phẩm</Link>,
+        key: "products",
+        icon: <BgColorsOutlined />,
+      },
+    ];
+  }, [categoryResponse]);
   return (
     <Menu
       className={`${isManager ? "" : "home-menubar"}`}
