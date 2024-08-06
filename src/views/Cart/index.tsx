@@ -12,6 +12,7 @@ import { NumberToVND } from "../../helper";
 import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import { KeyedMutator } from "swr";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
+import { useVouchers } from "../../hooks/useVoucher";
 
 type DebouncedInputNumberProps = {
   defaultValue: number;
@@ -72,6 +73,8 @@ const DebouncedInputNumber = (props: DebouncedInputNumberProps) => {
 
 function UserCart() {
   const { data: currentCart, mutate: refreshCart } = useCart();
+  const { data: voucher } = useVouchers(1);
+  console.info(voucher);
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
@@ -210,7 +213,7 @@ function UserCart() {
                 <div className="cart-item-product-info">
                   <div>{item.product.nameProduct}</div>
                   <div style={{ color: "red" }}>
-                    {NumberToVND.format(item.product.price)}
+                    {NumberToVND.format(item.price)}
                   </div>
                   <div>x{item.quantity}</div>
                 </div>
@@ -223,7 +226,7 @@ function UserCart() {
                   defaultValue={item.quantity}
                 />
                 <div className="cart-item-total">
-                  Tổng: {NumberToVND.format(item.product.price * item.quantity)}
+                  Tổng: {NumberToVND.format(item.price * item.quantity)}
                 </div>
                 <div
                   className="cart-item-delete"
