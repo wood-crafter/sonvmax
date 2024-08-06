@@ -70,7 +70,11 @@ function Products() {
         ))}
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <Pagination onChange={onPageChange} defaultPageSize={10} total={20} />
+        <Pagination
+          onChange={onPageChange}
+          defaultPageSize={10}
+          total={data?.totalRecord}
+        />
       </div>
     </div>
   );

@@ -340,7 +340,7 @@ function ManageAgent() {
               placeholder={currentEditing.accountHave.toString()}
               maxLength={16}
             />
-            <label htmlFor="rank">Xếp hạng: </label>
+            <label htmlFor="rank">Cấp đại lý: </label>
             <Select
               value={rank}
               onChange={(value) => setRank(value)}
@@ -458,7 +458,7 @@ function ManageAgent() {
             }}
             maxLength={16}
           />
-          <label htmlFor="rank">Xếp hạng: </label>
+          <label htmlFor="rank">Cấp đại lý: </label>
           <Select
             value={nextRank}
             onChange={(value) => setNextRank(value)}
