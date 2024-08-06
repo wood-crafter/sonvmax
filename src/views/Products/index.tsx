@@ -3,7 +3,7 @@ import "./index.css";
 import { Product } from "../../type";
 import { NumberToVND } from "../../helper";
 import { useProducts } from "../../hooks/useProduct";
-import { ITEM_PER_ROW } from "../../constant";
+import { DISCOUNT_AMOUNT, ITEM_PER_ROW } from "../../constant";
 import { Pagination } from "antd";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -11,6 +11,7 @@ import { useUserStore } from "../../store/user";
 
 function Products() {
   const level = useUserStore((state) => state.level);
+  const discount = DISCOUNT_AMOUNT[+level - 1] ?? 0;
   const { categoryId } = useParams<{ categoryId: string }>();
   const [currentPage, setCurrentPage] = useState(1);
   const { data, mutate: refreshProducts } = useProducts(
@@ -63,7 +64,7 @@ function Products() {
               }}
             >
               {level
-                ? NumberToVND.format((item.price * (100 - +level)) / 100)
+                ? NumberToVND.format((item.price * (100 - discount)) / 100)
                 : NumberToVND.format(item.price)}
             </div>
           </div>

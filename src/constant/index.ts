@@ -44,3 +44,5 @@ export const STOCKER = {
   role: 'STOCKER',
   defaultPath: '/manage/products'
 }
+
+export const DISCOUNT_AMOUNT = [40, 30, 20]

@@ -18,7 +18,7 @@ export const useUserStore = create(
       setAccessToken: (accessToken: string) => {
         const payload = accessToken.split(".")[1];
         const roleName = JSON.parse(atob(payload)).roleName;
-        const level = JSON.parse(atob(payload)).level;
+        const level = JSON.parse(atob(payload)).rank;
 
         set(() => ({ roleName, accessToken, level }));
       },

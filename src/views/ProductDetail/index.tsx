@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { API_ROOT } from "../../constant";
+import { API_ROOT, DISCOUNT_AMOUNT } from "../../constant";
 import { requestOptions, useProductsById } from "../../hooks/useProduct";
 import { Button, InputNumber, notification } from "antd";
 import "./index.css";
@@ -14,6 +14,7 @@ import ColorTable from "../../components/ColorTable";
 
 function ProductDetail() {
   const level = useUserStore((state) => state.level);
+  const discount = DISCOUNT_AMOUNT[+level - 1] ?? 0;
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const currentProductId = useLocation().pathname.split("/")[2];
@@ -160,7 +161,7 @@ function ProductDetail() {
             >
               {level
                 ? NumberToVND.format(
-                    ((product?.price ?? 0) * numOfProduct * (100 - +level)) /
+                    ((product?.price ?? 0) * numOfProduct * (100 - discount)) /
                       100
                   )
                 : NumberToVND.format(numOfProduct * (product?.price ?? 0))}
