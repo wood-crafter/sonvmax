@@ -1,7 +1,7 @@
 import { FormEventHandler, useState } from "react";
 import "./index.css";
 import { useUserStore } from "../../store/user";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ADMIN_ROLES } from "../../constant";
 import { useLogin } from "../../hooks/useAuth";
 
@@ -68,7 +68,9 @@ function Login() {
             }}
           />
         </div>
-        <a className="forget-password">Quên mật khẩu</a>
+        <Link to="/forget_password" className="forget-password">
+          Quên mật khẩu
+        </Link>
         <button className="login-button" type="submit">
           Đăng nhập
         </button>

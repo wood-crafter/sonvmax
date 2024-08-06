@@ -92,6 +92,11 @@ function Nav({ isManager = false }: { isManager: boolean }) {
         });
       }
       nextMenuItems.push({
+        label: <Link to="/profile">Hồ sơ</Link>,
+        key: "profile",
+        icon: <ProfileOutlined />,
+      });
+      nextMenuItems.push({
         label: <div onClick={logout}>Đăng xuất</div>,
         key: "logout",
       });

@@ -16,6 +16,7 @@ import UserCart from "./views/Cart";
 import { ACCOUTANT, OWNER, SALES, STOCKER } from "./constant";
 import ManageOrder from "./views/ManageOrder";
 import OrderHistory from "./views/OrderHistory";
+import Profile from "./views/Profile";
 
 const AppRoutes = () => {
   return (
@@ -57,6 +58,14 @@ const AppRoutes = () => {
         element={
           <Layout hasNav>
             <ForgetPassword />
+          </Layout>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <Layout hasNav requiredLogin>
+            <Profile />
           </Layout>
         }
       />
