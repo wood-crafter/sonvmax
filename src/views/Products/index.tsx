@@ -37,14 +37,7 @@ function Products() {
             <Link to={`/product_detail/${item.id}`}>
               <img src={item.image} style={{ height: "70%", width: "100%" }} />
             </Link>
-            <div
-              style={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {item.nameProduct}
-            </div>
+            <div className="product-name">{item.nameProduct}</div>
             {level && (
               <div
                 style={{
