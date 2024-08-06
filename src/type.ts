@@ -60,6 +60,7 @@ export type Agent = {
   debitLimit: number
   accountHave: number
   accountDebit: number
+  staffId: string
   address: string
   orders: Order[]
   invoice: any[]
@@ -84,6 +85,16 @@ export type Staff = {
   username: string
   password: string
   role: Role
+}
+
+export type Sales = {
+  id: string
+  roleId: string
+  fullName: string
+  phoneNumber: string
+  isActive: boolean
+  gender: number
+  username: string
 }
 
 export type Voucher = {

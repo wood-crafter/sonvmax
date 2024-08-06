@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import "./index.css";
 import {
@@ -23,6 +24,7 @@ import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { API_ROOT } from "../../constant";
 import { useRoles } from "../../hooks/useRoles";
+import { useSales } from "../../hooks/useStaff";
 
 const { Option } = Select;
 
@@ -32,6 +34,8 @@ function ManageAgent() {
   const [api, contextHolder] = notification.useNotification();
   const { data: rolesResponse } = useRoles(1);
   const { data, mutate: refreshAgents } = useAgents(1, 9999);
+  const { data: salesResponse } = useSales(1, 9999);
+  const sales = salesResponse?.data;
   const agents = data?.data ?? [];
   const roles = rolesResponse?.data;
 
@@ -50,6 +54,39 @@ function ManageAgent() {
       icon: <SmileOutlined style={{ color: "#108ee9" }} />,
     });
   };
+
+  const updateSuccessNotification = () => {
+    api.open({
+      message: "Sửa thành công",
+      description: "",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
+  const updateFailNotification = (status: number, statusText: string) => {
+    api.open({
+      message: "Sửa thất bại",
+      description: `Mã lỗi: ${status} ${statusText}`,
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
+  const deleteSuccessNotification = () => {
+    api.open({
+      message: "Xoá thành công",
+      description: "",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
+  const deleteFailNotification = (status: number, statusText: string) => {
+    api.open({
+      message: "Xoá thất bại",
+      description: `Mã lỗi: ${status} ${statusText}`,
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
   const addFailNotification = (status: number, statusText: string) => {
     api.open({
       message: "Tạo thất bại",
@@ -62,6 +99,7 @@ function ManageAgent() {
   const [accountDebit, setAccountDebit] = useState<string>("");
   const [accountHave, setAccountHave] = useState<string>("");
   const [rank, setRank] = useState<string>("");
+  const [sale, setSale] = useState<string>("");
 
   const [nextAgentFullName, setNextAgentFullName] = useState("");
   const [nextAgentEmail, setNextAgentEmail] = useState("");
@@ -74,10 +112,11 @@ function ManageAgent() {
   const [nextAccountDebit, setNextAccountDebit] = useState<string>("");
   const [nextAccountHave, setNextAccountHave] = useState<string>("");
   const [nextRank, setNextRank] = useState<string>("");
+  const [nextSale, setNextSale] = useState<string>("");
 
   const [currentEditing, setCurrentEditing] = useState<Agent | null>(null);
   const handleUpdateAgent = async () => {
-    const updateData = {
+    const updateData: any = {
       ...currentEditing,
       roleId: roles?.find((it) => it.name === "AGENT")?.id,
       debitLimit: +debitLimit,
@@ -85,17 +124,30 @@ function ManageAgent() {
       accountHave: +accountHave,
       rank: +rank,
     };
+
+    if (sale) {
+      updateData.staffId = sale;
+    }
     const updateBody = JSON.stringify(updateData);
 
-    await authFetch(`${API_ROOT}/agent/update-agent/${currentEditing?.id}`, {
-      ...requestOptions,
-      body: updateBody,
-      method: "PUT",
-      headers: {
-        ...requestOptions.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const updateResponse = await authFetch(
+      `${API_ROOT}/agent/update-agent/${currentEditing?.id}`,
+      {
+        ...requestOptions,
+        body: updateBody,
+        method: "PUT",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (updateResponse.ok) {
+      updateSuccessNotification();
+    } else {
+      updateFailNotification(updateResponse.status, updateResponse.statusText);
+    }
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -116,14 +168,23 @@ function ManageAgent() {
   };
 
   const handleDeleteRecord = async (record: Agent) => {
-    await authFetch(`${API_ROOT}/agent/remove-agent/${record.id}`, {
-      ...requestOptions,
-      method: "DELETE",
-      headers: {
-        ...requestOptions.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const deleteResponse = await authFetch(
+      `${API_ROOT}/agent/remove-agent/${record.id}`,
+      {
+        ...requestOptions,
+        method: "DELETE",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (deleteResponse.ok) {
+      deleteSuccessNotification();
+    } else {
+      deleteFailNotification(deleteResponse.status, deleteResponse.statusText);
+    }
     refreshAgents();
   };
 
@@ -139,6 +200,7 @@ function ManageAgent() {
     setNextAccountDebit("");
     setNextAccountHave("");
     setNextRank("");
+    setNextSale("");
   };
 
   const handleAddOk = async () => {
@@ -153,7 +215,8 @@ function ManageAgent() {
       !nextDebitLimit ||
       !nextAccountHave ||
       !nextAccountDebit ||
-      !nextRank
+      !nextRank ||
+      !nextSale
     ) {
       missingAddPropsNotification();
       return;
@@ -171,6 +234,7 @@ function ManageAgent() {
       debitLimit: +nextDebitLimit,
       accountHave: +nextAccountHave,
       accountDebit: +nextAccountDebit,
+      staffId: nextSale,
     });
 
     const createResponse = await authFetch(
@@ -224,11 +288,6 @@ function ManageAgent() {
       key: "email",
     },
     {
-      title: "Tên đăng nhập",
-      dataIndex: "username",
-      key: "username",
-    },
-    {
       title: "Công nợ tối đa",
       dataIndex: "debitLimit",
       key: "debitLimit",
@@ -256,7 +315,15 @@ function ManageAgent() {
       sorter: (a, b) => a.accountHave - b.accountHave,
     },
     {
-      title: "Xếp hạng",
+      title: "Nhân viên quản lý",
+      dataIndex: "staffId",
+      key: "staffId",
+      render: (_, record) => (
+        <div>{sales?.find((it) => it.id === record.staffId)?.fullName}</div>
+      ),
+    },
+    {
+      title: "Cấp đại lý",
       dataIndex: "rank",
       key: "rank",
       sorter: (a, b) => a.rank - b.rank,
@@ -351,6 +418,23 @@ function ManageAgent() {
               <Option value="2">2</Option>
               <Option value="3">3</Option>
             </Select>
+
+            {sales && sales.length && (
+              <>
+                <label htmlFor="sales">Nhân viên quản lý: </label>
+                <Select
+                  value={sale}
+                  onChange={(value) => setSale(value)}
+                  style={{ width: "100%" }}
+                >
+                  {sales.map((sale) => (
+                    <Option key={sale.id} value={sale.id}>
+                      {sale.fullName}
+                    </Option>
+                  ))}
+                </Select>
+              </>
+            )}
           </div>
         )}
       </Modal>
@@ -468,6 +552,23 @@ function ManageAgent() {
             <Option value="2">2</Option>
             <Option value="3">3</Option>
           </Select>
+
+          {sales && sales.length && (
+            <>
+              <label htmlFor="sales">Nhân viên quản lý: </label>
+              <Select
+                value={nextSale}
+                onChange={(value) => setNextSale(value)}
+                style={{ width: "100%" }}
+              >
+                {sales.map((sale) => (
+                  <Option key={sale.id} value={sale.id}>
+                    {sale.fullName}
+                  </Option>
+                ))}
+              </Select>
+            </>
+          )}
         </div>
       </Modal>
     </div>
