@@ -80,14 +80,12 @@ function ManageColor() {
       const createResponse = await authFetch(`${API_ROOT}/color/import-color`, {
         ...requestOptions,
         body: JSON.stringify({
-          colors: rows
-            .map((item) => {
-              return {
-                ...item,
-                parentId: "null",
-              };
-            })
-            .slice(0, 100),
+          colors: rows.map((item) => {
+            return {
+              ...item,
+              parentId: "null",
+            };
+          }),
         }),
         method: "POST",
         headers: {
@@ -126,14 +124,12 @@ function ManageColor() {
       const createRes = await authFetch(`${API_ROOT}/color/import-color`, {
         ...requestOptions,
         body: JSON.stringify({
-          colors: rows
-            .map((item) => {
-              return {
-                ...item,
-                parentId: "null",
-              };
-            })
-            .slice(0, 100),
+          colors: rows.map((item) => {
+            return {
+              ...item,
+              parentId: "null",
+            };
+          }),
         }),
         method: "POST",
         headers: {
