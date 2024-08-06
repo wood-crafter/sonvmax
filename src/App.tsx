@@ -55,7 +55,7 @@ const AppRoutes = () => {
       <Route
         path="/forget_password"
         element={
-          <Layout>
+          <Layout hasNav>
             <ForgetPassword />
           </Layout>
         }
