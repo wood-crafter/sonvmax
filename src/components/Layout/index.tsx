@@ -28,6 +28,7 @@ function Layout({
       <div className={isManager ? "ManagerLayout" : "Layout"}>{children}</div>
     );
   }
+  console.info(roleAllow);
   if (isManager && (!roleName || !roleAllow.includes(roleName))) {
     if (!roleName || !ADMIN_ROLES.includes(roleName)) {
       return <Navigate to="/home" replace={true} />;

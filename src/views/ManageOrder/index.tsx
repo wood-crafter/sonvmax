@@ -25,7 +25,7 @@ import { NumberToVND } from "../../helper";
 import { requestOptions } from "../../hooks/useProduct";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
-import { API_ROOT } from "../../constant";
+import { ACCOUTANT, API_ROOT, SALES, STOCKER } from "../../constant";
 import { useOrders } from "../../hooks/useOrder";
 
 type UpdateProps = {
@@ -45,6 +45,7 @@ type UpdateOrderProps = {
 
 function ManageOrder() {
   const accessToken = useUserStore((state) => state.accessToken);
+  const roleName = useUserStore((state) => state.roleName);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const { data, isLoading, mutate: refreshOrder } = useOrders();
@@ -101,7 +102,7 @@ function ManageOrder() {
 
   const updateSuccessNotification = () => {
     api.open({
-      message: "Cập nhận đơn hàng",
+      message: "Cập nhật đơn hàng",
       description: "Cập nhật đơn hàng thành công",
       icon: <SmileOutlined style={{ color: "#108ee9" }} />,
     });
@@ -109,58 +110,91 @@ function ManageOrder() {
 
   const updateFailNotification = () => {
     api.open({
-      message: "Cập nhận đơn hàng",
+      message: "Cập nhật đơn hàng",
       description: "Cập nhật đơn hàng thất bại",
       icon: <FrownOutlined style={{ color: "red" }} />,
     });
   };
 
-  const getStatusMenu = (record: Order) => (
-    <Menu>
-      <Menu.Item
-        key="0"
-        icon={<UserOutlined />}
-        onClick={() => updateOrder({ id: record.id, status: 0 })}
-      >
-        Đã đặt
-      </Menu.Item>
-      <Menu.Item
-        key="1"
-        icon={<UserOutlined />}
-        onClick={() => updateOrder({ id: record.id, status: 1 })}
-      >
-        Xác nhận
-      </Menu.Item>
-      <Menu.Item
-        key="2"
-        icon={<UserOutlined />}
-        onClick={() => updateOrder({ id: record.id, status: 2 })}
-      >
-        Đang chuẩn bị
-      </Menu.Item>
-      <Menu.Item
-        key="3"
-        icon={<UserOutlined />}
-        onClick={() => updateOrder({ id: record.id, status: 3 })}
-      >
-        Đang giao
-      </Menu.Item>
-      <Menu.Item
-        key="4"
-        icon={<UserOutlined />}
-        onClick={() => updateOrder({ id: record.id, status: 4 })}
-      >
-        Giao thành công
-      </Menu.Item>
-      <Menu.Item
-        key="-1"
-        icon={<UserOutlined />}
-        onClick={() => updateOrder({ id: record.id, status: -1 })}
-      >
-        Huỷ bỏ
-      </Menu.Item>
-    </Menu>
-  );
+  const getStatusMenu = (record: Order) => {
+    const statusMenuItems: any[] = [];
+    if (roleName === SALES.role) {
+      if (record.status === 0) {
+        statusMenuItems.push(
+          <Menu.Item
+            key="-1"
+            icon={<UserOutlined />}
+            onClick={() => updateOrder({ id: record.id, status: -1 })}
+          >
+            Huỷ bỏ
+          </Menu.Item>
+        );
+      }
+    } else if (roleName === ACCOUTANT.role) {
+      if (record.status === 0) {
+        statusMenuItems.push(
+          <Menu.Item
+            key="1"
+            icon={<UserOutlined />}
+            onClick={() => updateOrder({ id: record.id, status: 1 })}
+          >
+            Xác nhận
+          </Menu.Item>,
+          <Menu.Item
+            key="-1"
+            icon={<UserOutlined />}
+            onClick={() => updateOrder({ id: record.id, status: -1 })}
+          >
+            Huỷ bỏ
+          </Menu.Item>
+        );
+      }
+    } else if (roleName === STOCKER.role) {
+      if (record.status === 1) {
+        statusMenuItems.push(
+          <Menu.Item
+            key="2"
+            icon={<UserOutlined />}
+            onClick={() => updateOrder({ id: record.id, status: 2 })}
+          >
+            Đang chuẩn bị
+          </Menu.Item>
+        );
+      } else if (record.status === 2) {
+        statusMenuItems.push(
+          <Menu.Item
+            key="3"
+            icon={<UserOutlined />}
+            onClick={() => updateOrder({ id: record.id, status: 3 })}
+          >
+            Đang giao
+          </Menu.Item>
+        );
+      } else if (record.status === 3) {
+        statusMenuItems.push(
+          <Menu.Item
+            key="4"
+            icon={<UserOutlined />}
+            onClick={() => updateOrder({ id: record.id, status: 4 })}
+          >
+            Giao thành công
+          </Menu.Item>
+        );
+      }
+      if ([1, 2, 3].includes(record.status)) {
+        statusMenuItems.push(
+          <Menu.Item
+            key="-1"
+            icon={<UserOutlined />}
+            onClick={() => updateOrder({ id: record.id, status: -1 })}
+          >
+            Huỷ bỏ
+          </Menu.Item>
+        );
+      }
+    }
+    return <Menu>{statusMenuItems}</Menu>;
+  };
 
   const statusToText = (status: number) => {
     switch (status) {
@@ -279,7 +313,16 @@ function ManageOrder() {
       key: "status",
       render: (_, record: Order) => {
         const status = statusToText(record.status);
-        return (
+        const canUpdate =
+          (roleName === "SALES" && record.status === 0) ||
+          (roleName === "ACCOUNTANT" && record.status === 0) ||
+          (roleName === "STOCKER" &&
+            ([1, 2, 3].includes(record.status) ||
+              (record.status === 1 && [2, -1].includes(record.status)) ||
+              (record.status === 2 && [3, -1].includes(record.status)) ||
+              (record.status === 3 && [4, -1].includes(record.status))));
+
+        return canUpdate ? (
           <Dropdown overlay={getStatusMenu(record)}>
             <Button>
               <Space style={{ color: status?.color }}>
@@ -288,6 +331,8 @@ function ManageOrder() {
               </Space>
             </Button>
           </Dropdown>
+        ) : (
+          <div style={{ color: status?.color }}>{status?.text}</div>
         );
       },
       sorter: (a, b) => a.status - b.status,

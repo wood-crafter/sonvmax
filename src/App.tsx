@@ -88,7 +88,7 @@ const AppRoutes = () => {
             <Layout
               hasNav
               isManager
-              roleAllow={[OWNER.role, STOCKER.role, ACCOUTANT.role]}
+              roleAllow={[STOCKER.role, ACCOUTANT.role, SALES.role]}
             >
               <ManageOrder />
             </Layout>
