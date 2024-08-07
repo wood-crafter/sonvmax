@@ -26,6 +26,21 @@ export function useAgents(page: number, size = 20) {
   };
 }
 
+export function useAgentById(id: string) {
+  const fetcher = useAuthenticatedFetch();
+  const { data, isLoading, error, mutate } = useSWR(
+    { url: `/agent/get-agent/${id}`, fetcher },
+    fetchAgents
+  );
+
+  return {
+    data,
+    isLoading,
+    error,
+    mutate,
+  };
+}
+
 export async function fetchAgents({url, fetcher} : FetchWithAuthOptions) {
   const res = await fetcher(`${API_ROOT}${url}`, {...requestOptions});
 
