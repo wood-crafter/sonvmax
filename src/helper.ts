@@ -65,6 +65,15 @@ const rgbToHsl = (rgb: RGB) => {
   return [h * 360, s, l];
 };
 
+export const classifyColor = (rgb: RGB) => {
+  if (!rgb) return 1
+  const hsl = rgbToHsl(rgb)
+  if (!hsl) return 1
+  if (hsl[2] <= 0.25) return 1.5
+  if (hsl[2] >= 0.75) return 1.2
+  return 1.1
+}
+
 export const getClosestMainColor = (rgb: RGB) => {
   const [h1, s1, l1] = rgbToHsl(rgb);
   let closestColor = null;

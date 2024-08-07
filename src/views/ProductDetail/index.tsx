@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { API_ROOT, DISCOUNT_AMOUNT } from "../../constant";
 import { requestOptions, useProductsById } from "../../hooks/useProduct";
 import { Button, InputNumber, notification } from "antd";
 import "./index.css";
-import { NumberToVND } from "../../helper";
+import { classifyColor, NumberToVND } from "../../helper";
 import { useLocation } from "react-router-dom";
 import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import { Color } from "../../type";
@@ -30,6 +30,9 @@ function ProductDetail() {
   const [numOfProduct, setNumOfProduct] = useState(1);
   const [api, contextHolder] = notification.useNotification();
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
+  const ratioPriceColor = useMemo(() => {
+    return classifyColor(currentColor);
+  }, [currentColor]);
 
   const RequestLoginNotification = () => {
     api.open({
@@ -158,7 +161,9 @@ function ProductDetail() {
                   textDecoration: "line-through",
                 }}
               >
-                {NumberToVND.format(numOfProduct * (product?.price ?? 0))}
+                {NumberToVND.format(
+                  numOfProduct * (product?.price ?? 0) * ratioPriceColor
+                )}
               </div>
             )}
             <div
@@ -169,10 +174,15 @@ function ProductDetail() {
             >
               {level
                 ? NumberToVND.format(
-                    ((product?.price ?? 0) * numOfProduct * (100 - discount)) /
+                    ((product?.price ?? 0) *
+                      ratioPriceColor *
+                      numOfProduct *
+                      (100 - discount)) /
                       100
                   )
-                : NumberToVND.format(numOfProduct * (product?.price ?? 0))}
+                : NumberToVND.format(
+                    numOfProduct * ratioPriceColor * (product?.price ?? 0)
+                  )}
             </div>
           </p>
           {product?.categoryId !== noColorId && (
