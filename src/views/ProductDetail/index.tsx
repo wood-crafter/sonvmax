@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { API_ROOT, DISCOUNT_AMOUNT } from "../../constant";
 import { requestOptions, useProductsById } from "../../hooks/useProduct";
@@ -11,6 +12,8 @@ import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { ColorResult, SketchPicker } from "react-color";
 import ColorTable from "../../components/ColorTable";
+
+const noColorId = "clzdwqi900009skr5yrl5yvcq";
 
 function ProductDetail() {
   const level = useUserStore((state) => state.level);
@@ -71,14 +74,17 @@ function ProductDetail() {
       openNotification("Số lượng không hợp lệ");
     }
 
-    const cartBody = {
+    const cartBody: any = {
       quantity: numOfProduct,
-      rgb: {
+    };
+
+    if (product?.categoryId !== noColorId) {
+      cartBody.rgb = {
         r: currentColor.r,
         g: currentColor.g,
         b: currentColor.b,
-      },
-    };
+      };
+    }
 
     const createResponse = await authFetch(
       `${API_ROOT}/order/create-order-product/${currentProductId}`,
@@ -126,11 +132,13 @@ function ProductDetail() {
   return (
     <div className="ProductDetail">
       {contextHolder}
-      <ColorTable
-        setCurrentColor={setCurrentColor}
-        isOpen={isColorModalOpen}
-        setIsOpen={setIsColorModalOpen}
-      />
+      {product?.categoryId !== noColorId && (
+        <ColorTable
+          setCurrentColor={setCurrentColor}
+          isOpen={isColorModalOpen}
+          setIsOpen={setIsColorModalOpen}
+        />
+      )}
       <div className="body">
         <div className="side-preview">
           <img src={product?.image}></img>
@@ -167,42 +175,44 @@ function ProductDetail() {
                 : NumberToVND.format(numOfProduct * (product?.price ?? 0))}
             </div>
           </p>
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-            }}
-          >
-            <div style={{ marginRight: "0.5rem" }}>
-              <Button
-                style={{ width: "100%", marginBottom: "0.5rem" }}
-                onClick={() => setIsColorModalOpen(!isColorModalOpen)}
-              >
-                Mở bảng màu
-              </Button>
-              <SketchPicker
-                disableAlpha
-                color={currentColor}
-                onChangeComplete={handleChangeColorComplete}
-              />
-            </div>
+          {product?.categoryId !== noColorId && (
             <div
               style={{
-                flexGrow: "1",
-                backgroundColor: `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`,
+                width: "100%",
                 display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                color: `${getTextColorForBackground(
-                  currentColor.r,
-                  currentColor.g,
-                  currentColor.b
-                )}`,
               }}
             >
-              {`rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`}
+              <div style={{ marginRight: "0.5rem" }}>
+                <Button
+                  style={{ width: "100%", marginBottom: "0.5rem" }}
+                  onClick={() => setIsColorModalOpen(!isColorModalOpen)}
+                >
+                  Mở bảng màu
+                </Button>
+                <SketchPicker
+                  disableAlpha
+                  color={currentColor}
+                  onChangeComplete={handleChangeColorComplete}
+                />
+              </div>
+              <div
+                style={{
+                  flexGrow: "1",
+                  backgroundColor: `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: `${getTextColorForBackground(
+                    currentColor.r,
+                    currentColor.g,
+                    currentColor.b
+                  )}`,
+                }}
+              >
+                {`rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`}
+              </div>
             </div>
-          </div>
+          )}
           <h3 style={{ width: "100%" }}>Chi tiết</h3>
           <p className="full-width">{product?.description}</p>
           <div className="add-to-cart">
