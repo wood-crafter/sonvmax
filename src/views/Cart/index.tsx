@@ -153,13 +153,13 @@ function UserCart() {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-
     if (orderRes.ok) {
       addSuccessNotification();
       refreshCart();
       setTotal(0);
     } else {
-      addFailNotification(orderRes.status, orderRes.statusText);
+      const orderJson = await orderRes.json();
+      addFailNotification(orderRes.status, orderJson.message);
     }
   };
 
@@ -217,6 +217,7 @@ function UserCart() {
                   </div>
                   <div>x{item.quantity}</div>
                 </div>
+                <div className="">{item.colors}</div>
                 <DebouncedInputNumber
                   refreshCart={refreshCart}
                   className="cart-item-num-of-product"
