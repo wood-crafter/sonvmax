@@ -91,7 +91,7 @@ function AddProductButton(props: AddProductButtonProps) {
   const [nextImage, setNextImage] = useState<string>("");
   const [nextProductDescription, setNextProductDescription] = useState("");
   const [nextVolumes, setNextVolumes] = useState<ProductVolume[]>([
-    { volume: "", price: 0 },
+    { id: "", price: 0 },
   ]);
   const [nextCategory, setNextCategory] = useState(
     categories && categories[0] ? categories[0].id : ""
@@ -102,7 +102,7 @@ function AddProductButton(props: AddProductButtonProps) {
   const clearAddInput = () => {
     setNextProductName("");
     setNextImage("");
-    setNextVolumes([{ volume: "", price: 0 }]);
+    setNextVolumes([{ id: "", price: 0 }]);
     setNextProductDescription("");
     setNextCategory(categories ? categories[0].id : "");
   };
@@ -110,7 +110,7 @@ function AddProductButton(props: AddProductButtonProps) {
   const isNextVolumesFullfilled = () => {
     let isFullfilled = true;
     nextVolumes.forEach((volume) => {
-      if (+volume.price === 0 || !volume.volume) {
+      if (+volume.price === 0 || !volume.id) {
         isFullfilled = false;
       }
     });
@@ -201,7 +201,7 @@ function AddProductButton(props: AddProductButtonProps) {
                         const updatedVolumes = [...preVolumes];
                         updatedVolumes[index] = {
                           ...updatedVolumes[index],
-                          volume: value,
+                          id: value,
                         };
                         return updatedVolumes;
                       });
@@ -212,7 +212,7 @@ function AddProductButton(props: AddProductButtonProps) {
                       <Select.Option
                         key={volumn.id}
                         value={volumn.id}
-                        selected={volumn.id === it.volume}
+                        selected={volumn.id === it.id}
                       >
                         {volumn.volume}
                       </Select.Option>
@@ -269,7 +269,7 @@ function AddProductButton(props: AddProductButtonProps) {
                         setNextVolumes((preVolumes) => {
                           const updatedVolumes = [
                             ...preVolumes,
-                            { volume: "", price: 0 },
+                            { id: "", price: 0 },
                           ];
                           return updatedVolumes;
                         });
@@ -362,25 +362,27 @@ function UpdateProductModal(props: UpdateProductModalProps) {
   const [productName, setProductName] = useState<string>("");
   const [image, setImage] = useState<string | undefined>("");
   const [volumes, setVolumes] = useState<ProductVolume[]>([
-    { volume: "", price: 0 },
+    { id: "", price: 0 },
   ]);
   const [description, setDescription] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [activeProduct, setActiveProduct] = useState(false);
+  const [canColorPick, setCanColorPick] = useState(false);
 
   useEffect(() => {
     setProductName(currentEditing.nameProduct);
     setVolumes(
       currentEditing.volumes
         ? currentEditing.volumes.map((it) => {
-            return { volume: it.volume, price: it.price };
+            return { id: it.id, price: it.price };
           })
-        : [{ volume: "", price: 0 }]
+        : [{ id: "", price: 0 }]
     );
     setDescription(currentEditing.description);
     setCategory(currentEditing.categoryId);
     setActiveProduct(currentEditing.activeProduct);
     setImage(currentEditing.image);
+    setCanColorPick(currentEditing.canColorPick);
   }, [currentEditing]);
 
   const handleUpdateProduct = async () => {
@@ -392,6 +394,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
       activeProduct: activeProduct,
       image: image,
       id: currentEditing?.id,
+      canColorPick: canColorPick,
     };
     const updateBody = JSON.stringify(updateData);
 
@@ -444,18 +447,18 @@ function UpdateProductModal(props: UpdateProductModalProps) {
                 <label htmlFor="volume">Khối lượng {index + 1}: </label>
                 <div style={{ width: "100%", display: "flex" }}>
                   <Select
+                    defaultValue={volume.id}
                     onChange={(value) => {
                       setVolumes((preVolumes) => {
                         const updatedVolumes = [...preVolumes];
                         updatedVolumes[index] = {
                           ...updatedVolumes[index],
-                          volume: value,
+                          id: value,
                         };
                         return updatedVolumes;
                       });
                     }}
                     style={{ flexGrow: 1 }}
-                    defaultValue={volume.volume}
                   >
                     {allVolumes?.map((volumn) => (
                       <Select.Option key={volumn.id} value={volumn.id}>
@@ -477,7 +480,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
                       type="primary"
                       danger
                       icon={<DeleteOutlined />}
-                      style={{ marginTop: "1rem" }}
+                      style={{ marginLeft: "1rem" }}
                     />
                   )}
                 </div>
@@ -501,17 +504,25 @@ function UpdateProductModal(props: UpdateProductModalProps) {
               </div>
             ))}
           {volumes.length > 0 && (
-            <Button
-              onClick={() => {
-                setVolumes((prevVolumes) => [
-                  ...prevVolumes,
-                  { volume: "", price: 0 },
-                ]);
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
               }}
-              type="primary"
-              icon={<PlusSquareOutlined />}
-              style={{ marginTop: "1rem" }}
-            />
+            >
+              <Button
+                onClick={() => {
+                  setVolumes((prevVolumes) => [
+                    ...prevVolumes,
+                    { id: "", price: 0 },
+                  ]);
+                }}
+                type="primary"
+                icon={<PlusSquareOutlined />}
+                style={{ marginTop: "1rem" }}
+              />
+            </div>
           )}
           <label htmlFor="product-description">Chi tiết sản phẩm: </label>
           <TextArea
@@ -546,6 +557,15 @@ function UpdateProductModal(props: UpdateProductModalProps) {
           >
             <Radio value={true}>Hoạt động</Radio>
             <Radio value={false}>Tạm dừng</Radio>
+          </Radio.Group>
+          <Radio.Group
+            onChange={(e) => {
+              setCanColorPick(e.target.value);
+            }}
+            value={canColorPick}
+          >
+            <Radio value={true}>Đa màu</Radio>
+            <Radio value={false}>Đơn màu</Radio>
           </Radio.Group>
         </div>
       )}

@@ -6,6 +6,7 @@ export type Product = {
   activeProduct: boolean
   image: string | undefined
   volumes: ProductVolume[]
+  canColorPick: boolean
 }
 
 export type Volume = {
@@ -15,7 +16,7 @@ export type Volume = {
 
 export type ProductVolume = {
   price: number
-  volume: string
+  id: string
 }
 
 export type Color = any
