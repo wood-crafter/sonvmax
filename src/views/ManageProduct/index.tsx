@@ -20,7 +20,13 @@ import {
   PlusSquareOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { Category, PagedResponse, Product, Volume } from "../../type";
+import {
+  Category,
+  PagedResponse,
+  Product,
+  ProductVolume,
+  Volume,
+} from "../../type";
 import { NumberToVND } from "../../helper";
 import {
   useCategories,
@@ -32,17 +38,7 @@ import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { API_ROOT } from "../../constant";
 import { KeyedMutator } from "swr";
 import TextArea from "antd/es/input/TextArea";
-
-const VOLUME_DUMMY = [
-  {
-    id: "volume 1",
-    volume: "volume 1",
-  },
-  {
-    id: "volume 2",
-    volume: "volume 2",
-  },
-];
+import { useVolume } from "../../hooks/useVolume";
 
 type AddProductButtonProps = {
   categories: Category[] | undefined;
@@ -59,6 +55,7 @@ type AddProductButtonProps = {
   missingAddPropNoti: () => void;
   addSuccessNoti: () => void;
   addFailNoti: (status: number, statusText: string) => void;
+  volumes: Volume[] | undefined;
 };
 
 type UpdateProductModalProps = {
@@ -76,6 +73,7 @@ type UpdateProductModalProps = {
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<string>>
   ) => void;
+  allVolumes: Volume[] | undefined;
 };
 
 function AddProductButton(props: AddProductButtonProps) {
@@ -87,17 +85,19 @@ function AddProductButton(props: AddProductButtonProps) {
     missingAddPropNoti,
     addSuccessNoti,
     addFailNoti,
+    volumes,
   } = props;
   const [nextProductName, setNextProductName] = useState("");
   const [nextImage, setNextImage] = useState<string>("");
   const [nextProductDescription, setNextProductDescription] = useState("");
-  const [nextVolumes, setNextVolumes] = useState<Volume[]>([
+  const [nextVolumes, setNextVolumes] = useState<ProductVolume[]>([
     { volume: "", price: 0 },
   ]);
   const [nextCategory, setNextCategory] = useState(
     categories && categories[0] ? categories[0].id : ""
   );
   const [nextActiveProduct, setNextActiveProduct] = useState(false);
+  const [nextCanColorPick, setNextCanColorPick] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const clearAddInput = () => {
     setNextProductName("");
@@ -111,8 +111,6 @@ function AddProductButton(props: AddProductButtonProps) {
     let isFullfilled = true;
     nextVolumes.forEach((volume) => {
       if (+volume.price === 0 || !volume.volume) {
-        console.info(volume.price);
-        console.info(volume.volume);
         isFullfilled = false;
       }
     });
@@ -138,6 +136,7 @@ function AddProductButton(props: AddProductButtonProps) {
       image: nextImage,
       volume: nextVolumes,
       activeProduct: nextActiveProduct,
+      canColorPick: nextCanColorPick,
     });
 
     const createResponse = await authFetch(
@@ -209,7 +208,7 @@ function AddProductButton(props: AddProductButtonProps) {
                     }}
                     style={{ flexGrow: 1 }}
                   >
-                    {VOLUME_DUMMY.map((volumn) => (
+                    {volumes?.map((volumn) => (
                       <Select.Option
                         key={volumn.id}
                         value={volumn.id}
@@ -332,6 +331,16 @@ function AddProductButton(props: AddProductButtonProps) {
             <Radio value={true}>Hoạt động</Radio>
             <Radio value={false}>Tạm dừng</Radio>
           </Radio.Group>
+
+          <Radio.Group
+            onChange={(e) => {
+              setNextCanColorPick(e.target.value);
+            }}
+            value={nextCanColorPick}
+          >
+            <Radio value={true}>Đa màu</Radio>
+            <Radio value={false}>Đơn màu</Radio>
+          </Radio.Group>
         </div>
       </Modal>
     </>
@@ -346,20 +355,28 @@ function UpdateProductModal(props: UpdateProductModalProps) {
     authFetch,
     accessToken,
     refreshProducts,
-    handleSetNumberInput,
     categories,
+    allVolumes,
   } = props;
 
   const [productName, setProductName] = useState<string>("");
   const [image, setImage] = useState<string | undefined>("");
-  const [price, setPrice] = useState<string>("");
+  const [volumes, setVolumes] = useState<ProductVolume[]>([
+    { volume: "", price: 0 },
+  ]);
   const [description, setDescription] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [activeProduct, setActiveProduct] = useState(false);
 
   useEffect(() => {
     setProductName(currentEditing.nameProduct);
-    setPrice(currentEditing.price.toString());
+    setVolumes(
+      currentEditing.volumes
+        ? currentEditing.volumes.map((it) => {
+            return { volume: it.volume, price: it.price };
+          })
+        : [{ volume: "", price: 0 }]
+    );
     setDescription(currentEditing.description);
     setCategory(currentEditing.categoryId);
     setActiveProduct(currentEditing.activeProduct);
@@ -369,7 +386,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
   const handleUpdateProduct = async () => {
     const updateData = {
       categoryId: category,
-      price: +price,
+      volumes: volumes,
       nameProduct: productName,
       description: description,
       activeProduct: activeProduct,
@@ -421,27 +438,82 @@ function UpdateProductModal(props: UpdateProductModalProps) {
             }}
             name="product-name"
           />
-          <label htmlFor="price">Giá niêm yết: </label>
-          <Input
-            name="price"
-            value={price}
-            onChange={(e) => {
-              handleSetNumberInput(e, setPrice);
-            }}
-            placeholder={currentEditing.price.toString()}
-            maxLength={16}
-          />
-          <label htmlFor="product-name">Ảnh sản phẩm: </label>
-          <Input
-            value={image}
-            type="text"
-            placeholder={currentEditing.image}
-            onChange={(e) => {
-              setImage(e.target.value);
-            }}
-            name="product-name"
-          />
-          <label htmlFor="description">Chi tiết sản phẩm: </label>
+          {volumes.length !== 0 &&
+            volumes.map((volume, index) => (
+              <div key={index}>
+                <label htmlFor="volume">Khối lượng {index + 1}: </label>
+                <div style={{ width: "100%", display: "flex" }}>
+                  <Select
+                    onChange={(value) => {
+                      setVolumes((preVolumes) => {
+                        const updatedVolumes = [...preVolumes];
+                        updatedVolumes[index] = {
+                          ...updatedVolumes[index],
+                          volume: value,
+                        };
+                        return updatedVolumes;
+                      });
+                    }}
+                    style={{ flexGrow: 1 }}
+                    defaultValue={volume.volume}
+                  >
+                    {allVolumes?.map((volumn) => (
+                      <Select.Option key={volumn.id} value={volumn.id}>
+                        {volumn.volume}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  {volumes.length > 1 && (
+                    <Button
+                      onClick={() => {
+                        setVolumes((prevVolumes) => {
+                          const updatedVolumes = [
+                            ...prevVolumes.slice(0, index),
+                            ...prevVolumes.slice(index + 1),
+                          ];
+                          return updatedVolumes;
+                        });
+                      }}
+                      type="primary"
+                      danger
+                      icon={<DeleteOutlined />}
+                      style={{ marginTop: "1rem" }}
+                    />
+                  )}
+                </div>
+                <label htmlFor="price">Giá {index + 1}: </label>
+                <Input
+                  value={volume.price}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    if (/^\d*\.?\d*$/.test(newValue)) {
+                      setVolumes((prevVolumes) => {
+                        const updatedVolumes = [...prevVolumes];
+                        updatedVolumes[index] = {
+                          ...updatedVolumes[index],
+                          price: newValue === "" ? 0 : +newValue, // Convert to number if not empty
+                        };
+                        return updatedVolumes;
+                      });
+                    }
+                  }}
+                />
+              </div>
+            ))}
+          {volumes.length > 0 && (
+            <Button
+              onClick={() => {
+                setVolumes((prevVolumes) => [
+                  ...prevVolumes,
+                  { volume: "", price: 0 },
+                ]);
+              }}
+              type="primary"
+              icon={<PlusSquareOutlined />}
+              style={{ marginTop: "1rem" }}
+            />
+          )}
+          <label htmlFor="product-description">Chi tiết sản phẩm: </label>
           <TextArea
             name="description"
             value={description}
@@ -460,13 +532,11 @@ function UpdateProductModal(props: UpdateProductModalProps) {
               setCategory(e.target.value);
             }}
           >
-            {categories?.map((category: Category) => {
-              return (
-                <option key={category.id} id={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              );
-            })}
+            {categories?.map((category: Category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
           </select>
           <Radio.Group
             onChange={(e) => {
@@ -488,11 +558,13 @@ function ManageProduct() {
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const { data: categoryResponse } = useCategories(1);
+  const { data: responseVolumes } = useVolume(1);
   const { data, isLoading, mutate: refreshProducts } = useProducts(1);
   const products = useMemo(
     () => data?.data.map((it) => ({ key: it.id, ...it })),
     [data?.data]
   );
+  const volumes = responseVolumes?.data;
   const categories = categoryResponse?.data;
 
   const missingAddPropsNotification = () => {
@@ -632,6 +704,7 @@ function ManageProduct() {
     <div className="ManageProduct">
       {contextHolder}
       <AddProductButton
+        volumes={volumes}
         addSuccessNoti={addSuccessNotification}
         addFailNoti={addFailNotification}
         missingAddPropNoti={missingAddPropsNotification}
@@ -643,6 +716,7 @@ function ManageProduct() {
       />
       <Table columns={columns} dataSource={products} />
       <UpdateProductModal
+        allVolumes={volumes}
         categories={categories}
         handleSetNumberInput={handleSetNumberInput}
         refreshProducts={refreshProducts}

@@ -5,12 +5,17 @@ export type Product = {
   description: string
   activeProduct: boolean
   image: string | undefined
-  volumes: Volume[]
+  volumes: ProductVolume[]
 }
 
 export type Volume = {
+  id: string
   volume: string
+}
+
+export type ProductVolume = {
   price: number
+  volume: string
 }
 
 export type Color = any
