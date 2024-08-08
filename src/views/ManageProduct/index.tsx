@@ -10,14 +10,17 @@ import {
   Radio,
   Popconfirm,
   Spin,
+  Select,
 } from "antd";
 import type { ColumnType } from "antd/es/table";
 import {
   SmileOutlined,
   FrownOutlined,
   QuestionCircleOutlined,
+  PlusSquareOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
-import { Category, PagedResponse, Product } from "../../type";
+import { Category, PagedResponse, Product, Volume } from "../../type";
 import { NumberToVND } from "../../helper";
 import {
   useCategories,
@@ -29,6 +32,17 @@ import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { API_ROOT } from "../../constant";
 import { KeyedMutator } from "swr";
 import TextArea from "antd/es/input/TextArea";
+
+const VOLUME_DUMMY = [
+  {
+    id: "volume 1",
+    volume: "volume 1",
+  },
+  {
+    id: "volume 2",
+    volume: "volume 2",
+  },
+];
 
 type AddProductButtonProps = {
   categories: Category[] | undefined;
@@ -67,7 +81,6 @@ type UpdateProductModalProps = {
 function AddProductButton(props: AddProductButtonProps) {
   const {
     categories,
-    handleSetNumberInput,
     refreshProducts,
     accessToken,
     authFetch,
@@ -78,7 +91,9 @@ function AddProductButton(props: AddProductButtonProps) {
   const [nextProductName, setNextProductName] = useState("");
   const [nextImage, setNextImage] = useState<string>("");
   const [nextProductDescription, setNextProductDescription] = useState("");
-  const [nextPrice, setNextPrice] = useState("");
+  const [nextVolumes, setNextVolumes] = useState<Volume[]>([
+    { volume: "", price: 0 },
+  ]);
   const [nextCategory, setNextCategory] = useState(
     categories && categories[0] ? categories[0].id : ""
   );
@@ -87,16 +102,29 @@ function AddProductButton(props: AddProductButtonProps) {
   const clearAddInput = () => {
     setNextProductName("");
     setNextImage("");
-    setNextPrice("");
+    setNextVolumes([{ volume: "", price: 0 }]);
     setNextProductDescription("");
     setNextCategory(categories ? categories[0].id : "");
+  };
+
+  const isNextVolumesFullfilled = () => {
+    let isFullfilled = true;
+    nextVolumes.forEach((volume) => {
+      if (+volume.price === 0 || !volume.volume) {
+        console.info(volume.price);
+        console.info(volume.volume);
+        isFullfilled = false;
+      }
+    });
+
+    return isFullfilled;
   };
 
   const handleAddOk = async () => {
     if (
       !nextProductName ||
       !nextProductDescription ||
-      !nextPrice ||
+      !isNextVolumesFullfilled() ||
       !nextCategory ||
       !nextImage
     ) {
@@ -104,11 +132,11 @@ function AddProductButton(props: AddProductButtonProps) {
       return;
     }
     const productToAdd = JSON.stringify({
-      price: +nextPrice,
+      volumes: nextVolumes,
       nameProduct: nextProductName,
       description: nextProductDescription,
       image: nextImage,
-      volume: null,
+      volume: nextVolumes,
       activeProduct: nextActiveProduct,
     });
 
@@ -163,17 +191,98 @@ function AddProductButton(props: AddProductButtonProps) {
             }}
             name="product-name"
           />
-          <label htmlFor="price">Giá niêm yết: </label>
-          <Input
-            name="price"
-            value={nextPrice}
-            onChange={(e) => {
-              handleSetNumberInput(e, setNextPrice);
-            }}
-            placeholder={"Thêm giá"}
-            maxLength={16}
-          />
-          <label htmlFor="product-name">Ảnh sản phẩm: </label>
+          {nextVolumes.length !== 0 &&
+            nextVolumes.map((it, index) => (
+              <>
+                <label htmlFor="price">Khối lượng {index + 1}: </label>
+                <div style={{ width: "100%", display: "flex" }}>
+                  <Select
+                    onChange={(value) => {
+                      setNextVolumes((preVolumes) => {
+                        const updatedVolumes = [...preVolumes];
+                        updatedVolumes[index] = {
+                          ...updatedVolumes[index],
+                          volume: value,
+                        };
+                        return updatedVolumes;
+                      });
+                    }}
+                    style={{ flexGrow: 1 }}
+                  >
+                    {VOLUME_DUMMY.map((volumn) => (
+                      <Select.Option
+                        key={volumn.id}
+                        value={volumn.id}
+                        selected={volumn.id === it.volume}
+                      >
+                        {volumn.volume}
+                      </Select.Option>
+                    ))}
+                  </Select>
+
+                  {nextVolumes.length !== 1 && (
+                    <Button
+                      onClick={() => {
+                        setNextVolumes((preVolumes) => {
+                          const updatedVolumes = [...preVolumes];
+                          return updatedVolumes
+                            .slice(0, index)
+                            .concat(updatedVolumes.slice(index + 1));
+                        });
+                      }}
+                      type="primary"
+                      danger
+                      icon={<DeleteOutlined />}
+                      style={{ marginLeft: "1rem" }}
+                    />
+                  )}
+                </div>
+
+                <label htmlFor="price">Giá {index + 1}: </label>
+                <Input
+                  value={it.price}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    if (/^\d*\.?\d*$/.test(newValue)) {
+                      setNextVolumes((preVolumes) => {
+                        const updatedVolumes = [...preVolumes];
+                        updatedVolumes[index] = {
+                          ...updatedVolumes[index],
+                          price: newValue === "" ? 0 : +newValue, // Convert to number if not empty
+                        };
+                        return updatedVolumes;
+                      });
+                    }
+                  }}
+                />
+                {index === nextVolumes.length - 1 && (
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginTop: "1rem",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    <Button
+                      onClick={() => {
+                        setNextVolumes((preVolumes) => {
+                          const updatedVolumes = [
+                            ...preVolumes,
+                            { volume: "", price: 0 },
+                          ];
+                          return updatedVolumes;
+                        });
+                      }}
+                      type="primary"
+                      icon={<PlusSquareOutlined />}
+                    />
+                  </div>
+                )}
+              </>
+            ))}
+          <label htmlFor="product-name">Link ảnh sản phẩm: </label>
           <Input
             value={nextImage}
             type="text"

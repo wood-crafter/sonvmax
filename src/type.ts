@@ -2,10 +2,15 @@ export type Product = {
   id: string
   categoryId: string
   nameProduct: string
-  price: number
   description: string
   activeProduct: boolean
   image: string | undefined
+  volumes: Volume[]
+}
+
+export type Volume = {
+  volume: string
+  price: number
 }
 
 export type Color = any
