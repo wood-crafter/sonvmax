@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import { API_ROOT, DISCOUNT_AMOUNT } from "../../constant";
 import { requestOptions, useProductsById } from "../../hooks/useProduct";
-import { Button, InputNumber, notification } from "antd";
+import { Button, InputNumber, notification, Select } from "antd";
 import "./index.css";
 import { classifyColor, NumberToVND } from "../../helper";
 import { useLocation } from "react-router-dom";
@@ -22,6 +22,7 @@ function ProductDetail() {
   const authFetch = useAuthenticatedFetch();
   const currentProductId = useLocation().pathname.split("/")[2];
   const { data: product } = useProductsById(currentProductId);
+  const [selectingVolume, setSelectingVolume] = useState("");
   const [currentColor, setCurrentColor] = useState<Color | null>({
     r: 255,
     g: 255,
@@ -79,6 +80,7 @@ function ProductDetail() {
 
     const cartBody: any = {
       quantity: numOfProduct,
+      volumeId: selectingVolume ? selectingVolume : product?.volumes[0].id,
     };
 
     if (product?.categoryId !== noColorId) {
@@ -151,6 +153,21 @@ function ProductDetail() {
         </div>
         <div className="detail">
           <h3 className="full-width">{product?.nameProduct}</h3>
+          <div style={{ width: "100%", display: "flex" }}>
+            <Select
+              style={{ width: "8rem" }}
+              onChange={(value) => {
+                setSelectingVolume(value);
+              }}
+              value={product?.volumes[0]?.id}
+            >
+              {product?.volumes?.map((it) => (
+                <Select.Option key={it.id} value={it.id}>
+                  {it.volume}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
           <p className="full-width">
             {level && (
               <div
@@ -163,7 +180,10 @@ function ProductDetail() {
               >
                 {NumberToVND.format(
                   numOfProduct *
-                    (product?.volumes[0]?.price ?? 0) *
+                    (product?.volumes.find((it) => it.id === selectingVolume)
+                      ?.price ??
+                      product?.volumes[0]?.price ??
+                      0) *
                     ratioPriceColor
                 )}
               </div>
@@ -176,7 +196,10 @@ function ProductDetail() {
             >
               {level
                 ? NumberToVND.format(
-                    ((product?.volumes[0]?.price ?? 0) *
+                    ((product?.volumes.find((it) => it.id === selectingVolume)
+                      ?.price ??
+                      product?.volumes[0]?.price ??
+                      0) *
                       ratioPriceColor *
                       numOfProduct *
                       (100 - discount)) /
@@ -185,7 +208,10 @@ function ProductDetail() {
                 : NumberToVND.format(
                     numOfProduct *
                       ratioPriceColor *
-                      (product?.volumes[0]?.price ?? 0)
+                      (product?.volumes.find((it) => it.id === selectingVolume)
+                        ?.price ??
+                        product?.volumes[0]?.price ??
+                        0)
                   )}
             </div>
           </p>

@@ -15,6 +15,7 @@ export type Volume = {
 }
 
 export type ProductVolume = {
+  volume: string
   price: number
   id: string
 }
