@@ -413,7 +413,10 @@ function UpdateProductModal(props: UpdateProductModalProps) {
 
   const handleUpdateProduct = async () => {
     for (let i = 0; i < volumes.length; i++) {
-      if (volumes[i]?.price || volumes[i]?.price <= 0) {
+      if (
+        (volumes[i].id && !volumes[i]?.price) ||
+        (volumes[i].id && volumes[i]?.price <= 0)
+      ) {
         missingUpdatePriceNoti();
         return;
       }
