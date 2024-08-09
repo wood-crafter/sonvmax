@@ -145,6 +145,7 @@ function ManageAgent() {
 
     if (updateResponse.ok) {
       updateSuccessNotification();
+      refreshAgents();
     } else {
       updateFailNotification(updateResponse.status, updateResponse.statusText);
     }
@@ -154,6 +155,7 @@ function ManageAgent() {
 
   const showModal = (record: Agent) => {
     setCurrentEditing(record);
+    reAddingUpdateProps(record);
     setIsModalOpen(true);
   };
 
@@ -333,7 +335,13 @@ function ManageAgent() {
       key: "action",
       render: (_, record: Agent) => (
         <Space size="middle">
-          <Button onClick={() => showModal(record)}>Sửa</Button>
+          <Button
+            onClick={() => {
+              showModal(record);
+            }}
+          >
+            Sửa
+          </Button>
           <Popconfirm
             title="Xoá đại lý"
             description="Bạn chắc chắn muốn xoá đại lý này?"
@@ -348,6 +356,14 @@ function ManageAgent() {
       ),
     },
   ];
+
+  const reAddingUpdateProps = (record: Agent) => {
+    setDebitLimit(record?.debitLimit + "");
+    setAccountDebit(record?.accountDebit + "");
+    setAccountHave(record?.accountHave + "");
+    setRank(record?.rank + "");
+    setSale(record?.staffId ?? "");
+  };
 
   return (
     <div className="ManageAgent">
