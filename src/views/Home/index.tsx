@@ -50,7 +50,7 @@ function TopProductGrid({ products }: TopProductGridProps) {
               <div className="overlay">
                 <div className="product-card-info">
                   <div>{item.nameProduct}</div>
-                  <div>Giá từ: {NumberToVND.format(item.price)}</div>
+                  <div>Giá từ: {NumberToVND.format(item.volumes[0].price)}</div>
                 </div>
               </div>
             </Link>
