@@ -32,8 +32,6 @@ type UpdateProps = {
   id: string;
   status?: number;
   description?: string;
-  confirmBy?: string;
-  voucherId?: string;
 };
 
 type UpdateOrderProps = {
@@ -60,28 +58,30 @@ function ManageOrder() {
   const [currentOrder, setCurrentOrder] = useState<any>(null);
 
   const updateOrder = async (UpdateProps: UpdateProps) => {
-    const { id, status, description, confirmBy, voucherId } = UpdateProps;
+    const { id, status, description } = UpdateProps;
     const updateOrderProps: UpdateOrderProps = {};
+
+    let updateResponse;
 
     if (typeof status === "number") {
       updateOrderProps.status = status;
+      updateResponse = await authFetch(
+        `${API_ROOT}/order/update-order-status/${id}`,
+        {
+          ...requestOptions,
+          body: JSON.stringify(updateOrderProps),
+          method: "PUT",
+          headers: {
+            ...requestOptions.headers,
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
     }
 
     if (description) {
       updateOrderProps.description = description;
-    }
-
-    if (confirmBy) {
-      updateOrderProps.confirmBy = confirmBy;
-    }
-
-    if (voucherId) {
-      updateOrderProps.voucherId = voucherId;
-    }
-
-    const updateResponse = await authFetch(
-      `${API_ROOT}/order/update-order/${id}`,
-      {
+      updateResponse = await authFetch(`${API_ROOT}/order/update-order/${id}`, {
         ...requestOptions,
         body: JSON.stringify(updateOrderProps),
         method: "PUT",
@@ -89,10 +89,10 @@ function ManageOrder() {
           ...requestOptions.headers,
           Authorization: `Bearer ${accessToken}`,
         },
-      }
-    );
+      });
+    }
 
-    if (updateResponse.ok) {
+    if (updateResponse?.ok) {
       refreshOrder();
       updateSuccessNotification();
     } else {
@@ -283,17 +283,7 @@ function ManageOrder() {
       dataIndex: "confirmBy",
       key: "confirmBy",
       render: (_, record: Order) => {
-        const isEditing = editingRow === record.id;
-        return isEditing ? (
-          <Space size="middle">
-            <Input
-              value={confirmBy}
-              onChange={(e) => setConfirmBy(e.target.value)}
-            />
-          </Space>
-        ) : (
-          <div>{record.confirmBy}</div>
-        );
+        return <div>{record.confirmBy}</div>;
       },
       sorter: (a, b) => {
         if (!a.confirmBy) return -1;
@@ -350,7 +340,6 @@ function ManageOrder() {
                   await updateOrder({
                     id: record.id,
                     description,
-                    confirmBy,
                   });
                   setEditingRow(null);
                   refreshOrder();
