@@ -7,13 +7,40 @@ import "./index.css";
 import { classifyColor, NumberToVND } from "../../helper";
 import { useLocation } from "react-router-dom";
 import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
-import { Color } from "../../type";
+import { Color, Product } from "../../type";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { ColorResult, SketchPicker } from "react-color";
 import ColorTable from "../../components/ColorTable";
 
 const noColorId = "clzlnun8d000d2urtsjgce2bi";
+
+type VolumeSelectProps = {
+  setSelectingVolume: React.Dispatch<React.SetStateAction<string>>;
+  product: Product | undefined;
+};
+
+function VolumeSelect(props: VolumeSelectProps) {
+  const { setSelectingVolume, product } = props;
+
+  if (!product) return <></>;
+
+  return (
+    <Select
+      style={{ width: "8rem" }}
+      onChange={(value) => {
+        setSelectingVolume(value);
+      }}
+      defaultValue={product?.volumes[0]?.id}
+    >
+      {product?.volumes?.map((it) => (
+        <Select.Option key={it.id} value={it.id}>
+          {it.volume}
+        </Select.Option>
+      ))}
+    </Select>
+  );
+}
 
 function ProductDetail() {
   const level = useUserStore((state) => state.level);
@@ -154,19 +181,10 @@ function ProductDetail() {
         <div className="detail">
           <h3 className="full-width">{product?.nameProduct}</h3>
           <div style={{ width: "100%", display: "flex" }}>
-            <Select
-              style={{ width: "8rem" }}
-              onChange={(value) => {
-                setSelectingVolume(value);
-              }}
-              value={product?.volumes[0]?.id}
-            >
-              {product?.volumes?.map((it) => (
-                <Select.Option key={it.id} value={it.id}>
-                  {it.volume}
-                </Select.Option>
-              ))}
-            </Select>
+            <VolumeSelect
+              setSelectingVolume={setSelectingVolume}
+              product={product}
+            />
           </div>
           <p className="full-width">
             {level && (
