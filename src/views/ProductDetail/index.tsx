@@ -13,7 +13,7 @@ import { useUserStore } from "../../store/user";
 import { ColorResult, SketchPicker } from "react-color";
 import ColorTable from "../../components/ColorTable";
 
-const noColorId = "clzdwqi900009skr5yrl5yvcq";
+const noColorId = "clzlnun8d000d2urtsjgce2bi";
 
 function ProductDetail() {
   const level = useUserStore((state) => state.level);
