@@ -114,7 +114,7 @@ function AddProductButton(props: AddProductButtonProps) {
   const [nextImage, setNextImage] = useState<string>("");
   const [nextProductDescription, setNextProductDescription] = useState("");
   const [nextVolumes, setNextVolumes] = useState<ProductVolume[]>([
-    { id: "", price: 0 },
+    { id: "", price: 0, volume: "" },
   ]);
   const [nextCategory, setNextCategory] = useState(
     categories && categories[0] ? categories[0].id : ""
@@ -125,7 +125,7 @@ function AddProductButton(props: AddProductButtonProps) {
   const clearAddInput = () => {
     setNextProductName("");
     setNextImage("");
-    setNextVolumes([{ id: "", price: 0 }]);
+    setNextVolumes([{ id: "", price: 0, volume: "" }]);
     setNextProductDescription("");
     setNextCategory(categories ? categories[0].id : "");
   };
@@ -292,7 +292,7 @@ function AddProductButton(props: AddProductButtonProps) {
                         setNextVolumes((preVolumes) => {
                           const updatedVolumes = [
                             ...preVolumes,
-                            { id: "", price: 0 },
+                            { id: "", price: 0, volume: "" },
                           ];
                           return updatedVolumes;
                         });
@@ -388,7 +388,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
   const [productName, setProductName] = useState<string>("");
   const [image, setImage] = useState<string | undefined>("");
   const [volumes, setVolumes] = useState<ProductVolume[]>([
-    { id: "", price: 0 },
+    { id: "", price: 0, volume: "" },
   ]);
   const [description, setDescription] = useState<string>("");
   const [category, setCategory] = useState<string>("");
@@ -400,9 +400,9 @@ function UpdateProductModal(props: UpdateProductModalProps) {
     setVolumes(
       currentEditing.volumes
         ? currentEditing.volumes.map((it) => {
-            return { id: it.id, price: it?.price };
+            return { id: it.id, price: it?.price, volume: it.volume };
           })
-        : [{ id: "", price: 0 }]
+        : [{ id: "", price: 0, volume: "" }]
     );
     setDescription(currentEditing.description);
     setCategory(currentEditing.categoryId);
@@ -557,7 +557,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
                 onClick={() => {
                   setVolumes((prevVolumes) => [
                     ...prevVolumes,
-                    { id: "", price: 0 },
+                    { id: "", price: 0, volume: "" },
                   ]);
                 }}
                 type="primary"
