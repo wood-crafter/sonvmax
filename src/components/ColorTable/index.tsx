@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Modal, Table, UploadProps } from "antd";
+import { Modal, Table } from "antd";
 import "./index.css";
-import Upload, { RcFile } from "antd/es/upload";
-import { useState } from "react";
-import { UploadOutlined } from "@ant-design/icons";
-import readXlsxFile from "read-excel-file";
 import { ColumnType } from "antd/es/table";
+import { useColors } from "../../hooks/useColor";
 
 type ColorTableProps = {
   setColor?: React.Dispatch<any>;
@@ -14,51 +11,10 @@ type ColorTableProps = {
   setCurrentColor: React.Dispatch<any>;
 };
 
-const schema = {
-  price: {
-    prop: "priceColor",
-    type: Number,
-  },
-  type: {
-    prop: "colorType",
-    type: String,
-  },
-  name: {
-    prop: "colorName",
-    type: String,
-  },
-  R: {
-    prop: "r",
-    type: Number,
-  },
-  G: {
-    prop: "g",
-    type: Number,
-  },
-  B: {
-    prop: "b",
-    type: Number,
-  },
-};
-
 function ColorTable(props: ColorTableProps) {
   const { isOpen, setIsOpen, setCurrentColor } = props;
-
-  const [files, setFiles] = useState<RcFile[]>([]);
-  const [tableData, setTableData] = useState<any>([]);
-  const uploadProps: UploadProps = {
-    name: "file",
-    accept: "xlsx",
-    maxCount: 1,
-    beforeUpload(file) {
-      setFiles([file]);
-      readXlsxFile(file, { schema }).then(async (readInfo) => {
-        const { rows } = readInfo;
-        setTableData(rows);
-      });
-    },
-    fileList: files,
-  };
+  const { data } = useColors();
+  const colors = data?.data;
 
   const handleAddOk = () => {
     setIsOpen(false);
@@ -119,12 +75,9 @@ function ColorTable(props: ColorTableProps) {
       onCancel={handleAddCancel}
       width={"100%"}
     >
-      <Upload {...uploadProps}>
-        <Button icon={<UploadOutlined />}>Thêm file màu</Button>
-      </Upload>
       <Table
         columns={columns}
-        dataSource={tableData}
+        dataSource={colors}
         onRow={(record) => ({
           onDoubleClick: () => {
             console.info(record);

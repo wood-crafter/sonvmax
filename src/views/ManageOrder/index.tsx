@@ -54,7 +54,6 @@ function ManageOrder() {
 
   const [editingRow, setEditingRow] = useState<string | null>(null);
   const [description, setDescription] = useState<string>("");
-  const [confirmBy, setConfirmBy] = useState<string>("");
   const [currentOrder, setCurrentOrder] = useState<any>(null);
 
   const updateOrder = async (UpdateProps: UpdateProps) => {
@@ -357,7 +356,6 @@ function ManageOrder() {
                 onClick={() => {
                   setEditingRow(record.id);
                   setDescription(record.description || "");
-                  setConfirmBy(record.confirmBy || "");
                 }}
               >
                 Sửa

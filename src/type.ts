@@ -146,13 +146,6 @@ export type ChildColor = {
   priceColor: number
 }
 
-export type ParentColor = {
-  name: string
-  rgb: parentRGB
-  childs: ChildColor[]
-  type: string
-}
-
 export type Cart = {
   id: string;
   orderId: string | null;
