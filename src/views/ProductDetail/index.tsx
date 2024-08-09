@@ -184,7 +184,7 @@ function ProductDetail() {
                       ?.price ??
                       product?.volumes[0]?.price ??
                       0) *
-                    ratioPriceColor
+                    (product?.categoryId === noColorId ? 1 : ratioPriceColor)
                 )}
               </div>
             )}
@@ -200,14 +200,18 @@ function ProductDetail() {
                       ?.price ??
                       product?.volumes[0]?.price ??
                       0) *
-                      ratioPriceColor *
+                      (product?.categoryId === noColorId
+                        ? 1
+                        : ratioPriceColor) *
                       numOfProduct *
                       (100 - discount)) /
                       100
                   )
                 : NumberToVND.format(
                     numOfProduct *
-                      ratioPriceColor *
+                      (product?.categoryId === noColorId
+                        ? 1
+                        : ratioPriceColor) *
                       (product?.volumes.find((it) => it.id === selectingVolume)
                         ?.price ??
                         product?.volumes[0]?.price ??
