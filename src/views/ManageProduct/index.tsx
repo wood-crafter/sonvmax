@@ -73,6 +73,8 @@ type UpdateProductModalProps = {
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<string>>
   ) => void;
+  updateSuccessNoti: () => void;
+  updateFailNoti: (status: number, statusText: string) => void;
   allVolumes: Volume[] | undefined;
 };
 
@@ -377,6 +379,8 @@ function UpdateProductModal(props: UpdateProductModalProps) {
     refreshProducts,
     categories,
     allVolumes,
+    updateSuccessNoti,
+    updateFailNoti,
   } = props;
 
   const [productName, setProductName] = useState<string>("");
@@ -418,7 +422,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
     };
     const updateBody = JSON.stringify(updateData);
 
-    await authFetch(
+    const updateResponse = await authFetch(
       `${API_ROOT}/product/update-product/${currentEditing?.id}`,
       {
         ...requestOptions,
@@ -430,6 +434,12 @@ function UpdateProductModal(props: UpdateProductModalProps) {
         },
       }
     );
+
+    if (updateResponse.ok) {
+      updateSuccessNoti();
+    } else {
+      updateFailNoti(updateResponse.status, updateResponse.statusText);
+    }
   };
 
   const handleOk = async () => {
@@ -746,6 +756,20 @@ function ManageProduct() {
       icon: <FrownOutlined style={{ color: "#108ee9" }} />,
     });
   };
+  const updateSuccessNotification = () => {
+    api.open({
+      message: "Cập nhật thành công",
+      description: "",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+  const updateFailNotification = (status: number, statusText: string) => {
+    api.open({
+      message: "Cập nhật thất bại",
+      description: `Mã lỗi: ${status} ${statusText}`,
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
   const [currentEditing, setCurrentEditing] = useState<Product>({
     id: "",
     nameProduct: "",
@@ -810,6 +834,8 @@ function ManageProduct() {
         categories={categories}
       />
       <UpdateProductModal
+        updateSuccessNoti={updateSuccessNotification}
+        updateFailNoti={updateFailNotification}
         allVolumes={volumes}
         categories={categories}
         handleSetNumberInput={handleSetNumberInput}
