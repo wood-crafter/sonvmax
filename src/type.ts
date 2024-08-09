@@ -124,12 +124,6 @@ export type RGB = {
   b: number
 }
 
-type parentRGB = [
-  r: number,
-  g: number,
-  b: number,
-]
-
 export type LoginBody = {
   username: string
   password: string
