@@ -76,6 +76,26 @@ type UpdateProductModalProps = {
   allVolumes: Volume[] | undefined;
 };
 
+type ProductTableProps = {
+  products: Product[] | undefined;
+  categories: Category[] | undefined;
+  volumes: Volume[] | undefined;
+  showModal: (record: Product) => void;
+  handleDeleteRecord: (record: Product) => Promise<void>;
+};
+
+const getDefaultSelectedVolumePrices = (products: Product[] | undefined) => {
+  const defaultSelectedVolumePrices: {
+    [key: string]: number;
+  } = {};
+
+  products?.forEach((product) => {
+    defaultSelectedVolumePrices[product.id] = product.volumes[0].price;
+  });
+
+  return defaultSelectedVolumePrices;
+};
+
 function AddProductButton(props: AddProductButtonProps) {
   const {
     categories,
@@ -573,78 +593,18 @@ function UpdateProductModal(props: UpdateProductModalProps) {
   );
 }
 
-function ManageProduct() {
-  const accessToken = useUserStore((state) => state.accessToken);
-  const authFetch = useAuthenticatedFetch();
-  const [api, contextHolder] = notification.useNotification();
-  const { data: categoryResponse } = useCategories(1);
-  const { data: responseVolumes } = useVolume(1);
-  const { data, isLoading, mutate: refreshProducts } = useProducts(1);
-  const products = useMemo(
-    () => data?.data.map((it) => ({ key: it.id, ...it })),
-    [data?.data]
-  );
-  const volumes = responseVolumes?.data;
-  const categories = categoryResponse?.data;
+function ProductTable(props: ProductTableProps) {
+  const { products, categories, volumes, showModal, handleDeleteRecord } =
+    props;
+  const [selectedVolumePrices, setSelectedVolumePrices] = useState<{
+    [key: string]: number;
+  }>(getDefaultSelectedVolumePrices(products));
 
-  const missingAddPropsNotification = () => {
-    api.open({
-      message: "Tạo thất bại",
-      description: "Vui lòng điền đủ thông tin",
-      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
-    });
-  };
-  const addSuccessNotification = () => {
-    api.open({
-      message: "Tạo thành công",
-      description: "",
-      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
-    });
-  };
-  const addFailNotification = (status: number, statusText: string) => {
-    api.open({
-      message: "Tạo thất bại",
-      description: `Mã lỗi: ${status} ${statusText}`,
-      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
-    });
-  };
-  const [currentEditing, setCurrentEditing] = useState<Product>({
-    id: "",
-    nameProduct: "",
-    price: 0,
-    description: "",
-    categoryId: "",
-    activeProduct: false,
-    image: "",
-  });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const showModal = (record: Product) => {
-    setCurrentEditing(record);
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteRecord = async (record: Product) => {
-    await authFetch(`${API_ROOT}/product/remove-product/${record.id}`, {
-      ...requestOptions,
-      method: "DELETE",
-      headers: {
-        ...requestOptions.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    refreshProducts();
-  };
-
-  const handleSetNumberInput = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setter: React.Dispatch<React.SetStateAction<string>>
-  ) => {
-    const { value: inputValue } = e.target;
-    const reg = /^-?\d*(\.\d*)?$/;
-    if (reg.test(inputValue) || inputValue === "" || inputValue === "-") {
-      setter(inputValue);
-    }
+  const handleVolumeChange = (productId: string, price: number) => {
+    setSelectedVolumePrices((prev) => ({
+      ...prev,
+      [productId]: price,
+    }));
   };
 
   const columns: ColumnType<Product>[] = [
@@ -663,11 +623,42 @@ function ManageProduct() {
       ),
     },
     {
-      title: "Giá niêm yết",
-      dataIndex: "price",
-      key: "price",
-      sorter: (a, b) => +a.price - +b.price,
-      render: (price: number) => <div>{NumberToVND.format(price)}</div>,
+      title: "Giá theo khối lượng",
+      dataIndex: "volumes",
+      key: "volumes",
+      render: (_, record: Product) => {
+        return (
+          <div style={{ display: "flex" }}>
+            <Select
+              style={{ minWidth: "8rem" }}
+              defaultValue={record.volumes[0]?.id}
+              onChange={(value) =>
+                handleVolumeChange(
+                  record.id,
+                  record.volumes.find((it) => it.id === value)?.price ?? 0
+                )
+              }
+            >
+              {record.volumes?.map((it) => (
+                <Select.Option key={it.id} value={it.id}>
+                  {volumes?.find((volume) => volume.id === it.id)?.volume}
+                </Select.Option>
+              ))}
+            </Select>
+            {selectedVolumePrices[record.id] > 0 && (
+              <div
+                style={{
+                  marginLeft: "1rem",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {NumberToVND.format(selectedVolumePrices[record.id])}
+              </div>
+            )}
+          </div>
+        );
+      },
     },
     {
       title: "Chi tiết",
@@ -717,6 +708,83 @@ function ManageProduct() {
       ),
     },
   ];
+  return <Table columns={columns} dataSource={products} />;
+}
+
+function ManageProduct() {
+  const accessToken = useUserStore((state) => state.accessToken);
+  const authFetch = useAuthenticatedFetch();
+  const [api, contextHolder] = notification.useNotification();
+  const { data: categoryResponse } = useCategories(1);
+  const { data, isLoading, mutate: refreshProducts } = useProducts(1);
+  const products = useMemo(
+    () => data?.data.map((it) => ({ key: it.id, ...it })),
+    [data?.data]
+  );
+  const { data: responseVolumes } = useVolume(1);
+  const volumes = responseVolumes?.data;
+  const categories = categoryResponse?.data;
+
+  const missingAddPropsNotification = () => {
+    api.open({
+      message: "Tạo thất bại",
+      description: "Vui lòng điền đủ thông tin",
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+  const addSuccessNotification = () => {
+    api.open({
+      message: "Tạo thành công",
+      description: "",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+  const addFailNotification = (status: number, statusText: string) => {
+    api.open({
+      message: "Tạo thất bại",
+      description: `Mã lỗi: ${status} ${statusText}`,
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+  const [currentEditing, setCurrentEditing] = useState<Product>({
+    id: "",
+    nameProduct: "",
+    description: "",
+    categoryId: "",
+    activeProduct: false,
+    image: "",
+    volumes: [],
+    canColorPick: true,
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = (record: Product) => {
+    setCurrentEditing(record);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteRecord = async (record: Product) => {
+    await authFetch(`${API_ROOT}/product/remove-product/${record.id}`, {
+      ...requestOptions,
+      method: "DELETE",
+      headers: {
+        ...requestOptions.headers,
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    refreshProducts();
+  };
+
+  const handleSetNumberInput = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    const { value: inputValue } = e.target;
+    const reg = /^-?\d*(\.\d*)?$/;
+    if (reg.test(inputValue) || inputValue === "" || inputValue === "-") {
+      setter(inputValue);
+    }
+  };
 
   if (isLoading) return <Spin />;
 
@@ -734,7 +802,13 @@ function ManageProduct() {
         accessToken={accessToken}
         authFetch={authFetch}
       />
-      <Table columns={columns} dataSource={products} />
+      <ProductTable
+        volumes={volumes}
+        showModal={showModal}
+        products={products}
+        handleDeleteRecord={handleDeleteRecord}
+        categories={categories}
+      />
       <UpdateProductModal
         allVolumes={volumes}
         categories={categories}
