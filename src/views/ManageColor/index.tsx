@@ -16,27 +16,27 @@ import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import { RcFile } from "antd/es/upload";
 
 const schema = {
-  price: {
+  priceColor: {
     prop: "priceColor",
     type: Number,
   },
-  type: {
+  colorType: {
     prop: "colorType",
     type: String,
   },
-  name: {
+  colorName: {
     prop: "colorName",
     type: String,
   },
-  R: {
+  r: {
     prop: "r",
     type: Number,
   },
-  G: {
+  g: {
     prop: "g",
     type: Number,
   },
-  B: {
+  b: {
     prop: "b",
     type: Number,
   },
