@@ -75,6 +75,7 @@ type UpdateProductModalProps = {
   ) => void;
   updateSuccessNoti: () => void;
   updateFailNoti: (status: number, statusText: string) => void;
+  missingUpdatePriceNoti: () => void;
   allVolumes: Volume[] | undefined;
 };
 
@@ -92,7 +93,7 @@ const getDefaultSelectedVolumePrices = (products: Product[] | undefined) => {
   } = {};
 
   products?.forEach((product) => {
-    defaultSelectedVolumePrices[product.id] = product.volumes[0].price;
+    defaultSelectedVolumePrices[product.id] = product.volumes[0]?.price;
   });
 
   return defaultSelectedVolumePrices;
@@ -132,7 +133,7 @@ function AddProductButton(props: AddProductButtonProps) {
   const isNextVolumesFullfilled = () => {
     let isFullfilled = true;
     nextVolumes.forEach((volume) => {
-      if (+volume.price === 0 || !volume.id) {
+      if (+volume?.price === 0 || !volume.id) {
         isFullfilled = false;
       }
     });
@@ -261,7 +262,7 @@ function AddProductButton(props: AddProductButtonProps) {
 
                 <label htmlFor="price">Giá {index + 1}: </label>
                 <Input
-                  value={it.price}
+                  value={it?.price}
                   onChange={(e) => {
                     const newValue = e.target.value;
                     if (/^\d*\.?\d*$/.test(newValue)) {
@@ -381,6 +382,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
     allVolumes,
     updateSuccessNoti,
     updateFailNoti,
+    missingUpdatePriceNoti,
   } = props;
 
   const [productName, setProductName] = useState<string>("");
@@ -398,7 +400,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
     setVolumes(
       currentEditing.volumes
         ? currentEditing.volumes.map((it) => {
-            return { id: it.id, price: it.price };
+            return { id: it.id, price: it?.price };
           })
         : [{ id: "", price: 0 }]
     );
@@ -410,6 +412,13 @@ function UpdateProductModal(props: UpdateProductModalProps) {
   }, [currentEditing]);
 
   const handleUpdateProduct = async () => {
+    for (let i = 0; i < volumes.length; i++) {
+      if (volumes[i]?.price || volumes[i]?.price <= 0) {
+        missingUpdatePriceNoti();
+        return;
+      }
+    }
+
     const updateData = {
       categoryId: category,
       volumes: volumes,
@@ -516,7 +525,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
                 </div>
                 <label htmlFor="price">Giá {index + 1}: </label>
                 <Input
-                  value={volume.price}
+                  value={volume?.price}
                   onChange={(e) => {
                     const newValue = e.target.value;
                     if (/^\d*\.?\d*$/.test(newValue)) {
@@ -742,6 +751,15 @@ function ManageProduct() {
       icon: <FrownOutlined style={{ color: "#108ee9" }} />,
     });
   };
+
+  const missingUpdatePriceNoti = () => {
+    api.open({
+      message: "Cập nhật thất bại",
+      description: "Vui lòng điền đúng giá cho mỗi khối lượng",
+      icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
   const addSuccessNotification = () => {
     api.open({
       message: "Tạo thành công",
@@ -834,6 +852,7 @@ function ManageProduct() {
         categories={categories}
       />
       <UpdateProductModal
+        missingUpdatePriceNoti={missingUpdatePriceNoti}
         updateSuccessNoti={updateSuccessNotification}
         updateFailNoti={updateFailNotification}
         allVolumes={volumes}

@@ -163,7 +163,7 @@ function ProductDetail() {
               >
                 {NumberToVND.format(
                   numOfProduct *
-                    (product?.volumes[0].price ?? 0) *
+                    (product?.volumes[0]?.price ?? 0) *
                     ratioPriceColor
                 )}
               </div>
@@ -176,7 +176,7 @@ function ProductDetail() {
             >
               {level
                 ? NumberToVND.format(
-                    ((product?.volumes[0].price ?? 0) *
+                    ((product?.volumes[0]?.price ?? 0) *
                       ratioPriceColor *
                       numOfProduct *
                       (100 - discount)) /
@@ -185,7 +185,7 @@ function ProductDetail() {
                 : NumberToVND.format(
                     numOfProduct *
                       ratioPriceColor *
-                      (product?.volumes[0].price ?? 0)
+                      (product?.volumes[0]?.price ?? 0)
                   )}
             </div>
           </p>

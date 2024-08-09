@@ -47,7 +47,7 @@ function Products() {
                   fontWeight: "bold",
                 }}
               >
-                {NumberToVND.format(item.volumes[0].price)}
+                {NumberToVND.format(item.volumes[0]?.price)}
               </div>
             )}
             <div
@@ -58,9 +58,9 @@ function Products() {
             >
               {level
                 ? NumberToVND.format(
-                    (item.volumes[0].price * (100 - discount)) / 100
+                    (item.volumes[0]?.price * (100 - discount)) / 100
                   )
-                : NumberToVND.format(item.volumes[0].price)}
+                : NumberToVND.format(item.volumes[0]?.price)}
             </div>
           </div>
         ))}
