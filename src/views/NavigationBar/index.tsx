@@ -22,7 +22,7 @@ import {
   DatabaseOutlined,
 } from "@ant-design/icons";
 import { useCategories } from "../../hooks/useCategories";
-import { OWNER, STOCKER } from "../../constant";
+import { OWNER } from "../../constant";
 
 type MenuItem = Required<MenuProps>["items"][number];
 

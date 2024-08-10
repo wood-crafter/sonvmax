@@ -2,7 +2,7 @@ import { Checkbox, InputNumber, notification } from "antd";
 import { useCart } from "../../hooks/useCart";
 import { Cart, PagedResponse } from "../../type";
 import "./index.css";
-import _ from "lodash";
+import debounce from "lodash.debounce";
 import { useCallback, useEffect, useState } from "react";
 import { API_ROOT } from "../../constant";
 import { useUserStore } from "../../store/user";
@@ -41,7 +41,7 @@ const DebouncedInputNumber = (props: DebouncedInputNumberProps) => {
     refreshCart();
   };
 
-  const debouncedFetchData = useCallback(_.debounce(fetchData, 500), []);
+  const debouncedFetchData = useCallback(debounce(fetchData, 500), []);
 
   useEffect(() => {
     if (value !== null) {
