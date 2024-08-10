@@ -157,6 +157,14 @@ const AppRoutes = () => {
           }
         />
         <Route
+          path="profile"
+          element={
+            <Layout hasNav isManager requiredLogin>
+              <Profile />
+            </Layout>
+          }
+        />
+        <Route
           path="*"
           element={
             <Layout hasNav isManager>
