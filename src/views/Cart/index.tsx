@@ -1,4 +1,4 @@
-import { Checkbox, InputNumber, notification } from "antd";
+import { Checkbox, InputNumber, notification, Select, Popconfirm } from "antd";
 import { useCart } from "../../hooks/useCart";
 import { Cart, PagedResponse } from "../../type";
 import "./index.css";
@@ -8,7 +8,11 @@ import { API_ROOT } from "../../constant";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { NumberToVND } from "../../helper";
-import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
+import {
+  SmileOutlined,
+  FrownOutlined,
+  QuestionCircleOutlined,
+} from "@ant-design/icons";
 import { KeyedMutator } from "swr";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { useVouchers } from "../../hooks/useVoucher";
@@ -22,6 +26,7 @@ type DebouncedInputNumberProps = {
   className: string;
   refreshCart: KeyedMutator<PagedResponse<Cart>>;
 };
+
 const DebouncedInputNumber = (props: DebouncedInputNumberProps) => {
   const accessToken = useUserStore((state) => state.accessToken);
   const { defaultValue, id, min, max, className, refreshCart } = props;
@@ -73,13 +78,16 @@ const DebouncedInputNumber = (props: DebouncedInputNumberProps) => {
 
 function UserCart() {
   const { data: currentCart, mutate: refreshCart } = useCart();
-  const { data: voucher } = useVouchers(1);
-  console.info(voucher);
+  const { data: voucherResponse } = useVouchers(1);
+  const voucher = voucherResponse?.data;
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const [cartsChecked, setCartsChecked] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
+  const [selectedVoucher, setSelectedVoucher] = useState<string | undefined>(
+    undefined
+  );
 
   const addSuccessNotification = () => {
     api.open({
@@ -88,6 +96,7 @@ function UserCart() {
       icon: <SmileOutlined style={{ color: "#108ee9" }} />,
     });
   };
+
   const addFailNotification = (status: number, statusText: string) => {
     api.open({
       message: "Mua thất bại",
@@ -103,6 +112,7 @@ function UserCart() {
       icon: <SmileOutlined style={{ color: "#108ee9" }} />,
     });
   };
+
   const deleteFailNotification = (status: number, statusText: string) => {
     api.open({
       message: "Xoá thất bại",
@@ -138,12 +148,14 @@ function UserCart() {
       noProductInOrder();
       return;
     }
+
     const orderBody = {
       orderProductIds: currentCart
         ?.filter((it) => cartsChecked.includes(it.id))
         ?.map((it) => it.id),
-      voucherIds: [],
+      voucherIds: selectedVoucher ? [selectedVoucher] : [],
     };
+
     const orderRes = await authFetch(`${API_ROOT}/order/create-order`, {
       ...requestOptions,
       method: "POST",
@@ -153,6 +165,7 @@ function UserCart() {
         Authorization: `Bearer ${accessToken}`,
       },
     });
+
     if (orderRes.ok) {
       addSuccessNotification();
       refreshCart();
@@ -188,8 +201,20 @@ function UserCart() {
     const currentTotal = currentCart
       ?.filter((item) => cartsChecked.includes(item.id))
       ?.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    setTotal(currentTotal ? currentTotal : 0);
-  }, [cartsChecked.length]);
+
+    const discountAmount = selectedVoucher
+      ? voucher?.find((v) => v.id === selectedVoucher)?.discountAmount || 0
+      : 0;
+
+    const discountedTotal = currentTotal
+      ? currentTotal - (currentTotal * discountAmount) / 100
+      : 0;
+
+    setTotal(discountedTotal);
+  }, [cartsChecked.length, selectedVoucher, currentCart, voucher]);
+
+  const needsVouchersNotAppliedWarning =
+    selectedVoucher === undefined && (voucher ?? []).length > 0;
 
   return (
     <div className="Cart">
@@ -259,18 +284,49 @@ function UserCart() {
           </div>
         </div>
       )}
-      {currentCart && currentCart?.length !== 0 ? (
-        <button
+      {voucher && voucher.length > 0 && (
+        <div
           style={{
-            marginLeft: "1rem",
+            marginBottom: "1rem",
+            display: "flex",
+            justifyContent: "flex-end",
             marginRight: "1rem",
-            color: "white",
-            backgroundColor: "black",
           }}
-          onClick={handleOrder}
         >
-          Mua ngay
-        </button>
+          <Select
+            onChange={(value) => setSelectedVoucher(value)}
+            placeholder="Chọn voucher"
+            style={{ width: "20%" }}
+          >
+            {voucher.map((v) => (
+              <Select.Option key={v.id} value={v.id}>
+                {v.code} - {v.discountAmount}%
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+      )}
+      {currentCart?.length !== 0 ? (
+        <Popconfirm
+          title="Bạn chưa chọn voucher, bạn có muốn tiếp tục không?"
+          onConfirm={handleOrder}
+          okText="Có"
+          cancelText="Hủy"
+          disabled={!needsVouchersNotAppliedWarning}
+          icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+        >
+          <button
+            onClick={needsVouchersNotAppliedWarning ? undefined : handleOrder}
+            style={{
+              marginLeft: "1rem",
+              marginRight: "1rem",
+              color: "white",
+              backgroundColor: "black",
+            }}
+          >
+            Mua ngay
+          </button>
+        </Popconfirm>
       ) : (
         <div
           style={{
