@@ -1,4 +1,13 @@
-import { Button, Input, notification, Space, Table } from "antd";
+import {
+  Button,
+  Input,
+  Modal,
+  notification,
+  Popconfirm,
+  Space,
+  Table,
+} from "antd";
+import { QuestionCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import { NotificationInstance } from "antd/es/notification/interface";
 import type { ColumnsType } from "antd/es/table";
 import { useCallback, useState } from "react";
@@ -11,25 +20,154 @@ import type { Category } from "../../type";
 import "./index.css";
 
 export function ManageCategories() {
-  const { data, isLoading, mutate } = useCategories(1);
-  const [api, contextHolder] = notification.useNotification();
+  const { data: categories, isLoading, mutate } = useCategories(1);
+  const [notificationApi, contextHolder] = notification.useNotification();
 
-  const columns = useCategoryTableColumns(api, mutate);
+  const columns = useCategoryTableColumns(notificationApi, mutate);
 
   return (
     <div className="ManageCategories">
       {contextHolder}
-      <Table dataSource={data?.data} columns={columns} loading={isLoading} />
+      <AddCategoryButton notificationApi={notificationApi} requestCategoryRefresh={mutate} />
+      <Table
+        dataSource={categories?.data}
+        columns={columns}
+        loading={isLoading}
+      />
     </div>
   );
 }
 
-type EditCategoryParams = {
+type ActionHandlerParams = {
+  onSuccess?: () => void;
+  onError?: () => void;
+};
+
+type AddCategoryParams = ActionHandlerParams & {
+  name: string;
+  description: string;
+};
+
+function useAddCategoryHandler(notificationApi: NotificationInstance) {
+  const accessToken = useUserStore((state) => state.accessToken);
+  const authFetch = useAuthenticatedFetch();
+
+  const addCategory = useCallback(({ name, description, onSuccess }: AddCategoryParams) => {
+    try {
+      authFetch(`${API_ROOT}/category/create-category`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ name, description }),
+      }).then((response) => {
+        if (response.ok) {
+          notificationApi.success({
+            message: "Thành công",
+            description: "Thêm danh mục thành công",
+          });
+          if (onSuccess) onSuccess();
+        } else {
+          notificationApi.error({
+            message: "Lỗi",
+            description: "Thêm danh mục thất bại",
+          });
+        }
+      });
+    } catch (error) {
+      notificationApi.error({
+        message: "Lỗi",
+        description: "Có lỗi xảy ra khi thêm danh mục",
+      });
+    }
+  }, [accessToken, authFetch, notificationApi]);
+
+  return { addCategory };
+}
+
+type AddCategoryButtonProps = {
+  notificationApi: NotificationInstance;
+  requestCategoryRefresh: () => void;
+};
+
+function AddCategoryButton(props: AddCategoryButtonProps) {
+  const { notificationApi, requestCategoryRefresh } = props;
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [categoryName, setCategoryName] = useState("");
+  const [categoryDescription, setCategoryDescription] = useState("");
+
+  const { addCategory } = useAddCategoryHandler(notificationApi);
+
+  const handleClearForm = () => {
+    setCategoryName("");
+    setCategoryDescription("");
+  };
+
+  const handleAddCategory = () => {
+    if (!categoryName) {
+      notificationApi.error({
+        message: "Lỗi",
+        description: "Tên danh mục không được để trống",
+      });
+      return;
+    }
+
+    addCategory({
+      name: categoryName,
+      description: categoryDescription,
+      onSuccess: () => {
+        setIsModalVisible(false);
+        handleClearForm();
+        requestCategoryRefresh();
+      },
+    });
+  };
+
+  return (
+    <>
+      <Button
+        type="primary"
+        className="AddCategoryButton"
+        onClick={() => setIsModalVisible(true)}
+      >
+        Thêm danh mục
+      </Button>
+      <Modal
+        title="Thêm danh mục"
+        open={isModalVisible}
+        onCancel={() => {
+          setIsModalVisible(false);
+          handleClearForm();
+        }}
+        onOk={handleAddCategory}
+      >
+        <label htmlFor="category-name">Tên danh mục: </label>
+        <Input
+          required
+          type="text"
+          placeholder="Thêm tên danh mục"
+          name="category-name"
+          onChange={(e) => setCategoryName(e.target.value)}
+        />
+        <label htmlFor="category-description">Mô tả: </label>
+        <Input
+          required
+          type="text"
+          placeholder="Thêm mô tả"
+          name="category-description"
+          onChange={(e) => setCategoryDescription(e.target.value)}
+        />
+      </Modal>
+    </>
+  );
+}
+
+type EditCategoryParams = ActionHandlerParams & {
   id: string;
   name: string;
   description: string | null;
-  onSuccess?: () => void;
-  onError?: () => void;
 };
 
 export function useEditCategoryHandler(notificationApi: NotificationInstance) {
@@ -84,6 +222,53 @@ export function useEditCategoryHandler(notificationApi: NotificationInstance) {
   return { editCategory };
 }
 
+type DeleteCategoryParams = ActionHandlerParams & {
+  id: string;
+};
+
+export function useDeleteCategoryHandler(
+  notificationApi: NotificationInstance
+) {
+  const accessToken = useUserStore((state) => state.accessToken);
+  const authFetch = useAuthenticatedFetch();
+
+  const deleteCategory = useCallback(
+    ({ id, onSuccess, onError }: DeleteCategoryParams) => {
+      try {
+        authFetch(`${API_ROOT}/category/remove-category/${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }).then((response) => {
+          if (response.ok) {
+            notificationApi.success({
+              message: "Thành công",
+              description: "Xoá danh mục thành công",
+            });
+            if (onSuccess) onSuccess();
+          } else {
+            notificationApi.error({
+              message: "Lỗi",
+              description: "Xoá danh mục thất bại",
+            });
+            if (onError) onError();
+          }
+        });
+      } catch (error) {
+        notificationApi.error({
+          message: "Lỗi",
+          description: "Có lỗi xảy ra khi xoá danh mục",
+        });
+        if (onError) onError();
+      }
+    },
+    [accessToken, authFetch, notificationApi]
+  );
+
+  return { deleteCategory };
+}
+
 function useCategoryTableColumns(
   notificationApi: NotificationInstance,
   requestCategoryRefresh: () => void
@@ -93,14 +278,15 @@ function useCategoryTableColumns(
   const [editedDescription, setEditedDescription] = useState("");
 
   const { editCategory } = useEditCategoryHandler(notificationApi);
+  const { deleteCategory } = useDeleteCategoryHandler(notificationApi);
 
-  const handleEdit = (record: Category) => {
+  const handleStartEditing = (record: Category) => {
     setEditingKey(record.id);
     setEditedName(record.name);
     setEditedDescription(record.description ?? "");
   };
 
-  const handleSave = async (record: Category) => {
+  const handleEditCategory = async (record: Category) => {
     try {
       await editCategory({
         id: record.id,
@@ -119,7 +305,16 @@ function useCategoryTableColumns(
     }
   };
 
-  const handleCancel = () => {
+  const handleDeleteCategory = (categoryId: string) => {
+    deleteCategory({
+      id: categoryId,
+      onSuccess: () => {
+        requestCategoryRefresh();
+      },
+    });
+  };
+
+  const handleCancelEditing = () => {
     setEditingKey(null);
     setEditedName("");
     setEditedDescription("");
@@ -161,13 +356,25 @@ function useCategoryTableColumns(
         const isEditing = editingKey === record.id;
         return isEditing ? (
           <Space size="middle">
-            <Button onClick={() => handleSave(record)} type="primary">
+            <Button onClick={() => handleEditCategory(record)} type="primary">
               Save
             </Button>
-            <Button onClick={handleCancel}>Cancel</Button>
+            <Button onClick={handleCancelEditing}>Cancel</Button>
           </Space>
         ) : (
-          <Button onClick={() => handleEdit(record)}>Edit</Button>
+          <Space size="middle">
+            <Button onClick={() => handleStartEditing(record)}>Edit</Button>
+            <Popconfirm
+              title="Xoá danh mục"
+              description={`Bạn chắc chắn muốn xoá danh mục này? Việc xoá danh mục sẽ đồng thời xoá các sản phẩm liên quan`}
+              icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+              onConfirm={() => handleDeleteCategory(record.id)}
+              okText="Xoá"
+              cancelText="Huỷ"
+            >
+              <Button icon={<DeleteOutlined />} danger />
+            </Popconfirm>
+          </Space>
         );
       },
     },
