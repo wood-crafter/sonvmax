@@ -148,7 +148,7 @@ export type Voucher = {
   activeVoucher: boolean
   discountAmount: number
   createdAt: string
-  permissions: number
+  agentId: string
 }
 
 export type RGB = {
