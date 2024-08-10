@@ -3,7 +3,7 @@ import "./index.css";
 import { Button, Input, notification, Popconfirm, Space, Form } from "antd";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
-import { requestOptions, useVolume } from "../../hooks/useVolume";
+import { useVolume } from "../../hooks/useVolume";
 import Table, { ColumnType } from "antd/es/table";
 import { Volume } from "../../type";
 import {
@@ -13,6 +13,7 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import { API_ROOT } from "../../constant";
+import { requestOptions } from "../../hooks/utils";
 
 function ManageVolume() {
   const accessToken = useUserStore((state) => state.accessToken);

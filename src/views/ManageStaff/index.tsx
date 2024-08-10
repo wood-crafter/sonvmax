@@ -17,11 +17,12 @@ import {
   FrownOutlined,
 } from "@ant-design/icons";
 import { Role, Staff } from "../../type";
-import { requestOptions, useStaffs } from "../../hooks/useStaff";
+import { useStaffs } from "../../hooks/useStaff";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { API_ROOT } from "../../constant";
 import { useRoles } from "../../hooks/useRoles";
+import { requestOptions } from "../../hooks/utils";
 
 type UpdateData = {
   gender: number;

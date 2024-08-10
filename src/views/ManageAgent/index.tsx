@@ -18,13 +18,14 @@ import {
   FrownOutlined,
 } from "@ant-design/icons";
 import { Agent } from "../../type";
-import { requestOptions, useAgents } from "../../hooks/useAgent";
+import { useAgents } from "../../hooks/useAgent";
 import { NumberToVND } from "../../helper";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { API_ROOT } from "../../constant";
 import { useRoles } from "../../hooks/useRoles";
 import { useSales } from "../../hooks/useStaff";
+import { requestOptions } from "../../hooks/utils";
 
 const { Option } = Select;
 

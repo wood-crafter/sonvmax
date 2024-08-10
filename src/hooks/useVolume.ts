@@ -1,15 +1,8 @@
 import useSWR from "swr"
 import { API_ROOT } from "../constant"
-import { PagedResponse, Volume, RequestOptions } from "../type"
+import { PagedResponse, Volume } from "../type"
 import { FetchWithAuthOptions, useAuthenticatedFetch } from "./useAuthenticatedFetch";
-
-export const requestOptions: RequestOptions = {
-  method: "GET",
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  }
-}
+import { requestOptions } from "./utils";
 
 export function useVolume(page: number, size = 999) {
   const fetcher = useAuthenticatedFetch();
@@ -24,7 +17,7 @@ export function useVolume(page: number, size = 999) {
 }
 
 export async function fetchVolumes({url, fetcher} : FetchWithAuthOptions) {
-  const res = await fetcher(`${API_ROOT}${url}`, {...requestOptions})
+  const res = await fetcher(`${API_ROOT}${url}`, {...requestOptions })
 
   return res.json() as Promise<PagedResponse<Volume>>
 }
