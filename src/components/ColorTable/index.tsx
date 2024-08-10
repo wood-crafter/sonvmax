@@ -80,7 +80,6 @@ function ColorTable(props: ColorTableProps) {
         dataSource={colors}
         onRow={(record) => ({
           onDoubleClick: () => {
-            console.info(record);
             setCurrentColor({
               r: record.r,
               g: record.g,

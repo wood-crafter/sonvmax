@@ -18,6 +18,7 @@ import {
   TruckOutlined,
   ProfileOutlined,
   HistoryOutlined,
+  GiftOutlined,
 } from "@ant-design/icons";
 import { useCategories } from "../../hooks/useProduct";
 
@@ -53,6 +54,11 @@ const managerItems: MenuItem[] = [
     label: <Link to="/manage/products">Quản lý sản phẩm</Link>,
     key: "product",
     icon: <ProductOutlined />,
+  },
+  {
+    label: <Link to="/manage/volumes">Quản lý đóng gói</Link>,
+    key: "volumes",
+    icon: <GiftOutlined />,
   },
   {
     label: "Quản lý hóa đơn",

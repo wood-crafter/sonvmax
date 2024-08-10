@@ -17,6 +17,7 @@ import { ACCOUTANT, OWNER, SALES, STOCKER } from "./constant";
 import ManageOrder from "./views/ManageOrder";
 import OrderHistory from "./views/OrderHistory";
 import Profile from "./views/Profile";
+import ManageVolume from "./views/ManageVolume";
 
 const AppRoutes = () => {
   return (
@@ -103,6 +104,14 @@ const AppRoutes = () => {
               roleAllow={[OWNER.role, ACCOUTANT.role, SALES.role]}
             >
               <ManageAgent />
+            </Layout>
+          }
+        />
+        <Route
+          path="volumes"
+          element={
+            <Layout hasNav isManager roleAllow={[OWNER.role, STOCKER.role]}>
+              <ManageVolume />
             </Layout>
           }
         />
