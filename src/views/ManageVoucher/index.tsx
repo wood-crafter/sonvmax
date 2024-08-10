@@ -61,10 +61,10 @@ function ManageVoucher() {
   const [code, setCode] = useState("");
   const [agent, setAgent] = useState("");
   const [isActive, setIsActive] = useState(true);
-  const [discountAmount, setDiscountAmount] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(1);
 
   const [nextCode, setNextCode] = useState("");
-  const [nextDiscountAmount, setNextDiscountAmount] = useState(0);
+  const [nextDiscountAmount, setNextDiscountAmount] = useState(1);
   const [nextIsActive, setNextIsActive] = useState(true);
   const [nextAgent, setNextAgent] = useState("");
 
@@ -73,7 +73,7 @@ function ManageVoucher() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const handleUpdateVoucher = async () => {
-    if (!code || !discountAmount || !agent) {
+    if (!code || discountAmount <= 0 || !agent) {
       missingAddPropsNotification();
       return;
     }
@@ -139,7 +139,7 @@ function ManageVoucher() {
   };
 
   const handleAddOk = async () => {
-    if (!nextCode || !nextDiscountAmount || !nextAgent) {
+    if (!nextCode || nextDiscountAmount <= 0 || !nextAgent) {
       missingAddPropsNotification();
       return;
     }
@@ -271,9 +271,12 @@ function ManageVoucher() {
               value={discountAmount}
               type="number"
               min={0}
-              max={100}
+              placeholder="Nhập phần trăm giảm lớn hơn 0"
               name="discountAmount"
-              onChange={(e) => setDiscountAmount(+e.target.value)}
+              onChange={(e) => {
+                const value = Math.max(1, +e.target.value); // Ensure greater than 0
+                setDiscountAmount(value);
+              }}
             />
             <Radio.Group
               onChange={(e) => {
@@ -305,6 +308,8 @@ function ManageVoucher() {
         open={isAddModalOpen}
         onOk={handleAddOk}
         onCancel={handleAddCancel}
+        okText="OK"
+        cancelText="Huỷ"
       >
         <div className="modal-update-container">
           <label htmlFor="code">Mã voucher: </label>
@@ -312,25 +317,23 @@ function ManageVoucher() {
             value={nextCode}
             type="text"
             placeholder="Thêm tên mã voucher"
-            onChange={(e) => {
-              setNextCode(e.target.value);
-            }}
+            onChange={(e) => setNextCode(e.target.value)}
             name="code"
           />
           <label htmlFor="discountAmount">Phần trăm giảm: </label>
           <Input
             value={nextDiscountAmount}
             type="number"
-            placeholder="Nhập phần trăm giảm"
+            min={1}
+            placeholder="Nhập phần trăm giảm lớn hơn 0"
             onChange={(e) => {
-              setNextDiscountAmount(+e.target.value);
+              const value = Math.max(1, +e.target.value); // Ensure greater than 0
+              setNextDiscountAmount(value);
             }}
             name="discountAmount"
           />
           <Radio.Group
-            onChange={(e) => {
-              setNextIsActive(e.target.value);
-            }}
+            onChange={(e) => setNextIsActive(e.target.value)}
             value={nextIsActive}
           >
             <Radio value={true}>Hoạt động</Radio>
@@ -338,8 +341,9 @@ function ManageVoucher() {
           </Radio.Group>
           <label htmlFor="agent">Đại lý thụ hưởng: </label>
           <Select
+            value={nextAgent}
             onChange={(value) => setNextAgent(value)}
-            placeholder={"Chọn đại lý thụ hưởng"}
+            placeholder="Chọn đại lý thụ hưởng"
             style={{ width: "100%" }}
           >
             {agents?.data.map((agent) => (
