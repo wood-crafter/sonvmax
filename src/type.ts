@@ -1,3 +1,33 @@
+type CommonPersonalInfo = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: string | null;
+  fullName: string;
+  phoneNumber: string;
+  roleId: string;
+  type: "staff" | "agent";
+}
+
+export type StaffInfo = CommonPersonalInfo & {
+  gender: number;
+  isActive: boolean;
+  username: string;
+}
+
+export type AgentInfo = CommonPersonalInfo & {
+  accountDebit: string;
+  accountHave: string;
+  address: string;
+  agentName: string;
+  debitLimit: string;
+  email: string;
+  rank: number;
+  staffId: string;
+  taxCode: string;
+  username: string;
+}
+
 export type Product = {
   id: string
   categoryId: string

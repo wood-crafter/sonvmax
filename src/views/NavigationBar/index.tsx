@@ -71,11 +71,6 @@ const managerItems: MenuItem[] = [
     key: "invoice",
   },
   {
-    label: "Hồ sơ",
-    key: "profile",
-    icon: <ProfileOutlined />,
-  },
-  {
     label: <Link to="/manage/color">Quản lý màu</Link>,
     key: "color",
     icon: <FormatPainterOutlined />,
@@ -102,12 +97,18 @@ function Nav({ isManager = false }: { isManager: boolean }) {
           key: "orderHistory",
           icon: <HistoryOutlined />,
         });
+        nextMenuItems.push({
+          label: <Link to="/profile">Hồ sơ</Link>,
+          key: "profile",
+          icon: <ProfileOutlined />,
+        });
+      } else {
+        nextMenuItems.push({
+          label: <Link to="/manage/profile">Hồ sơ</Link>,
+          key: "profile",
+          icon: <ProfileOutlined />,
+        });
       }
-      nextMenuItems.push({
-        label: <Link to="/profile">Hồ sơ</Link>,
-        key: "profile",
-        icon: <ProfileOutlined />,
-      });
       nextMenuItems.push({
         label: <div onClick={logout}>Đăng xuất</div>,
         key: "logout",

@@ -1,13 +1,17 @@
-import { useAgentById } from "../../hooks/useAgent";
-import { useUserStore } from "../../store/user";
+import { Spin } from "antd";
+import { useMe } from "../../hooks/useMe";
 import "./index.css";
 function Profile() {
-  // const roleName = useUserStore((state) => state.roleName);
-  const id = useUserStore((state) => state.id);
-  const { data } = useAgentById(id);
-  console.info(data);
+  const { data, isLoading } = useMe();
+  if (isLoading) return <Spin />;
 
-  return <div className="Profile"></div>;
+  if (data?.type === "agent") {
+    return <div className="AgentProfile Profile"></div>;
+  }
+
+  if (data?.type === "staff") {
+    return <div className="StaffProfile Profile"></div>;
+  }
 }
 
 export default Profile;
