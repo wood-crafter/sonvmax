@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./index.css";
-import { Button, Input, notification, Popconfirm, Space } from "antd";
+import { Button, Input, notification, Popconfirm, Space, Form } from "antd";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { requestOptions, useVolume } from "../../hooks/useVolume";
@@ -23,6 +23,8 @@ function ManageVolume() {
 
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editedVolume, setEditedVolume] = useState<string>("");
+  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [newVolume, setNewVolume] = useState<string>("");
 
   const deleteSuccessNotification = () => {
     api.open({
@@ -36,6 +38,22 @@ function ManageVolume() {
     api.open({
       message: "Xoá thất bại",
       description: "Xoá quy cách đóng gói thất bại",
+      icon: <FrownOutlined style={{ color: "red" }} />,
+    });
+  };
+
+  const addSuccessNotification = () => {
+    api.open({
+      message: "Thêm thành công",
+      description: "Thêm quy cách đóng gói thành công",
+      icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+    });
+  };
+
+  const addFailNotification = () => {
+    api.open({
+      message: "Thêm thất bại",
+      description: "Thêm quy cách đóng gói thất bại",
       icon: <FrownOutlined style={{ color: "red" }} />,
     });
   };
@@ -103,6 +121,36 @@ function ManageVolume() {
     }
   };
 
+  const handleAddVolume = async () => {
+    if (!newVolume) {
+      api.error({
+        message: "Lỗi",
+        description: "Quy cách đóng gói không được để trống",
+      });
+      return;
+    }
+
+    const addRes = await authFetch(`${API_ROOT}/volume`, {
+      ...requestOptions,
+      method: "POST",
+      headers: {
+        ...requestOptions.headers,
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ volume: newVolume }),
+    });
+
+    if (addRes.ok) {
+      addSuccessNotification();
+      refreshVolume();
+      setNewVolume("");
+      setIsAdding(false);
+    } else {
+      addFailNotification();
+    }
+  };
+
   const columns: ColumnType<Volume>[] = [
     {
       title: "Id",
@@ -164,6 +212,43 @@ function ManageVolume() {
   return (
     <div className="ManageVolume">
       {contextHolder}
+      <Button
+        type="primary"
+        onClick={() => setIsAdding(true)}
+        style={{ marginBottom: 16 }}
+      >
+        Thêm quy cách đóng gói
+      </Button>
+      {isAdding && (
+        <Form layout="inline" onFinish={handleAddVolume}>
+          <Form.Item
+            name="volume"
+            rules={[
+              {
+                required: true,
+                message: "Quy cách đóng gói không được để trống",
+              },
+            ]}
+          >
+            <Input
+              value={newVolume}
+              onChange={(e) => setNewVolume(e.target.value)}
+              placeholder="Nhập quy cách đóng gói"
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Thêm
+            </Button>
+            <Button
+              onClick={() => setIsAdding(false)}
+              style={{ marginLeft: 8 }}
+            >
+              Huỷ
+            </Button>
+          </Form.Item>
+        </Form>
+      )}
       <Table columns={columns} dataSource={volume} />
     </div>
   );
