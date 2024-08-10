@@ -184,7 +184,7 @@ export function useEditCategoryHandler(notificationApi: NotificationInstance) {
     }: EditCategoryParams) => {
       try {
         const response = await authFetch(
-          `${API_ROOT}/category/update-categorys/${id}`,
+          `${API_ROOT}/category/update-category/${id}`,
           {
             method: "PUT",
             headers: {
