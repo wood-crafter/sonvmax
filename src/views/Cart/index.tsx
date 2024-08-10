@@ -5,7 +5,6 @@ import "./index.css";
 import _ from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { API_ROOT } from "../../constant";
-import { requestOptions } from "../../hooks/useProduct";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { NumberToVND } from "../../helper";
@@ -13,6 +12,7 @@ import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import { KeyedMutator } from "swr";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { useVouchers } from "../../hooks/useVoucher";
+import { requestOptions } from "../../hooks/utils";
 
 type DebouncedInputNumberProps = {
   defaultValue: number;

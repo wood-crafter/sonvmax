@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from "react";
 import { API_ROOT, DISCOUNT_AMOUNT } from "../../constant";
-import { requestOptions, useProductsById } from "../../hooks/useProduct";
+import { useProductsById } from "../../hooks/useProduct";
 import { Button, InputNumber, notification, Select } from "antd";
 import "./index.css";
 import { classifyColor, NumberToVND } from "../../helper";
@@ -12,6 +12,7 @@ import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { ColorResult, SketchPicker } from "react-color";
 import ColorTable from "../../components/ColorTable";
+import { requestOptions } from "../../hooks/utils";
 
 const noColorId = "clzlnun8d000d2urtsjgce2bi";
 

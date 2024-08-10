@@ -11,9 +11,9 @@ import readXlsxFile from "read-excel-file";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { API_ROOT } from "../../constant";
-import { requestOptions } from "../../hooks/useProduct";
 import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import { RcFile } from "antd/es/upload";
+import { requestOptions } from "../../hooks/utils";
 
 const schema = {
   priceColor: {

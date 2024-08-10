@@ -18,7 +18,7 @@ import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useOrders } from "../../hooks/useOrder";
 import { QuestionCircleOutlined, SmileOutlined } from "@ant-design/icons";
 import { API_ROOT } from "../../constant";
-import { requestOptions } from "../../hooks/useProduct";
+import { requestOptions } from "../../hooks/utils";
 
 function OrderHistory() {
   const accessToken = useUserStore((state) => state.accessToken);

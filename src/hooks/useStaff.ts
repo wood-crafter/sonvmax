@@ -1,18 +1,11 @@
 import useSWR from "swr";
 import { API_ROOT } from "../constant";
-import type { PagedResponse, RequestOptions, Sales, Staff } from "../type";
+import type { PagedResponse, Sales, Staff } from "../type";
 import {
   FetchWithAuthOptions,
   useAuthenticatedFetch,
 } from "./useAuthenticatedFetch";
-
-export const requestOptions: RequestOptions = {
-  method: "GET",
-  headers: {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-  },
-};
+import { requestOptions } from "./utils";
 
 export function useStaffs(page: number, size = 20) {
   const fetcher = useAuthenticatedFetch();

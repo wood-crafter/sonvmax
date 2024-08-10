@@ -22,11 +22,11 @@ import {
 } from "@ant-design/icons";
 import { Order } from "../../type";
 import { NumberToVND } from "../../helper";
-import { requestOptions } from "../../hooks/useProduct";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { ACCOUTANT, API_ROOT, SALES, STOCKER } from "../../constant";
 import { useOrders } from "../../hooks/useOrder";
+import { requestOptions } from "../../hooks/utils";
 
 type UpdateProps = {
   id: string;

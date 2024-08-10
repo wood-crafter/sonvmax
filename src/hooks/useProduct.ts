@@ -1,33 +1,7 @@
 import useSWR from "swr"
 import { API_ROOT } from "../constant"
-import { Category, PagedResponse, Product, RequestOptions } from "../type"
-import { FetchWithAuthOptions, useAuthenticatedFetch } from "./useAuthenticatedFetch";
-
-export const requestOptions: RequestOptions = {
-  method: "GET",
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  }
-}
-
-export function useCategories(page: number, size = 999) {
-  const fetcher = useAuthenticatedFetch();
-  const { data, isLoading, error, mutate } = useSWR({ url: `/category/get-category?page=${page}&size=${size}`, fetcher }, fetchCategories)
-
-  return {
-    data,
-    isLoading,
-    error,
-    mutate,
-  }
-}
-
-export async function fetchCategories({url, fetcher} : FetchWithAuthOptions) {
-  const res = await fetcher(`${API_ROOT}${url}`, {...requestOptions})
-
-  return res.json() as Promise<PagedResponse<Category>>
-}
+import { PagedResponse, Product } from "../type"
+import { requestOptions } from "./utils";
 
 export function useProducts(page: number, size = 20, categoryId:string | undefined = undefined) {
   if (categoryId) {
