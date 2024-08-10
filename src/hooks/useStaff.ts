@@ -7,7 +7,7 @@ import {
 } from "./useAuthenticatedFetch";
 import { requestOptions } from "./utils";
 
-export function useStaffs(page: number, size = 20) {
+export function useStaffs(page: number, size = 9999) {
   const fetcher = useAuthenticatedFetch();
 
   const { data, isLoading, error, mutate } = useSWR(

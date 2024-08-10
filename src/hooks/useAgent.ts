@@ -4,7 +4,7 @@ import type { PagedResponse, Agent } from "../type";
 import { FetchWithAuthOptions, useAuthenticatedFetch } from "./useAuthenticatedFetch";
 import { requestOptions } from "./utils";
 
-export function useAgents(page: number, size = 20) {
+export function useAgents(page: number, size = 9999) {
   const fetcher = useAuthenticatedFetch();
   const { data, isLoading, error, mutate } = useSWR(
     { url: `/agent/get-agent?page=${page}&size=${size}`, fetcher },

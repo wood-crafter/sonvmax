@@ -10,6 +10,7 @@ import {
   Radio,
   Popconfirm,
   Spin,
+  Select,
 } from "antd";
 import { ColumnType } from "antd/es/table";
 import {
@@ -23,12 +24,14 @@ import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { API_ROOT } from "../../constant";
 import { useVouchers } from "../../hooks/useVoucher";
+import { useAgents } from "../../hooks/useAgent";
 
 function ManageVoucher() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const { data, isLoading, mutate: refreshVouchers } = useVouchers(1);
+  const { data: agents } = useAgents(1);
   const voucher = data?.data ?? [];
 
   const missingAddPropsNotification = () => {
@@ -46,6 +49,7 @@ function ManageVoucher() {
       icon: <SmileOutlined style={{ color: "#108ee9" }} />,
     });
   };
+
   const addFailNotification = (status: number, statusText: string) => {
     api.open({
       message: "Tạo thất bại",
@@ -55,22 +59,30 @@ function ManageVoucher() {
   };
 
   const [code, setCode] = useState("");
+  const [agent, setAgent] = useState("");
   const [isActive, setIsActive] = useState(true);
-  const [discountAmount, setDiscountAmount] = useState(0);
-  const [permissions, setPermissions] = useState(1);
+  const [discountAmount, setDiscountAmount] = useState(1);
 
   const [nextCode, setNextCode] = useState("");
-  const [nextDiscountAmount, setNextDiscountAmount] = useState(0);
+  const [nextDiscountAmount, setNextDiscountAmount] = useState(1);
   const [nextIsActive, setNextIsActive] = useState(true);
-  const [nextPermissions, setNextPermissions] = useState(1);
+  const [nextAgent, setNextAgent] = useState("");
 
   const [currentEditing, setCurrentEditing] = useState<Voucher | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
   const handleUpdateVoucher = async () => {
+    if (!code || discountAmount <= 0 || !agent) {
+      missingAddPropsNotification();
+      return;
+    }
+
     const updateData = {
       code: code,
       discountAmount: +discountAmount,
       activeVoucher: isActive,
-      permissions: permissions,
+      agentId: agent,
     };
     const updateBody = JSON.stringify(updateData);
 
@@ -87,15 +99,13 @@ function ManageVoucher() {
       }
     );
   };
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const showModal = (record: Voucher) => {
     setCurrentEditing(record);
-    setCode(record?.code);
-    setDiscountAmount(record?.discountAmount);
-    setIsActive(record?.activeVoucher);
-    setPermissions(record?.permissions);
+    setCode(record.code);
+    setDiscountAmount(record.discountAmount);
+    setIsActive(record.activeVoucher);
+    setAgent(record.agentId ?? "");
     setIsModalOpen(true);
   };
 
@@ -125,11 +135,11 @@ function ManageVoucher() {
     setNextCode("");
     setNextDiscountAmount(0);
     setNextIsActive(true);
-    setNextPermissions(1);
+    setNextAgent("");
   };
 
   const handleAddOk = async () => {
-    if (!nextCode || !nextDiscountAmount) {
+    if (!nextCode || nextDiscountAmount <= 0 || !nextAgent) {
       missingAddPropsNotification();
       return;
     }
@@ -137,7 +147,7 @@ function ManageVoucher() {
       code: nextCode,
       discountAmount: nextDiscountAmount,
       activeVoucher: nextIsActive,
-      permissions: nextPermissions,
+      agentId: nextAgent,
     });
 
     const createResponse = await authFetch(
@@ -193,10 +203,15 @@ function ManageVoucher() {
       },
     },
     {
-      title: "Chấp nhận",
-      dataIndex: "permissions",
-      key: "permissions",
-      sorter: (a, b) => a.permissions - b.permissions,
+      title: "Đại lý thụ hưởng",
+      dataIndex: "agentId",
+      key: "agentId",
+      render: (_, record: Voucher) => (
+        <div>
+          {agents?.data.find((agent) => agent.id === record.agentId)
+            ?.agentName ?? "--"}
+        </div>
+      ),
     },
     {
       title: "",
@@ -239,6 +254,8 @@ function ManageVoucher() {
         open={isModalOpen}
         onOk={handleConfirmUpdate}
         onCancel={handleCancelUpdate}
+        okText="OK"
+        cancelText="Huỷ"
       >
         {currentEditing && (
           <div className="modal-update-container">
@@ -254,9 +271,12 @@ function ManageVoucher() {
               value={discountAmount}
               type="number"
               min={0}
-              max={100}
+              placeholder="Nhập phần trăm giảm lớn hơn 0"
               name="discountAmount"
-              onChange={(e) => setDiscountAmount(+e.target.value)}
+              onChange={(e) => {
+                const value = Math.max(1, +e.target.value); // Ensure greater than 0
+                setDiscountAmount(value);
+              }}
             />
             <Radio.Group
               onChange={(e) => {
@@ -267,13 +287,19 @@ function ManageVoucher() {
               <Radio value={true}>Hoạt động</Radio>
               <Radio value={false}>Ngừng</Radio>
             </Radio.Group>
-            <label htmlFor="permissions">Chấp nhận: </label>
-            <Input
-              value={permissions}
-              type="text"
-              name="permissions"
-              onChange={(e) => setPermissions(+e.target.value)}
-            />
+            <label htmlFor="agent">Đại lý thụ hưởng: </label>
+            <Select
+              value={agent}
+              onChange={(value) => setAgent(value)}
+              placeholder="Chọn đại lý thụ hưởng"
+              style={{ width: "100%" }}
+            >
+              {agents?.data.map((agent) => (
+                <Select.Option key={agent.id} value={agent.id}>
+                  {agent.agentName}
+                </Select.Option>
+              ))}
+            </Select>
           </div>
         )}
       </Modal>
@@ -282,6 +308,8 @@ function ManageVoucher() {
         open={isAddModalOpen}
         onOk={handleAddOk}
         onCancel={handleAddCancel}
+        okText="OK"
+        cancelText="Huỷ"
       >
         <div className="modal-update-container">
           <label htmlFor="code">Mã voucher: </label>
@@ -289,37 +317,41 @@ function ManageVoucher() {
             value={nextCode}
             type="text"
             placeholder="Thêm tên mã voucher"
-            onChange={(e) => {
-              setNextCode(e.target.value);
-            }}
+            onChange={(e) => setNextCode(e.target.value)}
             name="code"
           />
           <label htmlFor="discountAmount">Phần trăm giảm: </label>
           <Input
             value={nextDiscountAmount}
             type="number"
-            placeholder="Nhập phần trăm giảm"
+            min={1}
+            placeholder="Nhập phần trăm giảm lớn hơn 0"
             onChange={(e) => {
-              setNextDiscountAmount(+e.target.value);
+              const value = Math.max(1, +e.target.value); // Ensure greater than 0
+              setNextDiscountAmount(value);
             }}
             name="discountAmount"
           />
           <Radio.Group
-            onChange={(e) => {
-              setNextIsActive(e.target.value);
-            }}
+            onChange={(e) => setNextIsActive(e.target.value)}
             value={nextIsActive}
           >
             <Radio value={true}>Hoạt động</Radio>
             <Radio value={false}>Ngừng</Radio>
           </Radio.Group>
-          <label htmlFor="permissions">Chấp nhận: </label>
-          <Input
-            value={nextPermissions}
-            type="text"
-            name="permissions"
-            onChange={(e) => setNextPermissions(+e.target.value)}
-          />
+          <label htmlFor="agent">Đại lý thụ hưởng: </label>
+          <Select
+            value={nextAgent}
+            onChange={(value) => setNextAgent(value)}
+            placeholder="Chọn đại lý thụ hưởng"
+            style={{ width: "100%" }}
+          >
+            {agents?.data.map((agent) => (
+              <Select.Option key={agent.id} value={agent.id}>
+                {agent.agentName}
+              </Select.Option>
+            ))}
+          </Select>
         </div>
       </Modal>
     </div>
