@@ -27,6 +27,9 @@ export type Category = {
   name: string
   description: string | null
   products: Product[]
+  createdAt: string
+  updatedAt: string
+  updatedBy: string
 }
 
 export type Order = {

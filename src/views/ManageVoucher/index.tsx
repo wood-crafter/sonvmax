@@ -18,7 +18,7 @@ import {
   FrownOutlined,
 } from "@ant-design/icons";
 import { Voucher } from "../../type";
-import { requestOptions } from "../../hooks/useStaff";
+import { requestOptions } from "../../hooks/utils";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { API_ROOT } from "../../constant";

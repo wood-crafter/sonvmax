@@ -28,17 +28,15 @@ import {
   Volume,
 } from "../../type";
 import { NumberToVND } from "../../helper";
-import {
-  useCategories,
-  useProducts,
-  requestOptions,
-} from "../../hooks/useProduct";
+import { useProducts } from "../../hooks/useProduct";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { API_ROOT } from "../../constant";
 import { KeyedMutator } from "swr";
 import TextArea from "antd/es/input/TextArea";
 import { useVolume } from "../../hooks/useVolume";
+import { requestOptions } from "../../hooks/utils";
+import { useCategories } from "../../hooks/useCategories";
 
 type AddProductButtonProps = {
   categories: Category[] | undefined;

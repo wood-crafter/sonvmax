@@ -19,8 +19,9 @@ import {
   ProfileOutlined,
   HistoryOutlined,
   GiftOutlined,
+  DatabaseOutlined,
 } from "@ant-design/icons";
-import { useCategories } from "../../hooks/useProduct";
+import { useCategories } from "../../hooks/useCategories";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -59,6 +60,11 @@ const managerItems: MenuItem[] = [
     label: <Link to="/manage/volumes">Quản lý đóng gói</Link>,
     key: "volumes",
     icon: <GiftOutlined />,
+  },
+  {
+    label: <Link to="/manage/categories">Quản lý danh mục</Link>,
+    key: "categories",
+    icon: <DatabaseOutlined />,
   },
   {
     label: "Quản lý hóa đơn",

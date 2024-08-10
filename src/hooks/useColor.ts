@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import useSWR from "swr"
 import { API_ROOT } from "../constant"
-import { requestOptions } from "./useProduct"
+import { requestOptions } from "./utils"
 
 export async function fetchColors(url: string) {
   const res = await fetch(`${API_ROOT}${url}`, requestOptions)
