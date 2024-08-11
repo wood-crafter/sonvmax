@@ -153,7 +153,7 @@ function UserCart() {
       orderProductIds: currentCart
         ?.filter((it) => cartsChecked.includes(it.id))
         ?.map((it) => it.id),
-      voucherIds: selectedVoucher ? [selectedVoucher] : [],
+      voucherIds: selectedVoucher ? [selectedVoucher][0] : "",
     };
 
     const orderRes = await authFetch(`${API_ROOT}/order/create-order`, {
