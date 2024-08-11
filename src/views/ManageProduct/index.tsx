@@ -447,6 +447,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
 
     if (updateResponse.ok) {
       updateSuccessNoti();
+      refreshProducts();
     } else {
       updateFailNoti(updateResponse.status, updateResponse.statusText);
     }
@@ -619,6 +620,10 @@ function ProductTable(props: ProductTableProps) {
   const [selectedVolumePrices, setSelectedVolumePrices] = useState<{
     [key: string]: number;
   }>(getDefaultSelectedVolumePrices(products));
+
+  useEffect(() => {
+    setSelectedVolumePrices(getDefaultSelectedVolumePrices(products));
+  }, [products]);
 
   const handleVolumeChange = (productId: string, price: number) => {
     setSelectedVolumePrices((prev) => ({
