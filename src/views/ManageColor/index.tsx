@@ -1,9 +1,5 @@
 import "./index.css";
-import {
-  UploadOutlined,
-  AppstoreAddOutlined,
-  ImportOutlined,
-} from "@ant-design/icons";
+import { UploadOutlined, AppstoreAddOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { Button, Upload, notification } from "antd";
 import { ReactNode, useState } from "react";
@@ -14,6 +10,7 @@ import { API_ROOT } from "../../constant";
 import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import { RcFile } from "antd/es/upload";
 import { requestOptions } from "../../hooks/utils";
+import { calculatePriceColor } from "../../helper";
 
 const schema = {
   priceColor: {
@@ -84,10 +81,11 @@ function ManageColor() {
       const createResponse = await authFetch(`${API_ROOT}/color/import-color`, {
         ...requestOptions,
         body: JSON.stringify({
-          colors: rows.map((item) => {
+          colors: rows.map((it) => {
             return {
-              ...item,
+              ...it,
               parentId: "null",
+              priceColor: calculatePriceColor({ r: +it.r, g: +it.g, b: +it.b }),
             };
           }),
         }),
@@ -117,50 +115,6 @@ function ManageColor() {
     });
   };
 
-  const handleReplaceColors = () => {
-    readXlsxFile(files[0], { schema }).then(async (readInfo) => {
-      const { rows } = readInfo;
-
-      if (!rows.length) {
-        notifyWrongFormatAddColor();
-        return;
-      }
-      const createRes = await authFetch(`${API_ROOT}/color/import-color`, {
-        ...requestOptions,
-        body: JSON.stringify({
-          colors: rows.map((item) => {
-            return {
-              ...item,
-              parentId: "null",
-            };
-          }),
-        }),
-        method: "POST",
-        headers: {
-          ...requestOptions.headers,
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      if (createRes.status !== 201) {
-        openNotification(
-          "Thay đổi bảng màu thất bại",
-          `
-          Mã lỗi: ${createRes.status}
-          ${createRes.statusText}
-          `,
-          <FrownOutlined style={{ color: "#e93f10" }} />
-        );
-      } else {
-        openNotification(
-          "Thay đổi bảng màu thành công",
-          "",
-          <SmileOutlined style={{ color: "#108ee9" }} />
-        );
-      }
-      setFiles([]);
-    });
-  };
-
   const notifyWrongFormatAddColor = () => {
     api.open({
       message: "Thêm màu thất bại",
@@ -181,13 +135,6 @@ function ManageColor() {
         onClick={handleAddToColors}
       >
         Thêm vào bảng màu
-      </Button>
-      <Button
-        disabled={!files?.length}
-        icon={<ImportOutlined />}
-        onClick={handleReplaceColors}
-      >
-        Thay thế bảng màu
       </Button>
     </div>
   );
