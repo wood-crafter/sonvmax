@@ -187,32 +187,80 @@ function ProductDetail() {
           </div>
           <p className="full-width">
             {level && (
+              <div style={{ display: "flex" }}>
+                <div
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Giá niêm yết:
+                </div>
+                <div
+                  style={{
+                    fontSize: "20px",
+                    color: "red",
+                    fontWeight: "bold",
+                    textDecoration: "line-through",
+                    marginLeft: "1rem",
+                  }}
+                >
+                  {NumberToVND.format(
+                    numOfProduct *
+                      (product?.volumes.find((it) => it.id === selectingVolume)
+                        ?.price ??
+                        product?.volumes[0]?.price ??
+                        0)
+                  )}
+                </div>
+              </div>
+            )}
+            <div style={{ display: "flex" }}>
               <div
                 style={{
                   fontSize: "20px",
-                  color: "red",
                   fontWeight: "bold",
-                  textDecoration: "line-through",
+                }}
+              >
+                Sau chiết khấu (- {`${discount}%`}) :
+              </div>
+              <div
+                style={{
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  marginLeft: "1rem",
                 }}
               >
                 {NumberToVND.format(
-                  numOfProduct *
-                    (product?.volumes.find((it) => it.id === selectingVolume)
-                      ?.price ??
-                      product?.volumes[0]?.price ??
-                      0) *
-                    (product?.canColorPick ? ratioPriceColor : 1)
+                  ((product?.volumes.find((it) => it.id === selectingVolume)
+                    ?.price ??
+                    product?.volumes[0]?.price ??
+                    0) *
+                    numOfProduct *
+                    (100 - discount)) /
+                    100
                 )}
               </div>
-            )}
-            <div
-              style={{
-                fontSize: "20px",
-                fontWeight: "bold",
-              }}
-            >
-              {level
-                ? NumberToVND.format(
+            </div>
+            {product?.canColorPick && (
+              <div style={{ display: "flex" }}>
+                <div
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Sau chọn màu (+{" "}
+                  {`${Math.round((ratioPriceColor - 1) * 100)}%`}):
+                </div>
+                <div
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    marginLeft: "1rem",
+                  }}
+                >
+                  {NumberToVND.format(
                     ((product?.volumes.find((it) => it.id === selectingVolume)
                       ?.price ??
                       product?.volumes[0]?.price ??
@@ -221,16 +269,10 @@ function ProductDetail() {
                       numOfProduct *
                       (100 - discount)) /
                       100
-                  )
-                : NumberToVND.format(
-                    numOfProduct *
-                      (!product?.canColorPick ? 1 : ratioPriceColor) *
-                      (product?.volumes.find((it) => it.id === selectingVolume)
-                        ?.price ??
-                        product?.volumes[0]?.price ??
-                        0)
                   )}
-            </div>
+                </div>
+              </div>
+            )}
           </p>
           {product?.canColorPick && (
             <div
