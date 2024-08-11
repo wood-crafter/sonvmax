@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { API_ROOT } from "../../constant";
 import "./index.css";
+import { useUserStore } from "../../store/user";
 
 type ChangePassProp = {
   oldPassword: string;
@@ -12,6 +13,7 @@ type ChangePassProp = {
 
 function ChangePassword() {
   const [form] = Form.useForm();
+  const logout = useUserStore((state) => state.clear);
   const [api, contextHolder] = notification.useNotification();
   const authFetch = useAuthenticatedFetch();
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,7 @@ function ChangePassword() {
 
     if (newPassword !== confirmPassword) {
       api.error({
-        message: "Passwords do not match",
+        message: "Mật khẩu mới không giống nhau",
       });
       setLoading(false);
       return;
@@ -40,17 +42,18 @@ function ChangePassword() {
 
       if (res.ok) {
         api.success({
-          message: "Password changed successfully",
+          message: "Đổi mật khẩu thành công",
         });
+        logout();
         form.resetFields();
       } else {
         api.error({
-          message: "Failed to change password",
+          message: "Đổi mật khẩu thất bại",
         });
       }
     } catch (error) {
       api.error({
-        message: "An error occurred",
+        message: "Lỗi lạ",
       });
     } finally {
       setLoading(false);
@@ -75,29 +78,25 @@ function ChangePassword() {
           <Form.Item
             name="oldPassword"
             label="Old Password"
-            rules={[
-              { required: true, message: "Please enter your old password" },
-            ]}
+            rules={[{ required: true, message: "Điền mật khẩu cũ" }]}
           >
-            <Input.Password placeholder="Enter old password" />
+            <Input.Password placeholder="Điền mật khẩu cũ" />
           </Form.Item>
 
           <Form.Item
             name="newPassword"
             label="New Password"
-            rules={[{ required: true, message: "Please enter a new password" }]}
+            rules={[{ required: true, message: "Nhập mật khẩu mới" }]}
           >
-            <Input.Password placeholder="Enter new password" />
+            <Input.Password placeholder="Nhập mật khẩu mới" />
           </Form.Item>
 
           <Form.Item
             name="confirmPassword"
             label="Confirm New Password"
-            rules={[
-              { required: true, message: "Please confirm your new password" },
-            ]}
+            rules={[{ required: true, message: "Nhập lại mật khẩu" }]}
           >
-            <Input.Password placeholder="Confirm new password" />
+            <Input.Password placeholder="Nhập lại mật khẩu" />
           </Form.Item>
 
           <Form.Item>
