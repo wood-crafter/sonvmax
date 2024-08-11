@@ -230,6 +230,29 @@ function ManageOrder() {
     }
   };
 
+  const createInvoice = async (id: string) => {
+    const createInvoiceRes = await authFetch(`${API_ROOT}/invoice/${id}`, {
+      ...requestOptions,
+      method: "POST",
+      headers: {
+        ...requestOptions.headers,
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (createInvoiceRes.ok) {
+      api.open({
+        message: "Tạo hóa đơn thành công",
+        icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+      });
+    } else {
+      api.open({
+        message: "Tạo hóa đơn thất bại",
+        icon: <FrownOutlined style={{ color: "red" }} />,
+      });
+    }
+  };
+
   const columns: ColumnType<Order>[] = [
     {
       title: "id",
@@ -359,6 +382,13 @@ function ManageOrder() {
                 }}
               >
                 Sửa
+              </Button>
+              <Button
+                onClick={() => {
+                  createInvoice(record.id);
+                }}
+              >
+                Tạo hóa đơn
               </Button>
             </>
           )}
