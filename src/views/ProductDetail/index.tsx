@@ -14,8 +14,6 @@ import { ColorResult, SketchPicker } from "react-color";
 import ColorTable from "../../components/ColorTable";
 import { requestOptions } from "../../hooks/utils";
 
-const noColorId = "clzlnun8d000d2urtsjgce2bi";
-
 type VolumeSelectProps = {
   setSelectingVolume: React.Dispatch<React.SetStateAction<string>>;
   product: Product | undefined;
@@ -50,6 +48,7 @@ function ProductDetail() {
   const authFetch = useAuthenticatedFetch();
   const currentProductId = useLocation().pathname.split("/")[2];
   const { data: product } = useProductsById(currentProductId);
+  console.info(product);
   const [selectingVolume, setSelectingVolume] = useState("");
   const [currentColor, setCurrentColor] = useState<Color | null>({
     r: 255,
@@ -111,7 +110,7 @@ function ProductDetail() {
       volumeId: selectingVolume ? selectingVolume : product?.volumes[0].id,
     };
 
-    if (product?.categoryId !== noColorId) {
+    if (product?.canColorPick) {
       cartBody.rgb = {
         r: currentColor.r,
         g: currentColor.g,
@@ -165,7 +164,7 @@ function ProductDetail() {
   return (
     <div className="ProductDetail">
       {contextHolder}
-      {product?.categoryId !== noColorId && (
+      {product?.canColorPick && (
         <ColorTable
           setCurrentColor={setCurrentColor}
           isOpen={isColorModalOpen}
@@ -203,7 +202,7 @@ function ProductDetail() {
                       ?.price ??
                       product?.volumes[0]?.price ??
                       0) *
-                    (product?.categoryId === noColorId ? 1 : ratioPriceColor)
+                    (product?.canColorPick ? ratioPriceColor : 1)
                 )}
               </div>
             )}
@@ -219,18 +218,14 @@ function ProductDetail() {
                       ?.price ??
                       product?.volumes[0]?.price ??
                       0) *
-                      (product?.categoryId === noColorId
-                        ? 1
-                        : ratioPriceColor) *
+                      (!product?.canColorPick ? 1 : ratioPriceColor) *
                       numOfProduct *
                       (100 - discount)) /
                       100
                   )
                 : NumberToVND.format(
                     numOfProduct *
-                      (product?.categoryId === noColorId
-                        ? 1
-                        : ratioPriceColor) *
+                      (!product?.canColorPick ? 1 : ratioPriceColor) *
                       (product?.volumes.find((it) => it.id === selectingVolume)
                         ?.price ??
                         product?.volumes[0]?.price ??
@@ -238,7 +233,7 @@ function ProductDetail() {
                   )}
             </div>
           </p>
-          {product?.categoryId !== noColorId && (
+          {product?.canColorPick && (
             <div
               style={{
                 width: "100%",
