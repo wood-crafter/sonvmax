@@ -324,12 +324,11 @@ function AddProductButton(props: AddProductButtonProps) {
           />
 
           <label htmlFor="category">Loại sản phẩm</label>
-          <select
+          <Select
             value={nextCategory}
             id="category"
-            name="category"
-            onChange={(e) => {
-              setNextCategory(e.target.value);
+            onChange={(value) => {
+              setNextCategory(value);
             }}
           >
             <option value="" disabled selected>
@@ -337,12 +336,12 @@ function AddProductButton(props: AddProductButtonProps) {
             </option>
             {categories?.map((category: Category) => {
               return (
-                <option key={category.id} value={category.id}>
+                <Select.Option key={category.id} value={category.id}>
                   {category.name}
-                </option>
+                </Select.Option>
               );
             })}
-          </select>
+          </Select>
           <Radio.Group
             onChange={(e) => {
               setNextActiveProduct(e.target.value);
@@ -586,20 +585,19 @@ function UpdateProductModal(props: UpdateProductModalProps) {
             autoSize={{ minRows: 5, maxRows: 30 }}
           />
           <label htmlFor="category">Loại sản phẩm</label>
-          <select
+          <Select
             value={category}
             id="category"
-            name="category"
-            onChange={(e) => {
-              setCategory(e.target.value);
+            onChange={(value) => {
+              setCategory(value);
             }}
           >
             {categories?.map((category: Category) => (
-              <option key={category.id} value={category.id}>
+              <Select.Option key={category.id} value={category.id}>
                 {category.name}
-              </option>
+              </Select.Option>
             ))}
-          </select>
+          </Select>
           <Radio.Group
             onChange={(e) => {
               setActiveProduct(e.target.value);
