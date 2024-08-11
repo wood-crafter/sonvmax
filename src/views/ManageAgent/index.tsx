@@ -210,11 +210,8 @@ function ManageAgent() {
     if (
       !nextAgentFullName ||
       !nextAgentEmail ||
-      !nextAgentAddress ||
       !nextAgentName ||
       !nextAgentUsername ||
-      !nextAgentPhoneNumber ||
-      !nextAgentTaxCode ||
       !nextDebitLimit ||
       !nextAccountHave ||
       !nextAccountDebit ||
@@ -229,9 +226,6 @@ function ManageAgent() {
       username: nextAgentUsername,
       password: "",
       rank: +nextRank,
-      address: nextAgentAddress,
-      taxCode: nextAgentTaxCode,
-      phoneNumber: nextAgentPhoneNumber,
       fullName: nextAgentFullName,
       agentName: nextAgentName,
       debitLimit: +nextDebitLimit,
@@ -387,14 +381,20 @@ function ManageAgent() {
       >
         {currentEditing && (
           <div className="modal-update-container">
-            <label htmlFor="agent-email">Email đại lý: </label>
+            <label htmlFor="agent-email" style={{ display: "flex" }}>
+              Email đại lý:{" "}
+              <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Input
               value={currentEditing?.email}
               type="text"
               name="agent-email"
               readOnly
             />
-            <label htmlFor="debitLimit">Công nợ tối đa: </label>
+            <label htmlFor="debitLimit" style={{ display: "flex" }}>
+              Công nợ tối đa:{" "}
+              <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Input
               name="debitLimit"
               value={debitLimit}
@@ -404,7 +404,10 @@ function ManageAgent() {
               placeholder={currentEditing.debitLimit.toString()}
               maxLength={16}
             />
-            <label htmlFor="accountDebit">Dư nợ hiện tại: </label>
+            <label htmlFor="accountDebit" style={{ display: "flex" }}>
+              Dư nợ hiện tại:{" "}
+              <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Input
               name="accountDebit"
               value={accountDebit}
@@ -414,7 +417,10 @@ function ManageAgent() {
               placeholder={currentEditing.accountDebit.toString()}
               maxLength={16}
             />
-            <label htmlFor="accountHave">Tài khoản hiện có: </label>
+            <label htmlFor="accountHave" style={{ display: "flex" }}>
+              Tài khoản hiện có:{" "}
+              <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Input
               name="accountHave"
               value={accountHave}
@@ -424,7 +430,10 @@ function ManageAgent() {
               placeholder={currentEditing.accountHave.toString()}
               maxLength={16}
             />
-            <label htmlFor="rank">Cấp đại lý: </label>
+            <label htmlFor="rank" style={{ display: "flex" }}>
+              Cấp đại lý:{" "}
+              <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Select
               value={rank}
               onChange={(value) => setRank(value)}
@@ -438,7 +447,10 @@ function ManageAgent() {
 
             {sales && sales.length && (
               <>
-                <label htmlFor="sales">Nhân viên quản lý: </label>
+                <label htmlFor="sales" style={{ display: "flex" }}>
+                  Nhân viên quản lý:{" "}
+                  <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+                </label>
                 <Select
                   value={sale}
                   onChange={(value) => setSale(value)}
@@ -462,27 +474,36 @@ function ManageAgent() {
         onCancel={handleAddCancel}
       >
         <div className="modal-update-container">
-          <label htmlFor="agent-fullname">Tên đầy đủ đại lý: </label>
+          <label htmlFor="agent-fullname" style={{ display: "flex" }}>
+            Tên người đại diện:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Input
             value={nextAgentFullName}
             type="text"
-            placeholder="Thêm tên đại lý"
+            placeholder="Thêm tên người đại diện"
             onChange={(e) => {
               setNextAgentFullName(e.target.value);
             }}
             name="agent-fullname"
           />
-          <label htmlFor="agent-email">Email đại lý: </label>
+          <label htmlFor="agent-email" style={{ display: "flex" }}>
+            Email đại lý:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
+          </label>
           <Input
             value={nextAgentEmail}
             type="text"
-            placeholder="Thêm tên đại lý"
+            placeholder="Thêm email đại lý"
             onChange={(e) => {
               setNextAgentEmail(e.target.value);
             }}
             name="agent-email"
           />
-          <label htmlFor="agent-username">Tên đăng nhập đại lý: </label>
+          <label htmlFor="agent-username" style={{ display: "flex" }}>
+            Tên đăng nhập đại lý:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
+          </label>
           <Input
             value={nextAgentUsername}
             type="text"
@@ -492,27 +513,34 @@ function ManageAgent() {
             }}
             name="agent-username"
           />
-          <label htmlFor="agent-address">Địa chỉ đại lý: </label>
+          <label htmlFor="agent-address" style={{ display: "flex" }}>
+            Địa chỉ đại lý:
+          </label>
           <Input
             value={nextAgentAddress}
             type="text"
-            placeholder="Thêm tên địa chỉ đại lý"
+            placeholder="Thêm địa chỉ đại lý"
             onChange={(e) => {
               setNextAgentAddress(e.target.value);
             }}
             name="agent-address"
           />
-          <label htmlFor="agent-phone-number">Số điện thoại đại lý: </label>
+          <label htmlFor="agent-phone-number" style={{ display: "flex" }}>
+            Số điện thoại đại lý:
+          </label>
           <Input
             value={nextAgentPhoneNumber}
             type="text"
-            placeholder="Thêm tên đại lý"
+            placeholder="Thêm số điện thoại"
             onChange={(e) => {
               setNextAgentPhoneNumber(e.target.value);
             }}
             name="agent-phone-number"
           />
-          <label htmlFor="agent-name">Tên đại lý: </label>
+          <label htmlFor="agent-name" style={{ display: "flex" }}>
+            Tên đại lý:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
+          </label>
           <Input
             value={nextAgentName}
             type="text"
@@ -522,7 +550,9 @@ function ManageAgent() {
             }}
             name="agent-name"
           />
-          <label htmlFor="agent-tax-code">Mã số thuế đại lý: </label>
+          <label htmlFor="agent-tax-code" style={{ display: "flex" }}>
+            Mã số thuế đại lý:
+          </label>
           <Input
             value={nextAgentTaxCode}
             type="text"
@@ -532,7 +562,10 @@ function ManageAgent() {
             }}
             name="agent-tax-code"
           />
-          <label htmlFor="debit-limit">Công nợ tối đa: </label>
+          <label htmlFor="debit-limit" style={{ display: "flex" }}>
+            Công nợ tối đa:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
+          </label>
           <Input
             name="debit-limit"
             value={nextDebitLimit}
@@ -541,7 +574,9 @@ function ManageAgent() {
             }}
             maxLength={16}
           />
-          <label htmlFor="account-debit">Dư nợ: </label>
+          <label htmlFor="account-debit" style={{ display: "flex" }}>
+            Dư nợ: <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
+          </label>
           <Input
             name="account-debit"
             value={nextAccountDebit}
@@ -550,7 +585,10 @@ function ManageAgent() {
             }}
             maxLength={16}
           />
-          <label htmlFor="account-have">Tài khoản hiện có: </label>
+          <label htmlFor="account-have" style={{ display: "flex" }}>
+            Tài khoản hiện có:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
+          </label>
           <Input
             name="account-have"
             value={nextAccountHave}
@@ -559,7 +597,10 @@ function ManageAgent() {
             }}
             maxLength={16}
           />
-          <label htmlFor="rank">Cấp đại lý: </label>
+          <label htmlFor="rank" style={{ display: "flex" }}>
+            Cấp đại lý:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
+          </label>
           <Select
             value={nextRank}
             onChange={(value) => setNextRank(value)}
@@ -572,7 +613,10 @@ function ManageAgent() {
 
           {sales && sales.length && (
             <>
-              <label htmlFor="sales">Nhân viên quản lý: </label>
+              <label htmlFor="sales" style={{ display: "flex" }}>
+                Nhân viên quản lý:{" "}
+                <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
+              </label>
               <Select
                 value={nextSale}
                 onChange={(value) => setNextSale(value)}

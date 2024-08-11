@@ -283,21 +283,29 @@ function ManageStaff() {
       >
         {currentEditing && (
           <div className="modal-update-container">
-            <label htmlFor="fullName">Họ và tên nhân viên: </label>
+            <label htmlFor="fullName" style={{ display: "flex" }}>
+              Họ và tên nhân viên:{" "}
+              <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Input
               value={currentEditing?.fullName}
               type="text"
               name="fullName"
               readOnly
             />
-            <label htmlFor="username">Tên đăng nhập: </label>
+            <label htmlFor="username" style={{ display: "flex" }}>
+              Tên đăng nhập:{" "}
+              <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Input
               value={currentEditing?.username}
               type="text"
               name="username"
               readOnly
             />
-            <label htmlFor="username">Email: </label>
+            <label htmlFor="username" style={{ display: "flex" }}>
+              Email: <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Input
               value={email}
               type="email"
@@ -324,7 +332,10 @@ function ManageStaff() {
               <Radio value={true}>Hoạt động</Radio>
               <Radio value={false}>Không hoạt động</Radio>
             </Radio.Group>
-            <label htmlFor="role">Vai trò:</label>
+            <label htmlFor="role" style={{ display: "flex" }}>
+              Vai trò:
+              <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Select
               value={role}
               id="role"
@@ -352,7 +363,10 @@ function ManageStaff() {
         onCancel={handleAddCancel}
       >
         <div className="modal-update-container">
-          <label htmlFor="fullName">Tên đầy đủ nhân viên: </label>
+          <label htmlFor="fullName" style={{ display: "flex" }}>
+            Tên đầy đủ nhân viên:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Input
             value={nextFullName}
             type="text"
@@ -362,7 +376,10 @@ function ManageStaff() {
             }}
             name="fullName"
           />
-          <label htmlFor="username">Tài khoản nhân viên: </label>
+          <label htmlFor="username" style={{ display: "flex" }}>
+            Tài khoản nhân viên:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Input
             value={nextUsername}
             type="text"
@@ -372,7 +389,10 @@ function ManageStaff() {
             }}
             name="username"
           />
-          <label htmlFor="nextEmail">Email nhân viên: </label>
+          <label htmlFor="nextEmail" style={{ display: "flex" }}>
+            Email nhân viên:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Input
             value={nextEmail}
             type="text"
@@ -382,7 +402,10 @@ function ManageStaff() {
             }}
             name="nextEmail"
           />
-          <label htmlFor="phone-number">Số điện thoại nhân viên: </label>
+          <label htmlFor="phone-number" style={{ display: "flex" }}>
+            Số điện thoại nhân viên:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Input
             value={nextPhoneNumber}
             type="text"
@@ -410,7 +433,9 @@ function ManageStaff() {
             <Radio value={true}>Hoạt động</Radio>
             <Radio value={false}>Không hoạt động</Radio>
           </Radio.Group>
-          <label htmlFor="role">Vai trò</label>
+          <label htmlFor="role" style={{ display: "flex" }}>
+            Vai trò<div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Select
             value={nextRole}
             id="role"

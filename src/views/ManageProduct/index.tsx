@@ -202,7 +202,10 @@ function AddProductButton(props: AddProductButtonProps) {
         onCancel={handleAddCancel}
       >
         <div className="modal-update-container">
-          <label htmlFor="product-name">Tên sản phẩm: </label>
+          <label htmlFor="product-name" style={{ display: "flex" }}>
+            Tên sản phẩm:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Input
             value={nextProductName}
             type="text"
@@ -215,7 +218,10 @@ function AddProductButton(props: AddProductButtonProps) {
           {nextVolumes.length !== 0 &&
             nextVolumes.map((it, index) => (
               <>
-                <label htmlFor="price">Khối lượng {index + 1}: </label>
+                <label htmlFor="price" style={{ display: "flex" }}>
+                  Khối lượng {index + 1}:{" "}
+                  <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+                </label>
                 <div style={{ width: "100%", display: "flex" }}>
                   <Select
                     onChange={(value) => {
@@ -259,7 +265,10 @@ function AddProductButton(props: AddProductButtonProps) {
                   )}
                 </div>
 
-                <label htmlFor="price">Giá {index + 1}: </label>
+                <label htmlFor="price" style={{ display: "flex" }}>
+                  Giá {index + 1}:{" "}
+                  <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+                </label>
                 <Input
                   value={it?.price}
                   onChange={(e) => {
@@ -303,7 +312,10 @@ function AddProductButton(props: AddProductButtonProps) {
                 )}
               </>
             ))}
-          <label htmlFor="product-name">Link ảnh sản phẩm: </label>
+          <label htmlFor="product-name" style={{ display: "flex" }}>
+            Link ảnh sản phẩm:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Input
             value={nextImage}
             type="text"
@@ -313,7 +325,10 @@ function AddProductButton(props: AddProductButtonProps) {
             }}
             name="product-name"
           />
-          <label htmlFor="product-description">Chi tiết: </label>
+          <label htmlFor="product-description" style={{ display: "flex" }}>
+            Chi tiết:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <TextArea
             value={nextProductDescription}
             placeholder="Thêm chi tiết"
@@ -324,7 +339,10 @@ function AddProductButton(props: AddProductButtonProps) {
             name="product-description"
           />
 
-          <label htmlFor="category">Loại sản phẩm</label>
+          <label htmlFor="category" style={{ display: "flex" }}>
+            Loại sản phẩm{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Select
             value={nextCategory}
             id="category"
@@ -472,7 +490,10 @@ function UpdateProductModal(props: UpdateProductModalProps) {
     >
       {currentEditing && (
         <div className="modal-update-container">
-          <label htmlFor="product-name">Tên sản phẩm: </label>
+          <label htmlFor="product-name" style={{ display: "flex" }}>
+            Tên sản phẩm:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Input
             value={productName}
             type="text"
@@ -482,7 +503,10 @@ function UpdateProductModal(props: UpdateProductModalProps) {
             }}
             name="product-name"
           />
-          <label htmlFor="product-image">Link ảnh sản phẩm: </label>
+          <label htmlFor="product-image" style={{ display: "flex" }}>
+            Link ảnh sản phẩm:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Input
             value={image}
             type="text"
@@ -495,7 +519,10 @@ function UpdateProductModal(props: UpdateProductModalProps) {
           {volumes.length !== 0 &&
             volumes.map((volume, index) => (
               <div key={index}>
-                <label htmlFor="volume">Khối lượng {index + 1}: </label>
+                <label htmlFor="volume" style={{ display: "flex" }}>
+                  Khối lượng {index + 1}:{" "}
+                  <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+                </label>
                 <div style={{ width: "100%", display: "flex" }}>
                   <Select
                     defaultValue={volume.id}
@@ -535,7 +562,10 @@ function UpdateProductModal(props: UpdateProductModalProps) {
                     />
                   )}
                 </div>
-                <label htmlFor="price">Giá {index + 1}: </label>
+                <label htmlFor="price" style={{ display: "flex" }}>
+                  Giá {index + 1}:{" "}
+                  <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+                </label>
                 <Input
                   value={volume?.price}
                   onChange={(e) => {
@@ -575,7 +605,10 @@ function UpdateProductModal(props: UpdateProductModalProps) {
               />
             </div>
           )}
-          <label htmlFor="product-description">Chi tiết sản phẩm: </label>
+          <label htmlFor="product-description" style={{ display: "flex" }}>
+            Chi tiết sản phẩm:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <TextArea
             name="description"
             value={description}
@@ -585,7 +618,10 @@ function UpdateProductModal(props: UpdateProductModalProps) {
             placeholder={currentEditing.description}
             autoSize={{ minRows: 5, maxRows: 30 }}
           />
-          <label htmlFor="category">Loại sản phẩm</label>
+          <label htmlFor="category" style={{ display: "flex" }}>
+            Loại sản phẩm{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Select
             value={category}
             id="category"

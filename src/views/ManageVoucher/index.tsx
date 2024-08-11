@@ -265,14 +265,20 @@ function ManageVoucher() {
       >
         {currentEditing && (
           <div className="modal-update-container">
-            <label htmlFor="code">Mã voucher: </label>
+            <label htmlFor="code" style={{ display: "flex" }}>
+              Mã voucher:{" "}
+              <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Input
               value={code}
               type="text"
               name="code"
               onChange={(e) => setCode(e.target.value)}
             />
-            <label htmlFor="discountAmount">Phần trăm giảm: </label>
+            <label htmlFor="discountAmount" style={{ display: "flex" }}>
+              Phần trăm giảm:{" "}
+              <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Input
               value={discountAmount}
               type="number"
@@ -296,7 +302,10 @@ function ManageVoucher() {
               <Radio value={true}>Hoạt động</Radio>
               <Radio value={false}>Ngừng</Radio>
             </Radio.Group>
-            <label htmlFor="agent">Đại lý thụ hưởng: </label>
+            <label htmlFor="agent" style={{ display: "flex" }}>
+              Đại lý thụ hưởng:{" "}
+              <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+            </label>
             <Select
               value={agent}
               onChange={(value) => setAgent(value)}
@@ -322,7 +331,10 @@ function ManageVoucher() {
         cancelText="Huỷ"
       >
         <div className="modal-update-container">
-          <label htmlFor="code">Mã voucher: </label>
+          <label htmlFor="code" style={{ display: "flex" }}>
+            Mã voucher:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Input
             value={nextCode}
             type="text"
@@ -330,7 +342,10 @@ function ManageVoucher() {
             onChange={(e) => setNextCode(e.target.value)}
             name="code"
           />
-          <label htmlFor="discountAmount">Phần trăm giảm: </label>
+          <label htmlFor="discountAmount" style={{ display: "flex" }}>
+            Phần trăm giảm:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Input
             value={nextDiscountAmount}
             type="number"
@@ -352,7 +367,10 @@ function ManageVoucher() {
             <Radio value={true}>Hoạt động</Radio>
             <Radio value={false}>Ngừng</Radio>
           </Radio.Group>
-          <label htmlFor="agent">Đại lý thụ hưởng: </label>
+          <label htmlFor="agent" style={{ display: "flex" }}>
+            Đại lý thụ hưởng:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
+          </label>
           <Select
             value={nextAgent}
             onChange={(value) => setNextAgent(value)}
