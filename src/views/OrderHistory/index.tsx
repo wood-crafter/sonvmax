@@ -52,7 +52,7 @@ function OrderHistory() {
     order.orderProductSnapshots.forEach((it) => {
       const cartBody = {
         quantity: it.quantity,
-        colorId: it.colorId,
+        colorPick: it.colorPick,
       };
 
       orderPromises.push(

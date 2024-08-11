@@ -182,6 +182,7 @@ function AddProductButton(props: AddProductButtonProps) {
   };
   const handleAddCancel = () => {
     setIsModalOpen(false);
+    clearAddInput();
   };
   return (
     <>
