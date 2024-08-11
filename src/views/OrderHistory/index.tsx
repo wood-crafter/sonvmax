@@ -52,7 +52,8 @@ function OrderHistory() {
     order.orderProductSnapshots.forEach((it) => {
       const cartBody = {
         quantity: it.quantity,
-        colorPick: it.colorPick,
+        rgb: it.colorPick,
+        volumeId: it.volumeId,
       };
 
       orderPromises.push(

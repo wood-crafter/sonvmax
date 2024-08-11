@@ -257,8 +257,9 @@ function UserCart() {
                   className="rePick-color"
                   style={{
                     border: "1px solid black",
+                    marginLeft: "1rem",
                     marginRight: "1rem",
-                    backgroundColor: `rgb(${item.colorPick.r}, ${item.colorPick.g}, ${item.colorPick.b})`,
+                    backgroundColor: `rgb(${item.colorPick?.r}, ${item.colorPick?.g}, ${item.colorPick?.b})`,
                   }}
                 ></button>
                 <DebouncedInputNumber
