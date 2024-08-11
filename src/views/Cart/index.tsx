@@ -259,7 +259,9 @@ function UserCart() {
                     border: "1px solid black",
                     marginLeft: "1rem",
                     marginRight: "1rem",
-                    backgroundColor: `rgb(${item.colorPick?.r}, ${item.colorPick?.g}, ${item.colorPick?.b})`,
+                    backgroundColor: `rgb(${item.colorPick?.r ?? 255}, ${
+                      item.colorPick?.g ?? 255
+                    }, ${item.colorPick?.b ?? 255})`,
                   }}
                 ></button>
                 <DebouncedInputNumber
