@@ -130,6 +130,7 @@ export type Staff = {
   username: string
   password: string
   role: Role
+  email: string
 }
 
 export type Sales = {

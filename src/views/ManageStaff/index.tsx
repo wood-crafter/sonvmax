@@ -29,6 +29,7 @@ type UpdateData = {
   gender: number;
   isActive: boolean;
   roleId?: string;
+  email: string;
 };
 
 function ManageStaff() {
@@ -66,18 +67,20 @@ function ManageStaff() {
   const [gender, setGender] = useState(1);
   const [isActive, setIsActive] = useState(false);
   const [role, setRole] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
 
   const [nextFullName, setNextFullName] = useState("");
   const [nextPhoneNumber, setNextPhoneNumber] = useState("");
   const [nextIsActive, setNextIsActive] = useState(false);
   const [nextGender, setNextGender] = useState(0);
   const [nextUsername, setNextUsername] = useState("");
-  const [nextPassword, setNextPassword] = useState("");
+  const [nextEmail, setNextEmail] = useState("");
   const [nextRole, setNextRole] = useState<string>("");
 
   const [currentEditing, setCurrentEditing] = useState<Staff | null>(null);
   const handleUpdateAgent = async () => {
     const updateData: UpdateData = {
+      email: email,
       gender: +gender,
       isActive: isActive,
     };
@@ -103,6 +106,7 @@ function ManageStaff() {
   const showModal = (record: Staff) => {
     setGender(record.gender);
     setIsActive(record.isActive);
+    setEmail(record.email);
     setCurrentEditing(record);
     setIsModalOpen(true);
   };
@@ -132,7 +136,7 @@ function ManageStaff() {
   const clearAddInput = () => {
     setNextFullName("");
     setNextUsername("");
-    setNextPassword("");
+    setNextEmail("");
     setNextGender(0);
     setNextIsActive(false);
     setNextPhoneNumber("");
@@ -143,7 +147,7 @@ function ManageStaff() {
     if (
       !nextFullName ||
       !nextUsername ||
-      !nextPassword ||
+      !nextEmail ||
       !nextPhoneNumber ||
       !nextRole
     ) {
@@ -153,7 +157,7 @@ function ManageStaff() {
     const staffToAdd = JSON.stringify({
       roleId: nextRole,
       username: nextUsername,
-      password: nextPassword,
+      email: nextEmail,
       isActive: nextIsActive,
       gender: nextGender,
       phoneNumber: nextPhoneNumber,
@@ -191,6 +195,11 @@ function ManageStaff() {
       dataIndex: "fullName",
       key: "fullName",
       sorter: (a, b) => a.fullName.localeCompare(b.fullName),
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
       title: "Tên đăng nhập",
@@ -288,6 +297,15 @@ function ManageStaff() {
               name="username"
               readOnly
             />
+            <label htmlFor="username">Email: </label>
+            <Input
+              value={email}
+              type="email"
+              name="email"
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
             <Radio.Group
               onChange={(e) => {
                 setGender(e.target.value);
@@ -354,15 +372,15 @@ function ManageStaff() {
             }}
             name="username"
           />
-          <label htmlFor="password">Mật khẩu nhân viên: </label>
+          <label htmlFor="nextEmail">Email nhân viên: </label>
           <Input
-            value={nextPassword}
+            value={nextEmail}
             type="text"
-            placeholder="Thêm tên mật khẩu nhân viên"
+            placeholder="Thêm email nhân viên"
             onChange={(e) => {
-              setNextPassword(e.target.value);
+              setNextEmail(e.target.value);
             }}
-            name="password"
+            name="nextEmail"
           />
           <label htmlFor="phone-number">Số điện thoại nhân viên: </label>
           <Input
