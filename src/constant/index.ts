@@ -32,7 +32,7 @@ export const OWNER = {
 
 export const SALES = {
   role: 'SALES',
-  defaultPath: '/manage/agents'
+  defaultPath: '/manage/orders'
 }
 
 export const ACCOUTANT = {
