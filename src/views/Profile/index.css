@@ -1,3 +1,20 @@
 .Profile {
   min-height: calc(100vh - 6rem);
+  color: black;
+  margin: 4rem;
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.Profile .line-container {
+  display: flex;
+}
+
+.Profile .prop-data {
+  margin-left: 1rem;
+}
+
+.Profile .marginTop1 {
+  margin-top: 1rem;
 }

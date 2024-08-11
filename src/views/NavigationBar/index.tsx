@@ -117,6 +117,11 @@ const useManagerMenuItems = () => {
         ]
       : []),
     {
+      label: <Link to="/manage/profile">Hồ sơ</Link>,
+      key: "manage/profile",
+      icon: <ProfileOutlined />,
+    },
+    {
       label: <div onClick={logout}>Đăng xuất</div>,
       key: "logout",
     },
