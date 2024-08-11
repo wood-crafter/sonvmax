@@ -9,6 +9,7 @@ import {
   Input,
   Radio,
   Popconfirm,
+  Select,
 } from "antd";
 import { ColumnType } from "antd/es/table";
 import {
@@ -306,22 +307,23 @@ function ManageStaff() {
               <Radio value={false}>Không hoạt động</Radio>
             </Radio.Group>
             <label htmlFor="role">Vai trò:</label>
-            <select
+            <Select
               value={role}
               id="role"
-              name="role"
-              onChange={(e) => {
-                setRole(e.target.value);
+              onChange={(value) => {
+                setRole(value);
               }}
             >
               {roles?.map((role: Role) => {
-                return (
-                  <option key={role.id} value={role.id}>
-                    {role.name}
-                  </option>
-                );
+                if (role.name !== "AGENT") {
+                  return (
+                    <Select.Option key={role.id} value={role.id}>
+                      {role.name}
+                    </Select.Option>
+                  );
+                }
               })}
-            </select>
+            </Select>
           </div>
         )}
       </Modal>
@@ -391,26 +393,27 @@ function ManageStaff() {
             <Radio value={false}>Không hoạt động</Radio>
           </Radio.Group>
           <label htmlFor="role">Vai trò</label>
-          <select
+          <Select
             value={nextRole}
-            id="category"
-            name="category"
-            onChange={(e) => {
-              setNextRole(e.target.value);
+            id="role"
+            onChange={(value) => {
+              setNextRole(value);
             }}
           >
-            <option value="" disabled selected>
+            <Select.Option value="" disabled selected>
               Chọn vai trò
-            </option>
+            </Select.Option>
             {roles &&
               roles.map((role: Role) => {
-                return (
-                  <option key={role.id} value={role.id}>
-                    {role.name}
-                  </option>
-                );
+                if (role.name !== "AGENT") {
+                  return (
+                    <Select.Option key={role.id} value={role.id}>
+                      {role.name}
+                    </Select.Option>
+                  );
+                }
               })}
-          </select>
+          </Select>
         </div>
       </Modal>
     </div>
