@@ -20,6 +20,7 @@ import {
   HistoryOutlined,
   GiftOutlined,
   DatabaseOutlined,
+  LockOutlined,
 } from "@ant-design/icons";
 import { useCategories } from "../../hooks/useCategories";
 import { ACCOUTANT, OWNER, SALES, STOCKER } from "../../constant";
@@ -117,6 +118,11 @@ const useManagerMenuItems = () => {
         ]
       : []),
     {
+      label: <Link to="/change_password">Đổi mật khẩu</Link>,
+      key: "change_password",
+      icon: <LockOutlined />,
+    },
+    {
       label: <Link to="/manage/profile">Hồ sơ</Link>,
       key: "manage/profile",
       icon: <ProfileOutlined />,
@@ -174,6 +180,11 @@ const useClientMenuItems = (accessToken: string) => {
             label: <Link to="/profile">Hồ sơ</Link>,
             key: "profile",
             icon: <ProfileOutlined />,
+          },
+          {
+            label: <Link to="/change_password">Đổi mật khẩu</Link>,
+            key: "change_password",
+            icon: <LockOutlined />,
           },
           {
             label: <div onClick={logout}>Đăng xuất</div>,

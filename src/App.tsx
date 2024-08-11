@@ -19,6 +19,7 @@ import OrderHistory from "./views/OrderHistory";
 import Profile from "./views/Profile";
 import ManageVolume from "./views/ManageVolume";
 import { ManageCategories } from "./views/ManageCategories";
+import ChangePassword from "./views/ChangePassword";
 
 const AppRoutes = () => {
   return (
@@ -44,6 +45,14 @@ const AppRoutes = () => {
         element={
           <Layout hasNav requiredLogin>
             <UserCart />
+          </Layout>
+        }
+      />
+      <Route
+        path="/change_password"
+        element={
+          <Layout hasNav requiredLogin>
+            <ChangePassword />
           </Layout>
         }
       />
@@ -153,6 +162,14 @@ const AppRoutes = () => {
           element={
             <Layout hasNav isManager roleAllow={[OWNER.role, STOCKER.role]}>
               <ManageCategories />
+            </Layout>
+          }
+        />
+        <Route
+          path="change_password"
+          element={
+            <Layout hasNav isManager>
+              <ChangePassword />
             </Layout>
           }
         />
