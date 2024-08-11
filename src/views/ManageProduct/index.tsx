@@ -422,7 +422,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
 
     const updateData = {
       categoryId: category,
-      volumes: volumes,
+      volumes: volumes.filter((volume) => volume.id && volume.price),
       nameProduct: productName,
       description: description,
       activeProduct: activeProduct,
