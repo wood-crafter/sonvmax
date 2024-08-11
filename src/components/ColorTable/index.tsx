@@ -31,6 +31,11 @@ function ColorTable(props: ColorTableProps) {
       key: "colorName",
     },
     {
+      title: "Mã màu",
+      dataIndex: "code",
+      key: "code",
+    },
+    {
       title: "Màu",
       key: "color",
       render: (_, color) => {
