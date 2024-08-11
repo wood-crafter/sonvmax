@@ -17,7 +17,8 @@ function Products() {
   const { data, mutate: refreshProducts } = useProducts(
     currentPage,
     10,
-    categoryId
+    categoryId,
+    true
   );
   const products = data?.data ?? [];
 

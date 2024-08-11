@@ -3,9 +3,10 @@ import { API_ROOT } from "../constant"
 import { PagedResponse, Product } from "../type"
 import { requestOptions } from "./utils";
 
-export function useProducts(page: number, size = 20, categoryId:string | undefined = undefined) {
+export function useProducts(page: number, size = 20, categoryId:string | undefined = undefined, active: boolean) {
   if (categoryId) {
-    const { data, isLoading, error, mutate } = useSWR(`/product/get-products-by-category/${categoryId}?page=${page}&size=${size}`, fetchProducts)
+    const url = `/product/get-products-by-category/${categoryId}?page=${page}&size=${size}` + (active ? `&active=${active}` : '')
+    const { data, isLoading, error, mutate } = useSWR(url, fetchProducts)
 
     return {
       data,
@@ -14,7 +15,8 @@ export function useProducts(page: number, size = 20, categoryId:string | undefin
       mutate,
     }
   }
-  const { data, isLoading, error, mutate } = useSWR(`/product/get-product?page=${page}&size=${size}`, fetchProducts)
+  const url = `/product/get-product?page=${page}&size=${size}` + (active ? `&active=${active}` : '')
+  const { data, isLoading, error, mutate } = useSWR(url, fetchProducts)
 
   return {
     data,
