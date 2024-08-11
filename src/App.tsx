@@ -20,6 +20,7 @@ import Profile from "./views/Profile";
 import ManageVolume from "./views/ManageVolume";
 import { ManageCategories } from "./views/ManageCategories";
 import ChangePassword from "./views/ChangePassword";
+import ManageInvoice from "./views/ManageInvoice";
 
 const AppRoutes = () => {
   return (
@@ -114,6 +115,14 @@ const AppRoutes = () => {
               roleAllow={[OWNER.role, ACCOUTANT.role, SALES.role]}
             >
               <ManageAgent />
+            </Layout>
+          }
+        />
+        <Route
+          path="invoice"
+          element={
+            <Layout hasNav isManager roleAllow={[ACCOUTANT.role]}>
+              <ManageInvoice />
             </Layout>
           }
         />

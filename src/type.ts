@@ -80,6 +80,26 @@ export type Order = {
   voucherOrders: {code: string, discountAmount: number}[]
 }
 
+type InvoiceDetails = {
+  agentId: string;
+  createdAt: string;
+  createdBy: string;
+  dueDate: string;
+  id: string;
+  totalAmount: number
+}
+
+export type Invoice = {
+  agentId: string;
+  agentName: string;
+  createdAt: string;
+  fullName: string;
+  invoice: InvoiceDetails;
+  invoiceId: string;
+  staffId: string;
+  updatedAt: string;
+}
+
 export type PagedResponse<T> = {
   message: string
   page: number

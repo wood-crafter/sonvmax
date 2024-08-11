@@ -21,6 +21,7 @@ import {
   GiftOutlined,
   DatabaseOutlined,
   LockOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import { useCategories } from "../../hooks/useCategories";
 import { ACCOUTANT, OWNER, SALES, STOCKER } from "../../constant";
@@ -104,10 +105,15 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
-    {
-      label: "Quản lý hóa đơn",
-      key: "invoice",
-    },
+    ...([ACCOUTANT.role].includes(roleName)
+      ? [
+          {
+            label: <Link to="/manage/invoice">Quản lý hóa đơn</Link>,
+            key: "invoice",
+            icon: <FileTextOutlined />,
+          },
+        ]
+      : []),
     ...([OWNER.role, STOCKER.role].includes(roleName)
       ? [
           {
