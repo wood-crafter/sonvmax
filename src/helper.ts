@@ -69,7 +69,7 @@ export const classifyColor = (rgb: RGB) => {
   if (!rgb) return 1
   const hsl = rgbToHsl(rgb)
   if (!hsl) return 1
-  if (hsl[2] <= 0.25) return 1.5
+  if (hsl[2] <= 0.25) return 1.05
   if (hsl[2] >= 0.75) return 1.2
   return 1.1
 }

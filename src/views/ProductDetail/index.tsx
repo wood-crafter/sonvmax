@@ -48,7 +48,6 @@ function ProductDetail() {
   const authFetch = useAuthenticatedFetch();
   const currentProductId = useLocation().pathname.split("/")[2];
   const { data: product } = useProductsById(currentProductId);
-  console.info(product);
   const [selectingVolume, setSelectingVolume] = useState("");
   const [currentColor, setCurrentColor] = useState<Color | null>({
     r: 255,
