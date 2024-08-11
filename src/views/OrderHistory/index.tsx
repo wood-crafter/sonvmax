@@ -189,6 +189,36 @@ function OrderHistory() {
       },
     },
     {
+      title: "Màu",
+      key: "color",
+      render: (record) => {
+        return (
+          <div
+            style={{
+              width: "3rem",
+              height: "3rem",
+              border: "1px solid black",
+              backgroundColor: `rgb(${record.colorPick?.r ?? 255}, ${
+                record.colorPick?.g ?? 255
+              }, ${record.colorPick?.b ?? 255})`,
+            }}
+          ></div>
+        );
+      },
+    },
+    {
+      title: "Quy cách đóng gói",
+      key: "volume",
+      render: (record) => {
+        return <div>{record?.volumeDetails?.volume}</div>;
+      },
+    },
+    {
+      title: "Ngày mua",
+      key: "createdAt",
+      dataIndex: "createdAt",
+    },
+    {
       title: "Giá",
       key: "price",
       render: (record) => {

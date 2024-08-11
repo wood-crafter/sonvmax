@@ -197,6 +197,18 @@ function UserCart() {
     }
   };
 
+  const updateOrderProduct = async (id: string, volumeId: string) => {
+    await authFetch(`${API_ROOT}/order/update-order-product/${id}`, {
+      ...requestOptions,
+      body: JSON.stringify({ volumeId: volumeId }),
+      method: "PUT",
+      headers: {
+        ...requestOptions.headers,
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    refreshCart();
+  };
   useEffect(() => {
     const currentTotal = currentCart
       ?.filter((item) => cartsChecked.includes(item.id))
@@ -243,7 +255,12 @@ function UserCart() {
                   <div>x{item.quantity}</div>
                 </div>
                 {item?.product?.volumes && (
-                  <Select defaultValue={item.volumeId}>
+                  <Select
+                    defaultValue={item.volumeId}
+                    onChange={(value: string) => {
+                      updateOrderProduct(item.id, value);
+                    }}
+                  >
                     {item?.product?.volumes?.map((volume) => {
                       return (
                         <Select.Option key={volume.id} value={volume.id}>
