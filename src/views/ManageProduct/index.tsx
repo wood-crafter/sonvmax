@@ -482,6 +482,16 @@ function UpdateProductModal(props: UpdateProductModalProps) {
             }}
             name="product-name"
           />
+          <label htmlFor="product-image">Link ảnh sản phẩm: </label>
+          <Input
+            value={image}
+            type="text"
+            placeholder={currentEditing.image}
+            onChange={(e) => {
+              setImage(e.target.value);
+            }}
+            name="product-image"
+          />
           {volumes.length !== 0 &&
             volumes.map((volume, index) => (
               <div key={index}>
