@@ -185,4 +185,10 @@ export type Cart = {
   price: number;
   product: Product;
   colors: Color | null;
+  colorPick: {
+    r: number,
+    g: number,
+    b: number
+  }
+  volumeId: string
 }

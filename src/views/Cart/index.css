@@ -61,3 +61,12 @@
 .Cart .cart-item:first-child {
   border: 0 !important;
 }
+
+.Cart .rePick-color {
+  height: 3rem;
+  width: 3rem;
+}
+
+.Cart .rePick-color:hover {
+  cursor: pointer;
+}

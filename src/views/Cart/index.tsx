@@ -242,7 +242,25 @@ function UserCart() {
                   </div>
                   <div>x{item.quantity}</div>
                 </div>
-                <div className="">{item.colors}</div>
+                {item?.product?.volumes && (
+                  <Select defaultValue={item.volumeId}>
+                    {item?.product?.volumes?.map((volume) => {
+                      return (
+                        <Select.Option key={volume.id} value={volume.id}>
+                          {volume.volume}
+                        </Select.Option>
+                      );
+                    })}
+                  </Select>
+                )}
+                <button
+                  className="rePick-color"
+                  style={{
+                    border: "1px solid black",
+                    marginRight: "1rem",
+                    backgroundColor: `rgb(${item.colorPick.r}, ${item.colorPick.g}, ${item.colorPick.b})`,
+                  }}
+                ></button>
                 <DebouncedInputNumber
                   refreshCart={refreshCart}
                   className="cart-item-num-of-product"
