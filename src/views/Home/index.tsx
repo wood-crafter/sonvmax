@@ -8,8 +8,6 @@ import { HOME_TOP_BANNERS } from "../../constant";
 import { NumberToVND } from "../../helper";
 import { useProducts } from "../../hooks/useProduct";
 import { Product } from "../../type";
-import { CalendarOutlined, UserOutlined } from "@ant-design/icons";
-
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -107,129 +105,6 @@ function Home() {
       <Link to="/products">
         <Button>Xem tất cả</Button>
       </Link>
-
-      <Divider className="Home-divider">Bài viết</Divider>
-      <div className="news-container">
-        <Link
-          target="_blank"
-          to="https://sonvmax.com/cac-buoc-ban-nhat-dinh-phai-lam-truoc-khi-son-nha.html"
-          className="news-image-holder"
-        >
-          <img src="https://sonvmax.com/bizweb.dktcdn.net/thumb/grande/100/156/168/articles/78480535-1757713167694321-2269016164321460224-n3bb1.jpg?v=1637219139390" />
-        </Link>
-        <Link
-          target="_blank"
-          to="https://sonvmax.com/tam-quan-trong-xu-ly-be-mat-tuong-truoc-khi-thi-cong.html"
-          className="news-image-holder"
-        >
-          <img src="https://sonvmax.com/bizweb.dktcdn.net/thumb/grande/100/156/168/articles/mattuongphang30fe.jpg?v=1636962555180" />
-        </Link>
-        <Link
-          target="_blank"
-          to="https://sonvmax.com/cach-chon-mau-son-nha-dep.html"
-          className="news-image-holder"
-        >
-          <img src="https://sonvmax.com/bizweb.dktcdn.net/thumb/grande/100/156/168/articles/mau-son-nha-dep-do-ben-mau-600x451ba95.jpg?v=1636788664067" />
-        </Link>
-      </div>
-      <div className="news-container">
-        <div className="news-description">
-          <a
-            href="https://sonvmax.com/cac-buoc-ban-nhat-dinh-phai-lam-truoc-khi-son-nha.html"
-            target="_blank"
-            className="news-title"
-          >
-            CÁC BƯỚC BẠN NHẤT ĐỊNH PHẢI LÀM TRƯỚC KHI SƠN NHÀ
-          </a>
-          <a
-            href="https://sonvmax.com/cac-buoc-ban-nhat-dinh-phai-lam-truoc-khi-son-nha.html"
-            target="_blank"
-            className="read-more"
-          >
-            Đọc thêm
-          </a>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-              width: "100%",
-            }}
-          >
-            <div style={{ display: "flex" }}>
-              <CalendarOutlined />
-              <p>18/11/2021</p>
-            </div>
-            <div style={{ display: "flex" }}>
-              <UserOutlined />
-              <p>Hana Ngọc Ánh</p>
-            </div>
-          </div>
-        </div>
-        <div className="news-description">
-          <a
-            className="news-title"
-            target="_blank"
-            href="https://sonvmax.com/tam-quan-trong-xu-ly-be-mat-tuong-truoc-khi-thi-cong.html"
-          >
-            TẦM QUAN TRỌNG XỬ LÝ BỀ MẶT TƯỜNG TRƯỚC KHI THI CÔNG
-          </a>
-          <a
-            href="https://sonvmax.com/cac-buoc-ban-nhat-dinh-phai-lam-truoc-khi-son-nha.html"
-            target="_blank"
-            className="read-more"
-          >
-            Đọc thêm
-          </a>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-              width: "100%",
-            }}
-          >
-            <div style={{ display: "flex" }}>
-              <CalendarOutlined />
-              <p>15/11/2021</p>
-            </div>
-            <div style={{ display: "flex" }}>
-              <UserOutlined />
-              <p>Hana Ngọc Ánh</p>
-            </div>
-          </div>
-        </div>
-        <div className="news-description">
-          <a
-            className="news-title"
-            target="_blank"
-            href="https://sonvmax.com/cach-chon-mau-son-nha-dep.html"
-          >
-            CÁCH CHỌN MÀU SƠN NHÀ ĐẸP
-          </a>
-          <a
-            href="https://sonvmax.com/cach-chon-mau-son-nha-dep.html"
-            target="_blank"
-            className="read-more"
-          >
-            Đọc thêm
-          </a>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-              width: "100%",
-            }}
-          >
-            <div style={{ display: "flex" }}>
-              <CalendarOutlined />
-              <p>13/11/2021</p>
-            </div>
-            <div style={{ display: "flex" }}>
-              <UserOutlined />
-              <p>Hana Ngọc Ánh</p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
