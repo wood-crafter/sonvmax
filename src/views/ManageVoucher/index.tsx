@@ -139,7 +139,12 @@ function ManageVoucher() {
   };
 
   const handleAddOk = async () => {
-    if (!nextCode || nextDiscountAmount <= 0 || !nextAgent) {
+    if (
+      !nextCode ||
+      nextDiscountAmount < 5 ||
+      nextDiscountAmount > 15 ||
+      !nextAgent
+    ) {
       missingAddPropsNotification();
       return;
     }
@@ -186,6 +191,7 @@ function ManageVoucher() {
       title: "Giá giảm",
       dataIndex: "discountAmount",
       key: "discountAmount",
+      render: (discountAmount) => <div>{discountAmount}%</div>,
       sorter: (a, b) => a.discountAmount - b.discountAmount,
     },
     {
@@ -270,11 +276,14 @@ function ManageVoucher() {
             <Input
               value={discountAmount}
               type="number"
-              min={0}
-              placeholder="Nhập phần trăm giảm lớn hơn 0"
+              min={5}
+              max={15}
+              placeholder="Nhập phần trăm giảm từ 5 đến 15"
               name="discountAmount"
               onChange={(e) => {
-                const value = Math.max(1, +e.target.value); // Ensure greater than 0
+                let value = +e.target.value;
+                if (value < 5) value = 5;
+                if (value > 15) value = 15;
                 setDiscountAmount(value);
               }}
             />
@@ -303,6 +312,7 @@ function ManageVoucher() {
           </div>
         )}
       </Modal>
+
       <Modal
         title="Thêm voucher"
         open={isAddModalOpen}
@@ -324,10 +334,13 @@ function ManageVoucher() {
           <Input
             value={nextDiscountAmount}
             type="number"
-            min={1}
-            placeholder="Nhập phần trăm giảm lớn hơn 0"
+            min={5}
+            max={15}
+            placeholder="Nhập phần trăm giảm từ 5 đến 15"
             onChange={(e) => {
-              const value = Math.max(1, +e.target.value); // Ensure greater than 0
+              let value = +e.target.value;
+              if (value < 5) value = 5;
+              if (value > 15) value = 15;
               setNextDiscountAmount(value);
             }}
             name="discountAmount"
