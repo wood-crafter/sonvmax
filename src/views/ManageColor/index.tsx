@@ -40,6 +40,10 @@ const schema = {
     prop: "b",
     type: Number,
   },
+  code: {
+    prop: "code",
+    type: String,
+  },
 };
 
 function ManageColor() {
