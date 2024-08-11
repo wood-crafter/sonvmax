@@ -3,7 +3,7 @@ import { API_ROOT } from "../constant"
 import { PagedResponse, Product } from "../type"
 import { requestOptions } from "./utils";
 
-export function useProducts(page: number, size = 20, categoryId:string | undefined = undefined, active: boolean) {
+export function useProducts(page: number, size = 20, active = false, categoryId:string | undefined = undefined) {
   if (categoryId) {
     const url = `/product/get-products-by-category/${categoryId}?page=${page}&size=${size}` + (active ? `&active=${active}` : '')
     const { data, isLoading, error, mutate } = useSWR(url, fetchProducts)

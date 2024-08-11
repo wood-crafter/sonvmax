@@ -75,7 +75,7 @@ function QualityCertificates() {
 }
 
 function Home() {
-  const { data } = useProducts(1, 10);
+  const { data } = useProducts(1, 10, true);
   const products = data?.data;
 
   return (
