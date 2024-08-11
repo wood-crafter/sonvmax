@@ -1,8 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Modal, Table } from "antd";
-import "./index.css";
+import React from "react";
+import { Modal, Table, Input, Space } from "antd";
 import { ColumnType } from "antd/es/table";
 import { useColors } from "../../hooks/useColor";
+import "./index.css";
+
+type Color = {
+  colorName: string;
+  code: string;
+  r: number;
+  g: number;
+  b: number;
+  priceColor: string;
+};
 
 type ColorTableProps = {
   setColor?: React.Dispatch<any>;
@@ -11,7 +21,7 @@ type ColorTableProps = {
   setCurrentColor: React.Dispatch<any>;
 };
 
-function ColorTable(props: ColorTableProps) {
+const ColorTable: React.FC<ColorTableProps> = (props) => {
   const { isOpen, setIsOpen, setCurrentColor } = props;
   const { data } = useColors();
   const colors = data?.data;
@@ -24,36 +34,83 @@ function ColorTable(props: ColorTableProps) {
     setIsOpen(false);
   };
 
-  const columns: ColumnType<any>[] = [
+  const getColumnSearchProps = (dataIndex: keyof Color): ColumnType<Color> => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }: any) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0] || ""}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => confirm()}
+          style={{ marginBottom: 8, display: "block" }}
+        />
+        <Space>
+          <a href="#!" onClick={() => confirm()}>
+            Search
+          </a>
+          <a href="#!" onClick={() => clearFilters && clearFilters()}>
+            Reset
+          </a>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered: boolean) => (
+      <span
+        style={{
+          color: filtered ? "#1890ff" : undefined,
+          fontSize: "16px",
+        }}
+      >
+        🔍
+      </span>
+    ),
+    onFilter: (value: any, record: Color) => {
+      const filterValue = value as string; // Type cast here
+      return record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes(filterValue.toLowerCase());
+    },
+  });
+
+  const columns: ColumnType<Color>[] = [
     {
       title: "Tên màu",
       dataIndex: "colorName",
       key: "colorName",
+      ...getColumnSearchProps("colorName"),
     },
     {
       title: "Mã màu",
       dataIndex: "code",
       key: "code",
+      ...getColumnSearchProps("code"),
     },
     {
       title: "Màu",
       key: "color",
-      render: (_, color) => {
-        return (
-          <div
-            style={{
-              width: "5rem",
-              height: "3rem",
-              backgroundColor: `rgb(${color.r}, ${color.g}, ${color.b})`,
-            }}
-          ></div>
-        );
-      },
+      render: (_, color) => (
+        <div
+          style={{
+            width: "5rem",
+            height: "3rem",
+            backgroundColor: `rgb(${color.r}, ${color.g}, ${color.b})`,
+          }}
+        ></div>
+      ),
     },
     {
       title: "Giá",
       dataIndex: "priceColor",
       key: "priceColor",
+      sorter: (a, b) => +a.priceColor - +b.priceColor,
     },
     {
       title: "r",
@@ -90,8 +147,8 @@ function ColorTable(props: ColorTableProps) {
               g: record.g,
               b: record.b,
               priceColor: record.priceColor,
-              colorType: record.colorType,
               colorName: record.colorName,
+              code: record.code,
             });
             setIsOpen(false);
           },
@@ -99,6 +156,6 @@ function ColorTable(props: ColorTableProps) {
       />
     </Modal>
   );
-}
+};
 
 export default ColorTable;
