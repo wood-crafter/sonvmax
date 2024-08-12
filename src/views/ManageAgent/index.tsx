@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import "./index.css";
 import {
   Table,
@@ -109,11 +109,14 @@ function ManageAgent() {
   const [nextAgentPhoneNumber, setNextAgentPhoneNumber] = useState("");
   const [nextAgentName, setNextAgentName] = useState("");
   const [nextAgentTaxCode, setNextAgentTaxCode] = useState("");
-  const [nextDebitLimit, setNextDebitLimit] = useState<string>("");
-  const [nextAccountDebit, setNextAccountDebit] = useState<string>("");
-  const [nextAccountHave, setNextAccountHave] = useState<string>("");
   const [nextRank, setNextRank] = useState<string>("");
   const [nextSale, setNextSale] = useState<string>("");
+  const nextDebitLimit = useMemo(() => {
+    if (+nextRank === 1) return 100000000;
+    if (+nextRank === 2) return 50000000;
+    if (+nextRank === 3) return 30000000;
+    return 0;
+  }, [nextRank]);
 
   const [currentEditing, setCurrentEditing] = useState<Agent | null>(null);
   const handleUpdateAgent = async () => {
@@ -199,9 +202,6 @@ function ManageAgent() {
     setNextAgentPhoneNumber("");
     setNextAgentTaxCode("");
     setNextAgentEmail("");
-    setNextDebitLimit("");
-    setNextAccountDebit("");
-    setNextAccountHave("");
     setNextRank("");
     setNextSale("");
   };
@@ -212,9 +212,7 @@ function ManageAgent() {
       !nextAgentEmail ||
       !nextAgentName ||
       !nextAgentUsername ||
-      !nextDebitLimit ||
-      !nextAccountHave ||
-      !nextAccountDebit ||
+      !nextAgentPhoneNumber ||
       !nextRank ||
       !nextSale
     ) {
@@ -228,9 +226,9 @@ function ManageAgent() {
       rank: +nextRank,
       fullName: nextAgentFullName,
       agentName: nextAgentName,
-      debitLimit: +nextDebitLimit,
-      accountHave: +nextAccountHave,
-      accountDebit: +nextAccountDebit,
+      address: nextAgentAddress,
+      taxCode: nextAgentTaxCode,
+      phoneNumber: nextAgentPhoneNumber,
       staffId: nextSale,
     });
 
@@ -252,9 +250,9 @@ function ManageAgent() {
       addFailNotification(createResponse.status, createResponse.statusText);
     } else {
       addSuccessNotification();
+      refreshAgents();
+      clearAddInput();
     }
-    refreshAgents();
-    clearAddInput();
   };
 
   const handleAddCancel = () => {
@@ -526,7 +524,8 @@ function ManageAgent() {
             name="agent-address"
           />
           <label htmlFor="agent-phone-number" style={{ display: "flex" }}>
-            Số điện thoại đại lý:
+            Số điện thoại đại lý:{" "}
+            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
           </label>
           <Input
             value={nextAgentPhoneNumber}
@@ -562,41 +561,6 @@ function ManageAgent() {
             }}
             name="agent-tax-code"
           />
-          <label htmlFor="debit-limit" style={{ display: "flex" }}>
-            Công nợ tối đa:{" "}
-            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
-          </label>
-          <Input
-            name="debit-limit"
-            value={nextDebitLimit}
-            onChange={(e) => {
-              handleSetNumberInput(e, setNextDebitLimit);
-            }}
-            maxLength={16}
-          />
-          <label htmlFor="account-debit" style={{ display: "flex" }}>
-            Dư nợ: <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
-          </label>
-          <Input
-            name="account-debit"
-            value={nextAccountDebit}
-            onChange={(e) => {
-              handleSetNumberInput(e, setNextAccountDebit);
-            }}
-            maxLength={16}
-          />
-          <label htmlFor="account-have" style={{ display: "flex" }}>
-            Tài khoản hiện có:{" "}
-            <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
-          </label>
-          <Input
-            name="account-have"
-            value={nextAccountHave}
-            onChange={(e) => {
-              handleSetNumberInput(e, setNextAccountHave);
-            }}
-            maxLength={16}
-          />
           <label htmlFor="rank" style={{ display: "flex" }}>
             Cấp đại lý:{" "}
             <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>{" "}
@@ -610,7 +574,15 @@ function ManageAgent() {
             <Option value="2">2</Option>
             <Option value="3">3</Option>
           </Select>
-
+          <label htmlFor="debit-limit" style={{ display: "flex" }}>
+            Công nợ tối đa:
+          </label>
+          <Input
+            name="debit-limit"
+            placeholder={`${NumberToVND.format(nextDebitLimit)}`}
+            disabled
+            maxLength={16}
+          />
           {sales && sales.length && (
             <>
               <label htmlFor="sales" style={{ display: "flex" }}>
