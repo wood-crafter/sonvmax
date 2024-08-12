@@ -42,6 +42,7 @@ function ManageInvoice() {
 
   return (
     <div className="ManageInvoice">
+      <h2>Quản lý hóa đơn</h2>
       <Table dataSource={tableData} columns={columns} />
     </div>
   );

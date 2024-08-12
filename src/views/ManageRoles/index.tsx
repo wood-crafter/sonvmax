@@ -152,6 +152,7 @@ export function ManageRoles() {
 
   return (
     <div className="ManageRoles">
+      <h2>Quản lý chức vụ</h2>
       {contextHolder}
       <AddRoleButton onAdded={handleRoleAdded} />
       <Table dataSource={roles} columns={columns} />

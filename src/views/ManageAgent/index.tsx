@@ -361,6 +361,7 @@ function ManageAgent() {
   return (
     <div className="ManageAgent">
       {contextHolder}
+      <h2>Quản lý đại lý</h2>
       <Button
         onClick={() => {
           setIsAddModalOpen(true);

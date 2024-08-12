@@ -53,7 +53,7 @@ function Login() {
         <div className="login-form-inputs">
           <input
             type="text"
-            placeholder="Email"
+            placeholder="Tên đăng nhập"
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);

@@ -162,6 +162,7 @@ function ProductDetail() {
 
   return (
     <div className="ProductDetail">
+      <h2>Chi tiết sản phẩm</h2>
       {contextHolder}
       {product?.canColorPick && (
         <ColorTable

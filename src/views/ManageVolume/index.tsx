@@ -213,6 +213,7 @@ function ManageVolume() {
   return (
     <div className="ManageVolume">
       {contextHolder}
+      <h2>Quản lý quy cách đóng gói</h2>
       <Button
         type="primary"
         onClick={() => setIsAdding(true)}

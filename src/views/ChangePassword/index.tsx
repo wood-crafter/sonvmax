@@ -69,15 +69,17 @@ function ChangePassword() {
           width: "calc(100% - 40rem)",
           height: "calc(100% - 4rem)",
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           borderRadius: "1rem",
         }}
       >
+        <h2>Đổi mật khẩu</h2>
         <Form form={form} onFinish={handleFinish} layout="vertical">
           <Form.Item
             name="oldPassword"
-            label="Old Password"
+            label="Mật khẩu cũ"
             rules={[{ required: true, message: "Điền mật khẩu cũ" }]}
           >
             <Input.Password placeholder="Điền mật khẩu cũ" />
@@ -85,7 +87,7 @@ function ChangePassword() {
 
           <Form.Item
             name="newPassword"
-            label="New Password"
+            label="Mật khẩu mới"
             rules={[{ required: true, message: "Nhập mật khẩu mới" }]}
           >
             <Input.Password placeholder="Nhập mật khẩu mới" />
@@ -93,7 +95,7 @@ function ChangePassword() {
 
           <Form.Item
             name="confirmPassword"
-            label="Confirm New Password"
+            label="Nhập lại mật khẩu mới"
             rules={[{ required: true, message: "Nhập lại mật khẩu" }]}
           >
             <Input.Password placeholder="Nhập lại mật khẩu" />

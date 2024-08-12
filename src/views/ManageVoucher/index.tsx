@@ -244,6 +244,7 @@ function ManageVoucher() {
 
   return (
     <div className="ManageVoucher">
+      <h2>Quản lý voucher</h2>
       {contextHolder}
       <Button
         onClick={() => {

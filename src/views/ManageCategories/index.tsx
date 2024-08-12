@@ -27,8 +27,12 @@ export function ManageCategories() {
 
   return (
     <div className="ManageCategories">
+      <h2>Quản lý danh mục</h2>
       {contextHolder}
-      <AddCategoryButton notificationApi={notificationApi} requestCategoryRefresh={mutate} />
+      <AddCategoryButton
+        notificationApi={notificationApi}
+        requestCategoryRefresh={mutate}
+      />
       <Table
         dataSource={categories?.data}
         columns={columns}
@@ -52,36 +56,39 @@ function useAddCategoryHandler(notificationApi: NotificationInstance) {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
 
-  const addCategory = useCallback(({ name, description, onSuccess }: AddCategoryParams) => {
-    try {
-      authFetch(`${API_ROOT}/category/create-category`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ name, description }),
-      }).then((response) => {
-        if (response.ok) {
-          notificationApi.success({
-            message: "Thành công",
-            description: "Thêm danh mục thành công",
-          });
-          if (onSuccess) onSuccess();
-        } else {
-          notificationApi.error({
-            message: "Lỗi",
-            description: "Thêm danh mục thất bại",
-          });
-        }
-      });
-    } catch (error) {
-      notificationApi.error({
-        message: "Lỗi",
-        description: "Có lỗi xảy ra khi thêm danh mục",
-      });
-    }
-  }, [accessToken, authFetch, notificationApi]);
+  const addCategory = useCallback(
+    ({ name, description, onSuccess }: AddCategoryParams) => {
+      try {
+        authFetch(`${API_ROOT}/category/create-category`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ name, description }),
+        }).then((response) => {
+          if (response.ok) {
+            notificationApi.success({
+              message: "Thành công",
+              description: "Thêm danh mục thành công",
+            });
+            if (onSuccess) onSuccess();
+          } else {
+            notificationApi.error({
+              message: "Lỗi",
+              description: "Thêm danh mục thất bại",
+            });
+          }
+        });
+      } catch (error) {
+        notificationApi.error({
+          message: "Lỗi",
+          description: "Có lỗi xảy ra khi thêm danh mục",
+        });
+      }
+    },
+    [accessToken, authFetch, notificationApi]
+  );
 
   return { addCategory };
 }

@@ -125,6 +125,7 @@ function ManageColor() {
   return (
     <div className="ManageColor">
       {contextHolder}
+      <h2>Quản lý màu</h2>
       <Upload {...props}>
         <Button icon={<UploadOutlined />}>Thêm file màu</Button>
       </Upload>

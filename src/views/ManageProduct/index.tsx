@@ -884,6 +884,7 @@ function ManageProduct() {
   return (
     <div className="ManageProduct">
       {contextHolder}
+      <h2>Quản lý sản phẩm</h2>
       <AddProductButton
         volumes={volumes}
         addSuccessNoti={addSuccessNotification}

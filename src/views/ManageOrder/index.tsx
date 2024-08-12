@@ -440,6 +440,7 @@ function ManageOrder() {
   return (
     <div className="ManageOrder">
       {contextHolder}
+      <h2>Quản lý đơn</h2>
       <Table columns={columns} dataSource={orders} />
       <Modal
         title="Xem chi tiết đơn"
