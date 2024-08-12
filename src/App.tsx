@@ -28,7 +28,7 @@ const AppRoutes = () => {
       <Route
         path="/login"
         element={
-          <Layout>
+          <Layout hasNav>
             <Login />
           </Layout>
         }
