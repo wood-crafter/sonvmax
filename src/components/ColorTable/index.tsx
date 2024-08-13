@@ -93,16 +93,16 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
 
   const columns: ColumnType<Color>[] = [
     {
-      title: "Tên màu",
-      dataIndex: "colorName",
-      key: "colorName",
-      ...getColumnSearchProps("colorName"),
-    },
-    {
       title: "Mã màu",
       dataIndex: "code",
       key: "code",
       ...getColumnSearchProps("code"),
+    },
+    {
+      title: "Tên màu",
+      dataIndex: "colorName",
+      key: "colorName",
+      ...getColumnSearchProps("colorName"),
     },
     {
       title: "Màu",
@@ -118,26 +118,26 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
       ),
     },
     {
-      title: "Giá",
+      title: "Giá (% tính trên giá sơn trắng)",
       dataIndex: "priceColor",
       key: "priceColor",
       sorter: (a, b) => +a.priceColor - +b.priceColor,
     },
-    {
-      title: "r",
-      dataIndex: "r",
-      key: "r",
-    },
-    {
-      title: "g",
-      dataIndex: "g",
-      key: "g",
-    },
-    {
-      title: "b",
-      dataIndex: "b",
-      key: "b",
-    },
+    // {
+    //   title: "r",
+    //   dataIndex: "r",
+    //   key: "r",
+    // },
+    // {
+    //   title: "g",
+    //   dataIndex: "g",
+    //   key: "g",
+    // },
+    // {
+    //   title: "b",
+    //   dataIndex: "b",
+    //   key: "b",
+    // },
   ];
 
   return (

@@ -96,9 +96,9 @@ export const calculatePriceColor = (rgb: RGB) => {
   const maxDistance = Math.sqrt(3 * Math.pow(255, 2)); // Max possible distance from white
   const percentage = colorDistance / maxDistance;
 
-  if (percentage <= 0.25) return 1.05;  // 5% extra
-  if (percentage <= 0.75) return 1.10; // 10% extra
-  return 1.20;
+  if (percentage <= 0.25) return 5;  // 5% extra
+  if (percentage <= 0.75) return 10; // 10% extra
+  return 20;
 }
 
 export const getClosestMainColor = (rgb: RGB) => {
