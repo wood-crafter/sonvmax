@@ -148,6 +148,14 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
       onCancel={handleAddCancel}
       width={"100%"}
     >
+      <div style={{ color: "red" }}>
+        *Màu sắc sơn hiển thị chỉ mang tính chất tham khảo và có thể khác biệt
+        so với màu sơn thực tế do sai lệch về phần cứng hiển thị.
+      </div>
+      <div style={{ color: "red" }}>
+        *Xin quý khách vui long tham khảo và đối chiếu với ô màu thực tế trên
+        bảng màu hoặc quạt màu chính hãng được cung cấp
+      </div>
       {currentColor && (
         <SketchPicker
           disableAlpha
