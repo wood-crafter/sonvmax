@@ -5,6 +5,8 @@ import {
   Select,
   Popconfirm,
   Button,
+  Modal,
+  Input,
 } from "antd";
 import { useCart } from "../../hooks/useCart";
 import { Cart, PagedResponse, RGB } from "../../type";
@@ -149,6 +151,9 @@ function UserCart() {
     g: 255,
     b: 255,
   });
+  const [isOpenOrderDetail, setIsOpenOrderDetail] = useState(false);
+  const [orderAddress, setOrderAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const addSuccessNotification = () => {
     api.open({
@@ -215,6 +220,8 @@ function UserCart() {
         ?.filter((it) => cartsChecked.includes(it.id))
         ?.map((it) => it.id),
       voucherIds: selectedVoucher ? [selectedVoucher][0] : "",
+      address: orderAddress,
+      phoneNumber: phoneNumber,
     };
 
     const orderRes = await authFetch(`${API_ROOT}/order/create-order`, {
@@ -286,6 +293,19 @@ function UserCart() {
     setTotal(discountedTotal);
   }, [cartsChecked.length, selectedVoucher, currentCart, voucher]);
 
+  const handleOrderInforOk = () => {
+    if (!orderAddress || !phoneNumber) {
+      api.open({
+        message: "Vui lòng điền đủ thông tin",
+        icon: <FrownOutlined style={{ color: "red" }} />,
+      });
+      return;
+    }
+
+    handleOrder();
+    setIsOpenOrderDetail(false);
+  };
+
   const needsVouchersNotAppliedWarning =
     selectedVoucher === undefined && (voucher ?? []).length > 0;
 
@@ -300,6 +320,26 @@ function UserCart() {
         orderProductId={currentEditingId}
         currentColor={currentColor}
       />
+      <Modal
+        title="Thông tin giao hàng"
+        open={isOpenOrderDetail}
+        onOk={handleOrderInforOk}
+        okText="Đặt hàng"
+        onCancel={() => setIsOpenOrderDetail(false)}
+        cancelText="Hủy"
+      >
+        <Input
+          value={orderAddress}
+          placeholder="Điền địa chỉ nhận hàng"
+          onChange={(e) => setOrderAddress(e.target.value)}
+          style={{ marginBottom: "1rem" }}
+        ></Input>
+        <Input
+          value={phoneNumber}
+          placeholder="Điền số điện thoại"
+          onChange={(e) => setPhoneNumber(e.target.value)}
+        ></Input>
+      </Modal>
       {currentCart && (
         <div className="cart-container">
           {currentCart.map((item: Cart) => {
@@ -428,7 +468,11 @@ function UserCart() {
           icon={<QuestionCircleOutlined style={{ color: "red" }} />}
         >
           <button
-            onClick={needsVouchersNotAppliedWarning ? undefined : handleOrder}
+            onClick={
+              needsVouchersNotAppliedWarning
+                ? undefined
+                : () => setIsOpenOrderDetail(true)
+            }
             style={{
               marginLeft: "1rem",
               marginRight: "1rem",
@@ -436,7 +480,7 @@ function UserCart() {
               backgroundColor: "black",
             }}
           >
-            Mua ngay
+            Đặt hàng
           </button>
         </Popconfirm>
       ) : (
