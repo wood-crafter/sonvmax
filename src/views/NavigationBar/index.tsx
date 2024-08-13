@@ -54,7 +54,7 @@ const useManagerMenuItems = () => {
     ...([OWNER.role].includes(roleName)
       ? [
           {
-            label: <Link to="/manage/roles">Quản lý roles</Link>,
+            label: <Link to="/manage/roles">Quản lý chức vụ</Link>,
             key: "roles",
             icon: <ClusterOutlined />,
           },

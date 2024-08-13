@@ -1,5 +1,5 @@
 import { Button, Space, Spin, Table } from "antd";
-import { SmileOutlined } from "@ant-design/icons";
+import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import type { ColumnType } from "antd/es/table";
 import { useCallback, useMemo, useState } from "react";
 import { appendIdAsKey } from "../../helper";
@@ -23,7 +23,7 @@ function useRoleTableColumns(
         sorter: (a, b) => a.id.localeCompare(b.id),
       },
       {
-        title: "Name",
+        title: "Tên chức vụ",
         dataIndex: "name",
         sorter: (a, b) => a.name.localeCompare(b.name),
       },
@@ -38,12 +38,19 @@ function useRoleTableColumns(
               disabled={isLoading}
               onDeleted={() => {
                 api.success({
-                  message: "Role deleted",
-                  description: `Deleted a role: ${role.name}`,
+                  message: "Xóa thành công",
+                  description: `Xóa chức vụ: ${role.name}`,
                   icon: <SmileOutlined style={{ color: "#108ee9" }} />,
                 });
 
                 requestRefresh();
+              }}
+              onFail={() => {
+                api.success({
+                  message: "Xóa thất bại",
+                  description: `Xóa chức vụ thất bại: ${role.name}`,
+                  icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+                });
               }}
             />
           </Space>
@@ -59,10 +66,11 @@ type DeleteRoleButtonProps = {
   id: string;
   disabled: boolean;
   onDeleted(): void;
+  onFail(): void;
 };
 
 function DeleteRoleButton(props: DeleteRoleButtonProps) {
-  const { id, disabled, onDeleted } = props;
+  const { id, disabled, onDeleted, onFail } = props;
 
   const { trigger, isMutating } = useDeleteRole();
 
@@ -72,12 +80,16 @@ function DeleteRoleButton(props: DeleteRoleButtonProps) {
       danger
       disabled={isMutating || disabled}
       onClick={async () => {
-        await trigger({ id });
+        const deleteResult = await trigger({ id });
 
-        onDeleted();
+        if (deleteResult.message === "Role deleted successfully") {
+          onDeleted();
+        } else {
+          onFail();
+        }
       }}
     >
-      Delete
+      Xóa
     </Button>
   );
 }
@@ -117,7 +129,7 @@ function AddRoleButton(props: AddRoleButtonProps) {
           setIsModalOpen(true);
         }}
       >
-        Add role
+        Thêm chức vụ
       </Button>
     </>
   );
@@ -136,8 +148,8 @@ export function ManageRoles() {
   const handleRoleAdded = useCallback(
     ({ roleName }: { roleName: string }) => {
       api.success({
-        message: "Role added",
-        description: `Added a new role: ${roleName}`,
+        message: "Thêm chức vụ thành công",
+        description: `Thêm chức vụ: ${roleName}`,
         icon: <SmileOutlined style={{ color: "#108ee9" }} />,
       });
 
