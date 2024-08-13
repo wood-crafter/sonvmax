@@ -133,6 +133,7 @@ const OrderProductColorPicker = (props: OrderProductColorPickerProps) => {
 };
 
 function UserCart() {
+  const me = useUserStore((state) => state.userInformation);
   const { data: currentCart, mutate: refreshCart } = useCart();
   const { data: voucherResponse } = useVouchers(1);
   const voucher = voucherResponse?.data;
@@ -152,8 +153,8 @@ function UserCart() {
     b: 255,
   });
   const [isOpenOrderDetail, setIsOpenOrderDetail] = useState(false);
-  const [orderAddress, setOrderAddress] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [orderAddress, setOrderAddress] = useState(me?.address ?? "");
+  const [phoneNumber, setPhoneNumber] = useState(me?.phoneNumber ?? "");
 
   const addSuccessNotification = () => {
     api.open({
