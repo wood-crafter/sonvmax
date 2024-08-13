@@ -24,7 +24,6 @@ function Profile() {
   const { trigger: triggerMe } = useMeMutation();
   const setUserInformation = useUserStore((state) => state.setUserInformation);
   const authFetch = useAuthenticatedFetch();
-  console.info(me);
 
   const [isEditing, setIsEditing] = useState(false);
 

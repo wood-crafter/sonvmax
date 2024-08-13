@@ -4,6 +4,7 @@ import { useUserStore } from "../../store/user";
 import { Link, useNavigate } from "react-router-dom";
 import { ADMIN_ROLES } from "../../constant";
 import { useLogin } from "../../hooks/useAuth";
+import { useMeMutation } from "../../hooks/useMe";
 
 function Login() {
   const navigate = useNavigate();
@@ -11,7 +12,9 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { trigger } = useLogin();
+  const { trigger: triggerMe } = useMeMutation();
   const setAccessToken = useUserStore((state) => state.setAccessToken);
+  const setUserInformation = useUserStore((state) => state.setUserInformation);
 
   const handleLogin: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
@@ -35,6 +38,8 @@ function Login() {
       const payload = res.accessToken.split(".")[1];
       const roleName = JSON.parse(atob(payload)).roleName;
       setAccessToken(res.accessToken);
+      const me = await triggerMe();
+      setUserInformation(me);
 
       if (!ADMIN_ROLES.includes(roleName)) {
         navigate("/home");
