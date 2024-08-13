@@ -1,6 +1,13 @@
-import { Checkbox, InputNumber, notification, Select, Popconfirm } from "antd";
+import {
+  Checkbox,
+  InputNumber,
+  notification,
+  Select,
+  Popconfirm,
+  Button,
+} from "antd";
 import { useCart } from "../../hooks/useCart";
-import { Cart, PagedResponse } from "../../type";
+import { Cart, PagedResponse, RGB } from "../../type";
 import "./index.css";
 import debounce from "lodash.debounce";
 import { useCallback, useEffect, useState } from "react";
@@ -17,6 +24,7 @@ import { KeyedMutator } from "swr";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { useVouchers } from "../../hooks/useVoucher";
 import { requestOptions } from "../../hooks/utils";
+import ColorTable from "../../components/ColorTable";
 
 type DebouncedInputNumberProps = {
   defaultValue: number;
@@ -25,6 +33,15 @@ type DebouncedInputNumberProps = {
   max: number;
   className: string;
   refreshCart: KeyedMutator<PagedResponse<Cart>>;
+};
+
+type OrderProductColorPickerProps = {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  orderProductId: string;
+  accessToken: string;
+  refreshCart: KeyedMutator<PagedResponse<Cart>>;
+  currentColor: RGB;
 };
 
 const DebouncedInputNumber = (props: DebouncedInputNumberProps) => {
@@ -76,6 +93,43 @@ const DebouncedInputNumber = (props: DebouncedInputNumberProps) => {
   );
 };
 
+const OrderProductColorPicker = (props: OrderProductColorPickerProps) => {
+  const {
+    isOpen,
+    setIsOpen,
+    orderProductId,
+    accessToken,
+    refreshCart,
+    currentColor,
+  } = props;
+  const authFetch = useAuthenticatedFetch();
+
+  const onPicked = async (rgb: RGB) => {
+    await authFetch(
+      `${API_ROOT}/order/update-order-product/${orderProductId}`,
+      {
+        ...requestOptions,
+        body: JSON.stringify({ colorPick: rgb }),
+        method: "PUT",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    refreshCart();
+  };
+
+  return (
+    <ColorTable
+      currentColor={currentColor}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      onPicked={onPicked}
+    />
+  );
+};
+
 function UserCart() {
   const { data: currentCart, mutate: refreshCart } = useCart();
   const { data: voucherResponse } = useVouchers(1);
@@ -88,6 +142,13 @@ function UserCart() {
   const [selectedVoucher, setSelectedVoucher] = useState<string | undefined>(
     undefined
   );
+  const [isOpenColorPick, setIsOpenColorPick] = useState(false);
+  const [currentEditingId, setCurrentEditingId] = useState("");
+  const [currentColor, setCurrrentColor] = useState({
+    r: 255,
+    g: 255,
+    b: 255,
+  });
 
   const addSuccessNotification = () => {
     api.open({
@@ -231,6 +292,14 @@ function UserCart() {
   return (
     <div className="Cart">
       {contextHolder}
+      <OrderProductColorPicker
+        isOpen={isOpenColorPick}
+        setIsOpen={setIsOpenColorPick}
+        accessToken={accessToken}
+        refreshCart={refreshCart}
+        orderProductId={currentEditingId}
+        currentColor={currentColor}
+      />
       {currentCart && (
         <div className="cart-container">
           {currentCart.map((item: Cart) => {
@@ -270,7 +339,7 @@ function UserCart() {
                     })}
                   </Select>
                 )}
-                <button
+                <Button
                   className="rePick-color"
                   style={{
                     border: "1px solid black",
@@ -280,7 +349,12 @@ function UserCart() {
                       item.colorPick?.g ?? 255
                     }, ${item.colorPick?.b ?? 255})`,
                   }}
-                ></button>
+                  onClick={() => {
+                    setCurrentEditingId(item.id);
+                    setCurrrentColor(item.colorPick);
+                    setIsOpenColorPick(true);
+                  }}
+                ></Button>
                 <DebouncedInputNumber
                   refreshCart={refreshCart}
                   className="cart-item-num-of-product"

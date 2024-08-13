@@ -4,6 +4,8 @@ import { Modal, Table, Input, Space } from "antd";
 import { ColumnType } from "antd/es/table";
 import { useColors } from "../../hooks/useColor";
 import "./index.css";
+import { RGB } from "../../type";
+import { ColorResult, SketchPicker } from "react-color";
 
 type Color = {
   colorName: string;
@@ -18,11 +20,13 @@ type ColorTableProps = {
   setColor?: React.Dispatch<any>;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setCurrentColor: React.Dispatch<any>;
+  setCurrentColor?: React.Dispatch<any>;
+  onPicked?: (rgb: RGB) => void;
+  currentColor?: RGB;
 };
 
 const ColorTable: React.FC<ColorTableProps> = (props) => {
-  const { isOpen, setIsOpen, setCurrentColor } = props;
+  const { isOpen, setIsOpen, setCurrentColor, onPicked, currentColor } = props;
   const { data } = useColors();
   const colors = data?.data;
 
@@ -32,6 +36,13 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
 
   const handleAddCancel = () => {
     setIsOpen(false);
+  };
+
+  const handleChangeColorComplete = (color: ColorResult) => {
+    if (onPicked) {
+      onPicked(color.rgb);
+      setIsOpen(false);
+    }
   };
 
   const getColumnSearchProps = (dataIndex: keyof Color): ColumnType<Color> => ({
@@ -137,19 +148,31 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
       onCancel={handleAddCancel}
       width={"100%"}
     >
+      {currentColor && (
+        <SketchPicker
+          disableAlpha
+          color={currentColor}
+          onChangeComplete={handleChangeColorComplete}
+        />
+      )}
       <Table
         columns={columns}
         dataSource={colors}
         onRow={(record) => ({
           onDoubleClick: () => {
-            setCurrentColor({
-              r: record.r,
-              g: record.g,
-              b: record.b,
-              priceColor: record.priceColor,
-              colorName: record.colorName,
-              code: record.code,
-            });
+            if (setCurrentColor) {
+              setCurrentColor({
+                r: record.r,
+                g: record.g,
+                b: record.b,
+                priceColor: record.priceColor,
+                colorName: record.colorName,
+                code: record.code,
+              });
+            }
+            if (onPicked) {
+              onPicked({ r: record.r, g: record.g, b: record.b });
+            }
             setIsOpen(false);
           },
         })}
