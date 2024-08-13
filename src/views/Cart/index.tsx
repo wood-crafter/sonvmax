@@ -9,7 +9,7 @@ import {
   Input,
 } from "antd";
 import { useCart } from "../../hooks/useCart";
-import { Cart, PagedResponse, RGB } from "../../type";
+import { AgentInfo, Cart, PagedResponse, RGB, StaffInfo } from "../../type";
 import "./index.css";
 import debounce from "lodash.debounce";
 import { useCallback, useEffect, useState } from "react";
@@ -132,6 +132,11 @@ const OrderProductColorPicker = (props: OrderProductColorPickerProps) => {
   );
 };
 
+// Type guard to check if the user is an agent
+function isAgentInfo(me: AgentInfo | StaffInfo | null): me is AgentInfo {
+  return me?.type === "agent";
+}
+
 function UserCart() {
   const me = useUserStore((state) => state.userInformation);
   const { data: currentCart, mutate: refreshCart } = useCart();
@@ -153,7 +158,9 @@ function UserCart() {
     b: 255,
   });
   const [isOpenOrderDetail, setIsOpenOrderDetail] = useState(false);
-  const [orderAddress, setOrderAddress] = useState(me?.address ?? "");
+  const [orderAddress, setOrderAddress] = useState(
+    isAgentInfo(me) ? me?.address : ""
+  );
   const [phoneNumber, setPhoneNumber] = useState(me?.phoneNumber ?? "");
 
   const addSuccessNotification = () => {

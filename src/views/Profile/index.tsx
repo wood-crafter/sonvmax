@@ -6,6 +6,17 @@ import "./index.css";
 import { NumberToVND } from "../../helper";
 import { useUserStore } from "../../store/user";
 import { useMeMutation } from "../../hooks/useMe";
+import { AgentInfo, StaffInfo } from "../../type";
+
+// Type guard to check if the user is an agent
+function isAgentInfo(me: AgentInfo | StaffInfo | null): me is AgentInfo {
+  return me?.type === "agent";
+}
+
+// Type guard to check if the user is a staff member
+function isStaffInfo(me: AgentInfo | StaffInfo | null): me is StaffInfo {
+  return me?.type === "staff";
+}
 
 function Profile() {
   const me = useUserStore((state) => state.userInformation);
@@ -13,26 +24,29 @@ function Profile() {
   const { trigger: triggerMe } = useMeMutation();
   const setUserInformation = useUserStore((state) => state.setUserInformation);
   const authFetch = useAuthenticatedFetch();
+  console.info(me);
 
   const [isEditing, setIsEditing] = useState(false);
 
   const [fullName, setFullName] = useState(me?.fullName || "");
-  const [email, setEmail] = useState(me?.email || "");
+  const [email, setEmail] = useState(isAgentInfo(me) ? me?.email : "");
   const [phoneNumber, setPhoneNumber] = useState(me?.phoneNumber || "");
-  const [agentName, setAgentName] = useState(me?.agentName || "");
-  const [address, setAddress] = useState(me?.address || "");
-  const [taxCode, setTaxCode] = useState(me?.taxCode || "");
-  const [gender, setGender] = useState(me?.gender || 1);
+  const [agentName, setAgentName] = useState(
+    isAgentInfo(me) ? me?.agentName : ""
+  );
+  const [address, setAddress] = useState(isAgentInfo(me) ? me?.address : "");
+  const [taxCode, setTaxCode] = useState(isAgentInfo(me) ? me?.taxCode : "");
+  const [gender, setGender] = useState(isStaffInfo(me) ? me?.gender : 1);
 
   useEffect(() => {
     if (me) {
       setFullName(me?.fullName);
-      setEmail(me?.email);
+      setEmail(isAgentInfo(me) ? me?.email : "");
       setPhoneNumber(me?.phoneNumber);
-      setAgentName(me?.agentName || "");
-      setAddress(me?.address || "");
-      setTaxCode(me?.taxCode || "");
-      setGender(me?.gender || 1);
+      setAgentName(isAgentInfo(me) ? me?.agentName : "");
+      setAddress(isAgentInfo(me) ? me?.address : "");
+      setTaxCode(isAgentInfo(me) ? me?.taxCode : "");
+      setGender(isStaffInfo(me) ? me?.gender : 1);
     }
   }, [me]);
 
@@ -41,20 +55,22 @@ function Profile() {
   };
 
   const handleCancel = () => {
-    setFullName(me?.fullName || "");
-    setEmail(me?.email || "");
-    setPhoneNumber(me?.phoneNumber || "");
-    setAgentName(me?.agentName || "");
-    setAddress(me?.address || "");
-    setTaxCode(me?.taxCode || "");
-    setGender(me?.gender || 1);
-    setIsEditing(false);
+    if (me) {
+      setFullName(me?.fullName);
+      setEmail(isAgentInfo(me) ? me?.email : "");
+      setPhoneNumber(me?.phoneNumber);
+      setAgentName(isAgentInfo(me) ? me?.agentName : "");
+      setAddress(isAgentInfo(me) ? me?.address : "");
+      setTaxCode(isAgentInfo(me) ? me?.taxCode : "");
+      setGender(isStaffInfo(me) ? me?.gender : 1);
+      setIsEditing(false);
+    }
   };
 
   const handleUpdate = async () => {
     let updateData;
 
-    if (me?.type === "agent") {
+    if (isAgentInfo(me)) {
       updateData = {
         fullName,
         email,
@@ -63,7 +79,7 @@ function Profile() {
         address,
         taxCode,
       };
-    } else if (me?.type === "staff") {
+    } else if (isStaffInfo(me)) {
       updateData = {
         fullName,
         email,
@@ -72,10 +88,9 @@ function Profile() {
       };
     }
 
-    const endpoint =
-      me?.type === "agent"
-        ? `${API_ROOT}/agent/update-agent/${me?.id}`
-        : `${API_ROOT}/staff/update-staff/${me?.id}`;
+    const endpoint = isAgentInfo(me)
+      ? `${API_ROOT}/agent/update-agent/${me?.id}`
+      : `${API_ROOT}/staff/update-staff/${me?.id}`;
 
     const res = await authFetch(endpoint, {
       method: "PUT",
@@ -89,8 +104,8 @@ function Profile() {
       api.success({
         message: "Cập nhật thành công",
       });
-      const me = await triggerMe();
-      setUserInformation(me);
+      const updatedMe = await triggerMe();
+      setUserInformation(updatedMe);
       setIsEditing(false);
     } else {
       api.error({
@@ -99,7 +114,7 @@ function Profile() {
     }
   };
 
-  if (me?.type === "agent") {
+  if (isAgentInfo(me)) {
     return (
       <div className="AgentProfile Profile">
         {contextHolder}
@@ -210,17 +225,17 @@ function Profile() {
               <Input className="marginTop1" value={me?.rank} disabled />
               <Input
                 className="marginTop1"
-                value={NumberToVND.format(me?.debitLimit)}
+                value={NumberToVND.format(+me?.debitLimit)}
                 disabled
               />
               <Input
                 className="marginTop1"
-                value={NumberToVND.format(me?.accountHave)}
+                value={NumberToVND.format(+me?.accountHave)}
                 disabled
               />
               <Input
                 className="marginTop1"
-                value={NumberToVND.format(me?.accountDebit)}
+                value={NumberToVND.format(+me?.accountDebit)}
                 disabled
               />
               <Input
@@ -251,7 +266,7 @@ function Profile() {
     );
   }
 
-  if (me?.type === "staff") {
+  if (isStaffInfo(me)) {
     return (
       <div className="StaffProfile Profile">
         {contextHolder}
@@ -309,13 +324,12 @@ function Profile() {
                 disabled={!isEditing}
               />
               <Select
-                className="marginTop1"
                 value={gender}
                 onChange={(value) => setGender(value)}
                 disabled={!isEditing}
               >
                 <Select.Option value={1}>Nam</Select.Option>
-                <Select.Option value={2}>Nữ</Select.Option>
+                <Select.Option value={0}>Nữ</Select.Option>
               </Select>
             </div>
           </div>
@@ -335,7 +349,6 @@ function Profile() {
               <strong className="marginTop1">Tên đăng nhập:</strong>
               <strong className="marginTop1">Vai trò:</strong>
               <strong className="marginTop1">Ngày gia nhập:</strong>
-              <strong className="marginTop1">Ngày cập nhật:</strong>
             </div>
             <div
               style={{
@@ -346,15 +359,10 @@ function Profile() {
               }}
             >
               <Input className="marginTop1" value={me?.username} disabled />
-              <Input className="marginTop1" value={me?.roleName} disabled />
+              <Input className="marginTop1" value={me?.roleId} disabled />
               <Input
                 className="marginTop1"
                 value={new Date(me?.createdAt).toLocaleString()}
-                disabled
-              />
-              <Input
-                className="marginTop1"
-                value={new Date(me?.updatedAt).toLocaleString()}
                 disabled
               />
             </div>

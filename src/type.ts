@@ -9,8 +9,8 @@ export type StaffInfo = {
   fullName: string;
   phoneNumber: string;
   roleId: string;
-  type: "staff" | "agent";
-}
+  type: "staff";
+};
 
 export type AgentInfo = {
   accountDebit: string;
@@ -30,8 +30,8 @@ export type AgentInfo = {
   fullName: string;
   phoneNumber: string;
   roleId: string;
-  type: "staff" | "agent";
-}
+  type: "agent";
+};
 
 export type Product = {
   id: string
