@@ -66,21 +66,39 @@ const rgbToHsl = (rgb: RGB) => {
 };
 
 export const classifyColor = (rgb: RGB) => {
-  if (!rgb) return 1
-  const hsl = rgbToHsl(rgb)
-  if (!hsl) return 1
-  if (hsl[2] <= 0.25) return 1.05
-  if (hsl[2] >= 0.75) return 1.2
-  return 1.1
+  if (!rgb) return 1;
+
+  if (rgb.r === 255 && rgb.g === 255 && rgb.b === 255) return 1
+  const colorDistance = Math.sqrt(
+    Math.pow(255 - rgb.r, 2) +
+    Math.pow(255 - rgb.g, 2) +
+    Math.pow(255 - rgb.b, 2)
+  );
+
+  const maxDistance = Math.sqrt(3 * Math.pow(255, 2)); // Max possible distance from white
+  const percentage = colorDistance / maxDistance;
+
+  if (percentage <= 0.25) return 1.05;  // 5% extra
+  if (percentage <= 0.75) return 1.10; // 10% extra
+  return 1.20;
 }
 
 export const calculatePriceColor = (rgb: RGB) => {
-  if (!rgb) return 1
-  const hsl = rgbToHsl(rgb)
-  if (!hsl) return 1
-  if (hsl[2] <= 0.25) return 5
-  if (hsl[2] >= 0.75) return 20
-  return 10
+  if (!rgb) return 0;
+
+  if (rgb.r === 255 && rgb.g === 255 && rgb.b === 255) return 0
+  const colorDistance = Math.sqrt(
+    Math.pow(255 - rgb.r, 2) +
+    Math.pow(255 - rgb.g, 2) +
+    Math.pow(255 - rgb.b, 2)
+  );
+
+  const maxDistance = Math.sqrt(3 * Math.pow(255, 2)); // Max possible distance from white
+  const percentage = colorDistance / maxDistance;
+
+  if (percentage <= 0.25) return 1.05;  // 5% extra
+  if (percentage <= 0.75) return 1.10; // 10% extra
+  return 1.20;
 }
 
 export const getClosestMainColor = (rgb: RGB) => {
