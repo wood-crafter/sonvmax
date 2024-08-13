@@ -218,11 +218,6 @@ function UserCart() {
   };
 
   const handleOrder = async () => {
-    if (cartsChecked.length < 1) {
-      noProductInOrder();
-      return;
-    }
-
     const orderBody = {
       orderProductIds: currentCart
         ?.filter((it) => cartsChecked.includes(it.id))
@@ -336,6 +331,9 @@ function UserCart() {
         onCancel={() => setIsOpenOrderDetail(false)}
         cancelText="Hủy"
       >
+        <div style={{ color: "red" }}>
+          *Đơn hàng sẽ được giao trong 1-3 ngày
+        </div>
         <Input
           value={orderAddress}
           placeholder="Điền địa chỉ nhận hàng"
@@ -469,7 +467,13 @@ function UserCart() {
       {currentCart?.length !== 0 ? (
         <Popconfirm
           title="Bạn chưa chọn voucher, bạn có muốn tiếp tục không?"
-          onConfirm={handleOrder}
+          onConfirm={() => {
+            if (cartsChecked.length < 1) {
+              noProductInOrder();
+              return;
+            }
+            setIsOpenOrderDetail(true);
+          }}
           okText="Có"
           cancelText="Hủy"
           disabled={!needsVouchersNotAppliedWarning}
@@ -479,7 +483,13 @@ function UserCart() {
             onClick={
               needsVouchersNotAppliedWarning
                 ? undefined
-                : () => setIsOpenOrderDetail(true)
+                : () => {
+                    if (cartsChecked.length < 1) {
+                      noProductInOrder();
+                      return;
+                    }
+                    setIsOpenOrderDetail(true);
+                  }
             }
             style={{
               marginLeft: "1rem",
