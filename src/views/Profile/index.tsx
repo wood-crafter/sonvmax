@@ -1,57 +1,60 @@
-import { Spin, Input, Button, notification, Select } from "antd";
+import { Input, Button, notification, Select } from "antd";
 import { useEffect, useState } from "react";
-import { useMe } from "../../hooks/useMe";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { API_ROOT } from "../../constant";
 import "./index.css";
 import { NumberToVND } from "../../helper";
+import { useUserStore } from "../../store/user";
+import { useMeMutation } from "../../hooks/useMe";
 
 function Profile() {
-  const { data, isLoading, mutate } = useMe();
+  const me = useUserStore((state) => state.userInformation);
   const [api, contextHolder] = notification.useNotification();
+  const { trigger: triggerMe } = useMeMutation();
+  const setUserInformation = useUserStore((state) => state.setUserInformation);
   const authFetch = useAuthenticatedFetch();
 
   const [isEditing, setIsEditing] = useState(false);
 
-  const [fullName, setFullName] = useState(data?.fullName || "");
-  const [email, setEmail] = useState(data?.email || "");
-  const [phoneNumber, setPhoneNumber] = useState(data?.phoneNumber || "");
-  const [agentName, setAgentName] = useState(data?.agentName || "");
-  const [address, setAddress] = useState(data?.address || "");
-  const [taxCode, setTaxCode] = useState(data?.taxCode || "");
-  const [gender, setGender] = useState(data?.gender || 1);
+  const [fullName, setFullName] = useState(me?.fullName || "");
+  const [email, setEmail] = useState(me?.email || "");
+  const [phoneNumber, setPhoneNumber] = useState(me?.phoneNumber || "");
+  const [agentName, setAgentName] = useState(me?.agentName || "");
+  const [address, setAddress] = useState(me?.address || "");
+  const [taxCode, setTaxCode] = useState(me?.taxCode || "");
+  const [gender, setGender] = useState(me?.gender || 1);
 
   useEffect(() => {
-    if (data) {
-      setFullName(data.fullName);
-      setEmail(data.email);
-      setPhoneNumber(data.phoneNumber);
-      setAgentName(data.agentName || "");
-      setAddress(data.address || "");
-      setTaxCode(data.taxCode || "");
-      setGender(data.gender || 1);
+    if (me) {
+      setFullName(me?.fullName);
+      setEmail(me?.email);
+      setPhoneNumber(me?.phoneNumber);
+      setAgentName(me?.agentName || "");
+      setAddress(me?.address || "");
+      setTaxCode(me?.taxCode || "");
+      setGender(me?.gender || 1);
     }
-  }, [data]);
+  }, [me]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
   };
 
   const handleCancel = () => {
-    setFullName(data?.fullName || "");
-    setEmail(data?.email || "");
-    setPhoneNumber(data?.phoneNumber || "");
-    setAgentName(data?.agentName || "");
-    setAddress(data?.address || "");
-    setTaxCode(data?.taxCode || "");
-    setGender(data?.gender || 1);
+    setFullName(me?.fullName || "");
+    setEmail(me?.email || "");
+    setPhoneNumber(me?.phoneNumber || "");
+    setAgentName(me?.agentName || "");
+    setAddress(me?.address || "");
+    setTaxCode(me?.taxCode || "");
+    setGender(me?.gender || 1);
     setIsEditing(false);
   };
 
   const handleUpdate = async () => {
     let updateData;
 
-    if (data.type === "agent") {
+    if (me?.type === "agent") {
       updateData = {
         fullName,
         email,
@@ -60,7 +63,7 @@ function Profile() {
         address,
         taxCode,
       };
-    } else if (data.type === "staff") {
+    } else if (me?.type === "staff") {
       updateData = {
         fullName,
         email,
@@ -70,9 +73,9 @@ function Profile() {
     }
 
     const endpoint =
-      data.type === "agent"
-        ? `${API_ROOT}/agent/update-agent/${data.id}`
-        : `${API_ROOT}/staff/update-staff/${data.id}`;
+      me?.type === "agent"
+        ? `${API_ROOT}/agent/update-agent/${me?.id}`
+        : `${API_ROOT}/staff/update-staff/${me?.id}`;
 
     const res = await authFetch(endpoint, {
       method: "PUT",
@@ -86,7 +89,8 @@ function Profile() {
       api.success({
         message: "Cập nhật thành công",
       });
-      mutate();
+      const me = await triggerMe();
+      setUserInformation(me);
       setIsEditing(false);
     } else {
       api.error({
@@ -95,9 +99,7 @@ function Profile() {
     }
   };
 
-  if (isLoading) return <Spin />;
-
-  if (data?.type === "agent") {
+  if (me?.type === "agent") {
     return (
       <div className="AgentProfile Profile">
         {contextHolder}
@@ -204,26 +206,26 @@ function Profile() {
                 marginLeft: "10px",
               }}
             >
-              <Input className="marginTop1" value={data.username} disabled />
-              <Input className="marginTop1" value={data.rank} disabled />
+              <Input className="marginTop1" value={me?.username} disabled />
+              <Input className="marginTop1" value={me?.rank} disabled />
               <Input
                 className="marginTop1"
-                value={NumberToVND.format(data.debitLimit)}
+                value={NumberToVND.format(me?.debitLimit)}
                 disabled
               />
               <Input
                 className="marginTop1"
-                value={NumberToVND.format(data.accountHave)}
+                value={NumberToVND.format(me?.accountHave)}
                 disabled
               />
               <Input
                 className="marginTop1"
-                value={NumberToVND.format(data.accountDebit)}
+                value={NumberToVND.format(me?.accountDebit)}
                 disabled
               />
               <Input
                 className="marginTop1"
-                value={new Date(data.createdAt).toLocaleString()}
+                value={new Date(me?.createdAt).toLocaleString()}
                 disabled
               />
             </div>
@@ -249,7 +251,7 @@ function Profile() {
     );
   }
 
-  if (data?.type === "staff") {
+  if (me?.type === "staff") {
     return (
       <div className="StaffProfile Profile">
         {contextHolder}
@@ -343,16 +345,16 @@ function Profile() {
                 marginLeft: "10px",
               }}
             >
-              <Input className="marginTop1" value={data.username} disabled />
-              <Input className="marginTop1" value={data.roleName} disabled />
+              <Input className="marginTop1" value={me?.username} disabled />
+              <Input className="marginTop1" value={me?.roleName} disabled />
               <Input
                 className="marginTop1"
-                value={new Date(data.createdAt).toLocaleString()}
+                value={new Date(me?.createdAt).toLocaleString()}
                 disabled
               />
               <Input
                 className="marginTop1"
-                value={new Date(data.updatedAt).toLocaleString()}
+                value={new Date(me?.updatedAt).toLocaleString()}
                 disabled
               />
             </div>

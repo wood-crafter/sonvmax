@@ -1,22 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import useSWR from "swr";
 import { API_ROOT } from "../constant";
 import { FetchWithAuthOptions, useAuthenticatedFetch } from "./useAuthenticatedFetch";
 import { requestOptions } from "./utils";
+import useSWRMutation from "swr/mutation";
 
-export function useMe() {
+export function useMeMutation() {
   const fetcher = useAuthenticatedFetch();
-  const { data, isLoading, error, mutate } = useSWR(
-    { url: `/auth/me`, fetcher },
-    fetchMe
-  );
+  const { data, error, trigger } = useSWRMutation({ url: `/auth/me`, fetcher }, fetchMe)
 
   return {
     data,
-    isLoading,
     error,
-    mutate,
-  };
+    trigger,
+  }
 }
 
 export async function fetchMe({url, fetcher} : FetchWithAuthOptions) {
