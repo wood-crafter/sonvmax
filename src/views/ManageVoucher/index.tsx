@@ -313,7 +313,7 @@ function ManageVoucher() {
               placeholder="Chọn đại lý thụ hưởng"
               style={{ width: "100%" }}
             >
-              {agents?.data.map((agent) => (
+              {agents?.data?.map((agent) => (
                 <Select.Option key={agent.id} value={agent.id}>
                   {agent.agentName}
                 </Select.Option>
@@ -378,7 +378,7 @@ function ManageVoucher() {
             placeholder="Chọn đại lý thụ hưởng"
             style={{ width: "100%" }}
           >
-            {agents?.data.map((agent) => (
+            {agents?.data?.map((agent) => (
               <Select.Option key={agent.id} value={agent.id}>
                 {agent.agentName}
               </Select.Option>
