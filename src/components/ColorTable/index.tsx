@@ -9,6 +9,7 @@ import { ColorResult, SketchPicker } from "react-color";
 import { CloseOutlined } from "@ant-design/icons";
 
 type Color = {
+  id: string;
   colorName: string;
   code: string;
   r: number;
@@ -21,12 +22,22 @@ type ColorTableProps = {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentColor?: React.Dispatch<any>;
-  onPicked?: (rgb: RGB) => void;
+  onPicked?: (currentColorId: string, rgb: RGB) => Promise<void>;
   currentColor?: RGB;
+  setColorId?: React.Dispatch<React.SetStateAction<string | null>>;
+  currentColorId: string | null;
 };
 
 const ColorTable: React.FC<ColorTableProps> = (props) => {
-  const { isOpen, setIsOpen, setCurrentColor, onPicked, currentColor } = props;
+  const {
+    isOpen,
+    setIsOpen,
+    setCurrentColor,
+    onPicked,
+    currentColor,
+    setColorId,
+    currentColorId,
+  } = props;
   const { data } = useColors();
   const colors = data?.data;
 
@@ -40,7 +51,7 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
 
   const handleChangeColorComplete = (color: ColorResult) => {
     if (onPicked) {
-      onPicked(color.rgb);
+      onPicked("", color.rgb);
       setIsOpen(false);
     }
   };
@@ -96,7 +107,7 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
       setCurrentColor({ r: 255, g: 255, b: 255 });
       setIsOpen(false);
     } else if (onPicked) {
-      onPicked({ r: 255, g: 255, b: 255 });
+      onPicked("", { r: 255, g: 255, b: 255 });
       setIsOpen(false);
     }
   };
@@ -185,7 +196,7 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
           onClick={handleClickNoColor}
         />
       </div>
-      {currentColor && (
+      {(currentColor || currentColorId) && (
         <SketchPicker
           disableAlpha
           color={currentColor}
@@ -197,6 +208,9 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
         dataSource={colors}
         onRow={(record) => ({
           onDoubleClick: () => {
+            if (setColorId) {
+              setColorId(record.id);
+            }
             if (setCurrentColor) {
               setCurrentColor({
                 r: record.r,
@@ -208,7 +222,7 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
               });
             }
             if (onPicked) {
-              onPicked({ r: record.r, g: record.g, b: record.b });
+              onPicked(record.id, { r: record.r, g: record.g, b: record.b });
             }
             setIsOpen(false);
           },

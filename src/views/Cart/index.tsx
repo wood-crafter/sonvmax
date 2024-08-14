@@ -44,6 +44,13 @@ type OrderProductColorPickerProps = {
   accessToken: string;
   refreshCart: KeyedMutator<PagedResponse<Cart>>;
   currentColor: RGB;
+  currentColorId: string | null;
+  setColorId: React.Dispatch<React.SetStateAction<string | null>>;
+};
+
+type CartUpdateBody = {
+  colorId?: string;
+  colorPick?: RGB | null;
 };
 
 const DebouncedInputNumber = (props: DebouncedInputNumberProps) => {
@@ -103,15 +110,29 @@ const OrderProductColorPicker = (props: OrderProductColorPickerProps) => {
     accessToken,
     refreshCart,
     currentColor,
+    currentColorId,
+    setColorId,
   } = props;
   const authFetch = useAuthenticatedFetch();
 
-  const onPicked = async (rgb: RGB) => {
+  const onPicked = async (currentColorId: string, rgb: RGB) => {
+    const body: CartUpdateBody = {};
+    if (currentColorId) {
+      body.colorId = currentColorId;
+      body.colorPick = null;
+    } else {
+      body.colorId = "";
+      body.colorPick = {
+        r: rgb.r,
+        b: rgb.b,
+        g: rgb.g,
+      };
+    }
     await authFetch(
       `${API_ROOT}/order/update-order-product/${orderProductId}`,
       {
         ...requestOptions,
-        body: JSON.stringify({ colorPick: rgb }),
+        body: JSON.stringify(body),
         method: "PUT",
         headers: {
           ...requestOptions.headers,
@@ -128,6 +149,8 @@ const OrderProductColorPicker = (props: OrderProductColorPickerProps) => {
       isOpen={isOpen}
       setIsOpen={setIsOpen}
       onPicked={onPicked}
+      currentColorId={currentColorId}
+      setColorId={setColorId}
     />
   );
 };
@@ -157,6 +180,7 @@ function UserCart() {
     g: 255,
     b: 255,
   });
+  const [colorId, setColorId] = useState<string | null>("");
   const [isOpenOrderDetail, setIsOpenOrderDetail] = useState(false);
   const [orderAddress, setOrderAddress] = useState(
     isAgentInfo(me) ? me?.address : ""
@@ -322,6 +346,8 @@ function UserCart() {
         refreshCart={refreshCart}
         orderProductId={currentEditingId}
         currentColor={currentColor}
+        currentColorId={colorId}
+        setColorId={setColorId}
       />
       <Modal
         title="Thông tin giao hàng"
@@ -391,13 +417,20 @@ function UserCart() {
                     border: "1px solid black",
                     marginLeft: "1rem",
                     marginRight: "1rem",
-                    backgroundColor: `rgb(${item.colorPick?.r ?? 255}, ${
-                      item.colorPick?.g ?? 255
-                    }, ${item.colorPick?.b ?? 255})`,
+                    backgroundColor: `rgb(${
+                      item?.color?.r ? item?.color?.r : item.colorPick?.r ?? 255
+                    }, ${
+                      item?.color?.g ? item?.color?.g : item.colorPick?.g ?? 255
+                    }, ${
+                      item?.color?.b ? item?.color?.b : item.colorPick?.b ?? 255
+                    })`,
                   }}
                   onClick={() => {
                     setCurrentEditingId(item.id);
-                    setCurrrentColor(item.colorPick);
+                    setColorId((item.colorId ?? "") + "");
+                    setCurrrentColor(
+                      item.colorId ? item.color : item.colorPick
+                    );
                     setIsOpenColorPick(true);
                   }}
                 ></Button>

@@ -215,5 +215,14 @@ export type Cart = {
     g: number,
     b: number
   }
+  color: CartColor
   volumeId: string
+}
+
+type CartColor = {
+  colorName: string
+  priceColor: number
+  r: number
+  g: number
+  b: number
 }

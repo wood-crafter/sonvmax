@@ -54,6 +54,7 @@ function ProductDetail() {
     g: 255,
     b: 255,
   });
+  const [colorId, setColorId] = useState("");
   const [numOfProduct, setNumOfProduct] = useState(1);
   const [api, contextHolder] = notification.useNotification();
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
@@ -98,7 +99,7 @@ function ProductDetail() {
       RequestLoginNotification();
     }
 
-    if (!currentColor) {
+    if (!currentColor && !colorId) {
       openNotification("Vui lòng chọn màu");
     } else if (numOfProduct < 1) {
       openNotification("Số lượng không hợp lệ");
@@ -110,11 +111,15 @@ function ProductDetail() {
     };
 
     if (product?.canColorPick) {
-      cartBody.rgb = {
-        r: currentColor.r,
-        g: currentColor.g,
-        b: currentColor.b,
-      };
+      if (colorId) {
+        cartBody.colorId = colorId;
+      } else {
+        cartBody.rgb = {
+          r: currentColor.r,
+          g: currentColor.g,
+          b: currentColor.b,
+        };
+      }
     }
 
     const createResponse = await authFetch(
@@ -169,6 +174,7 @@ function ProductDetail() {
           setCurrentColor={setCurrentColor}
           isOpen={isColorModalOpen}
           setIsOpen={setIsColorModalOpen}
+          setColorId={setColorId}
         />
       )}
       <div className="body">
