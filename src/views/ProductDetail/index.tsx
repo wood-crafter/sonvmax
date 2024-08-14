@@ -302,6 +302,7 @@ function ProductDetail() {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
+                  border: "1px solid black",
                   color: `${getTextColorForBackground(
                     currentColor.r,
                     currentColor.g,

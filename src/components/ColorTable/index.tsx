@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { Modal, Table, Input, Space } from "antd";
+import { Modal, Table, Input, Space, Button } from "antd";
 import { ColumnType } from "antd/es/table";
 import { useColors } from "../../hooks/useColor";
 import "./index.css";
 import { RGB } from "../../type";
 import { ColorResult, SketchPicker } from "react-color";
+import { CloseOutlined } from "@ant-design/icons";
 
 type Color = {
   colorName: string;
@@ -17,7 +18,6 @@ type Color = {
 };
 
 type ColorTableProps = {
-  setColor?: React.Dispatch<any>;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentColor?: React.Dispatch<any>;
@@ -91,6 +91,16 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
     },
   });
 
+  const handleClickNoColor = () => {
+    if (setCurrentColor) {
+      setCurrentColor({ r: 255, g: 255, b: 255 });
+      setIsOpen(false);
+    } else if (onPicked) {
+      onPicked({ r: 255, g: 255, b: 255 });
+      setIsOpen(false);
+    }
+  };
+
   const columns: ColumnType<Color>[] = [
     {
       title: "Mã màu",
@@ -148,13 +158,32 @@ const ColorTable: React.FC<ColorTableProps> = (props) => {
       onCancel={handleAddCancel}
       width={"100%"}
     >
-      <div style={{ color: "red" }}>
+      <div
+        style={{ color: "red", display: "flex", justifyContent: "flex-end" }}
+      >
         *Màu sắc sơn hiển thị chỉ mang tính chất tham khảo và có thể khác biệt
         so với màu sơn thực tế do sai lệch về phần cứng hiển thị.
       </div>
-      <div style={{ color: "red" }}>
+      <div
+        style={{ color: "red", display: "flex", justifyContent: "flex-end" }}
+      >
         *Xin quý khách vui long tham khảo và đối chiếu với ô màu thực tế trên
         bảng màu hoặc quạt màu chính hãng được cung cấp
+      </div>
+      <div
+        style={{ marginBottom: "1rem", display: "flex", alignItems: "center" }}
+      >
+        <h3>Không chọn màu:</h3>
+        <Button
+          icon={<CloseOutlined style={{ color: "red" }} />}
+          style={{
+            backgroundColor: "white",
+            border: "1px solid black",
+            color: "red",
+            marginLeft: "0.5rem",
+          }}
+          onClick={handleClickNoColor}
+        />
       </div>
       {currentColor && (
         <SketchPicker
