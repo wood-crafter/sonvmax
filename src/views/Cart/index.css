@@ -12,7 +12,13 @@
   height: 10rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+}
+
+.Cart .cart-voumes {
+  width: 10% !important;
+  min-width: 10%;
+  max-width: 10%;
 }
 
 .Cart .cart-item-image-container {

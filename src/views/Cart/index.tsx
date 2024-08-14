@@ -12,7 +12,7 @@ import { useCart } from "../../hooks/useCart";
 import { AgentInfo, Cart, PagedResponse, RGB, StaffInfo } from "../../type";
 import "./index.css";
 import debounce from "lodash.debounce";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { API_ROOT } from "../../constant";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
@@ -190,6 +190,17 @@ function UserCart() {
     isAgentInfo(me) ? me?.address : ""
   );
   const [phoneNumber, setPhoneNumber] = useState(me?.phoneNumber ?? "");
+  const isPickAll = useMemo(() => {
+    let isNoAll = false;
+    currentCart?.forEach((item) => {
+      if (!cartsChecked?.includes(item.id)) {
+        isNoAll = true;
+        return;
+      }
+    });
+
+    return !isNoAll;
+  }, [cartsChecked, currentCart]);
 
   const addSuccessNotification = () => {
     api.open({
@@ -312,6 +323,14 @@ function UserCart() {
     refreshCart();
   };
 
+  const handlePickAll = () => {
+    if (!isPickAll) {
+      setCartsChecked(currentCart ? currentCart.map((it) => it.id) : []);
+      return;
+    }
+    setCartsChecked([]);
+  };
+
   useEffect(() => {
     const triggerPersonalInfo = async () => {
       const me = await triggerMe();
@@ -412,20 +431,22 @@ function UserCart() {
                   <div>x{item.quantity}</div>
                 </div>
                 {item?.product?.volumes && (
-                  <Select
-                    defaultValue={item.volumeId}
-                    onChange={(value: string) => {
-                      updateOrderProduct(item.id, value);
-                    }}
-                  >
-                    {item?.product?.volumes?.map((volume) => {
-                      return (
-                        <Select.Option key={volume.id} value={volume.id}>
-                          {volume.volume}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
+                  <div className="cart-voumes">
+                    <Select
+                      defaultValue={item.volumeId}
+                      onChange={(value: string) => {
+                        updateOrderProduct(item.id, value);
+                      }}
+                    >
+                      {item?.product?.volumes?.map((volume) => {
+                        return (
+                          <Select.Option key={volume.id} value={volume.id}>
+                            {volume.volume}
+                          </Select.Option>
+                        );
+                      })}
+                    </Select>
+                  </div>
                 )}
                 <Button
                   className="rePick-color"
@@ -459,6 +480,7 @@ function UserCart() {
                   defaultValue={item.quantity}
                 />
                 <Checkbox
+                  checked={!!cartsChecked.find((it) => it === item.id)}
                   onChange={(e) => {
                     handleChangeCheckedProduct(e, item.id);
                   }}
@@ -478,6 +500,22 @@ function UserCart() {
               </div>
             );
           })}
+        </div>
+      )}
+      {!!currentCart?.length && (
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          <Button
+            style={{ marginRight: "2rem", marginTop: "0.5rem" }}
+            onClick={handlePickAll}
+          >
+            {isPickAll ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+          </Button>
         </div>
       )}
       {!!currentCart?.length && (
