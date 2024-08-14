@@ -1,7 +1,7 @@
 import "./index.css";
 import type { MenuProps } from "antd";
 import { Menu } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../../store/user";
 import {
@@ -148,104 +148,95 @@ const useManagerMenuItems = () => {
   return managerItems;
 };
 
-const useClientMenuItems = (
-  accessToken: string,
-  userInfo: AgentInfo | null
-) => {
+function Nav({ isManager = false }: { isManager: boolean }) {
+  const accessToken = useUserStore((state) => state.accessToken);
+  const userInfo = useUserStore((state) => state.userInformation);
+  const [current, setCurrent] = useState("mail");
   const setCategories = useUserStore((state) => state.setCategories);
   const { data: categoryResponse } = useCategories(1);
   const logout = useUserStore((state) => state.clear);
+
   useEffect(() => {
     if (categoryResponse) {
       setCategories(categoryResponse.data);
     }
   }, [categoryResponse]);
 
-  const clientItems: MenuItem[] = [
-    {
-      label: "Danh mục sản phẩm",
-      key: "productCollection",
-      icon: <UnorderedListOutlined />,
-      children: categoryResponse
-        ? categoryResponse.data.map((it) => {
-            return {
-              label: <Link to={`/products/${it.id}`}>{it.name}</Link>,
-              key: it.id,
-            };
-          })
-        : [],
-    },
-    {
-      label: <Link to="/home">Trang chủ</Link>,
-      key: "home",
-      icon: <HomeOutlined />,
-    },
-    {
-      label: <Link to="/products">Sản phẩm</Link>,
-      key: "products",
-      icon: <BgColorsOutlined />,
-    },
-    ...(accessToken
-      ? [
-          {
-            label: <Link to="/cart">Giỏ hàng</Link>,
-            key: "cart",
-            icon: <ShoppingCartOutlined />,
-          },
-          {
-            label: <Link to="/order/history">Lịch sử mua</Link>,
-            key: "orderHistory",
-            icon: <HistoryOutlined />,
-          },
-          {
-            label: <Link to="/profile">Hồ sơ</Link>,
-            key: "profile",
-            icon: <ProfileOutlined />,
-          },
-          {
-            label: <Link to="/change_password">Đổi mật khẩu</Link>,
-            key: "change_password",
-            icon: <LockOutlined />,
-          },
-          ...(userInfo
-            ? [
-                {
-                  label: (
-                    <div>
-                      Số dư: {NumberToVND.format(+userInfo.accountHave)}
-                    </div>
-                  ),
-                  key: "userInfo",
-                  disabled: true,
-                },
-              ]
-            : []),
-          {
-            label: <div onClick={logout}>Đăng xuất</div>,
-            key: "logout",
-          },
-        ]
-      : [
-          {
-            label: <Link to="/login">Đăng nhập</Link>,
-            key: "login",
-          },
-        ]),
-  ];
-
-  return clientItems;
-};
-
-function Nav({ isManager = false }: { isManager: boolean }) {
-  const accessToken = useUserStore((state) => state.accessToken);
-  const userInfo = useUserStore((state) => state.userInformation);
-  const [current, setCurrent] = useState("mail");
-
   const managerMenuItems = useManagerMenuItems();
-  const clientMenuItems = useClientMenuItems(
-    accessToken,
-    isAgentInfo(userInfo) ? userInfo : null
-  );
+  const clientMenuItems = useMemo(() => {
+    const me = isAgentInfo(userInfo) ? userInfo : null;
+    const clientItems: MenuItem[] = [
+      {
+        label: "Danh mục sản phẩm",
+        key: "productCollection",
+        icon: <UnorderedListOutlined />,
+        children: categoryResponse
+          ? categoryResponse.data.map((it) => {
+              return {
+                label: <Link to={`/products/${it.id}`}>{it.name}</Link>,
+                key: it.id,
+              };
+            })
+          : [],
+      },
+      {
+        label: <Link to="/home">Trang chủ</Link>,
+        key: "home",
+        icon: <HomeOutlined />,
+      },
+      {
+        label: <Link to="/products">Sản phẩm</Link>,
+        key: "products",
+        icon: <BgColorsOutlined />,
+      },
+      ...(accessToken
+        ? [
+            {
+              label: <Link to="/cart">Giỏ hàng</Link>,
+              key: "cart",
+              icon: <ShoppingCartOutlined />,
+            },
+            {
+              label: <Link to="/order/history">Lịch sử mua</Link>,
+              key: "orderHistory",
+              icon: <HistoryOutlined />,
+            },
+            {
+              label: <Link to="/profile">Hồ sơ</Link>,
+              key: "profile",
+              icon: <ProfileOutlined />,
+            },
+            {
+              label: <Link to="/change_password">Đổi mật khẩu</Link>,
+              key: "change_password",
+              icon: <LockOutlined />,
+            },
+            ...(me
+              ? [
+                  {
+                    label: (
+                      <div>Số dư: {NumberToVND.format(+me?.accountHave)}</div>
+                    ),
+                    key: "userInfo",
+                    disabled: true,
+                  },
+                ]
+              : []),
+            {
+              label: <div onClick={logout}>Đăng xuất</div>,
+              key: "logout",
+            },
+          ]
+        : [
+            {
+              label: <Link to="/login">Đăng nhập</Link>,
+              key: "login",
+            },
+          ]),
+    ];
+
+    return clientItems;
+  }, [accessToken, userInfo]);
 
   return (
     <Menu

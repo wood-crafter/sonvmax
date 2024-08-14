@@ -2,6 +2,10 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { AgentInfo, Category, StaffInfo } from "../type";
 
+// Type guard to check if the user is an agent
+function isAgentInfo(me: AgentInfo | StaffInfo): me is AgentInfo {
+  return me?.type === "agent";
+}
 interface UserState {
   accessToken: string;
   roleName: string;
@@ -33,7 +37,7 @@ export const useUserStore = create(
         set(() => ({ roleName, accessToken, level, id }));
       },
       setUserInformation: (user: AgentInfo| StaffInfo) => {
-        set(() => ({userInformation: user}))
+        set(() => ({userInformation: user, level: isAgentInfo(user) ? user.rank + '' : '-1'}))
       },
       setCategories: (categoires) => {
         set(() => ({ categoires }));

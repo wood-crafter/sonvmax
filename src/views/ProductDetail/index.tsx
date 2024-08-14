@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { API_ROOT, DISCOUNT_AMOUNT } from "../../constant";
 import { useProductsById } from "../../hooks/useProduct";
 import { Button, InputNumber, notification, Select } from "antd";
@@ -13,6 +13,7 @@ import { useUserStore } from "../../store/user";
 import { ColorResult, SketchPicker } from "react-color";
 import ColorTable from "../../components/ColorTable";
 import { requestOptions } from "../../hooks/utils";
+import { useMeMutation } from "../../hooks/useMe";
 
 type VolumeSelectProps = {
   setSelectingVolume: React.Dispatch<React.SetStateAction<string>>;
@@ -42,6 +43,8 @@ function VolumeSelect(props: VolumeSelectProps) {
 }
 
 function ProductDetail() {
+  const { trigger: triggerMe } = useMeMutation();
+  const setUserInformation = useUserStore((state) => state.setUserInformation);
   const level = useUserStore((state) => state.level);
   const discount = DISCOUNT_AMOUNT[+level - 1] ?? 0;
   const accessToken = useUserStore((state) => state.accessToken);
@@ -61,6 +64,14 @@ function ProductDetail() {
   const ratioPriceColor = useMemo(() => {
     return classifyColor(currentColor);
   }, [currentColor]);
+
+  useEffect(() => {
+    const triggerPersonalInfo = async () => {
+      const me = await triggerMe();
+      setUserInformation(me);
+    };
+    triggerPersonalInfo();
+  }, []);
 
   const RequestLoginNotification = () => {
     api.open({

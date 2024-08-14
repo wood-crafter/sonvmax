@@ -311,6 +311,15 @@ function UserCart() {
     });
     refreshCart();
   };
+
+  useEffect(() => {
+    const triggerPersonalInfo = async () => {
+      const me = await triggerMe();
+      setUserInformation(me);
+    };
+    triggerPersonalInfo();
+  }, []);
+
   useEffect(() => {
     const currentTotal = currentCart
       ?.filter((item) => cartsChecked.includes(item.id))
