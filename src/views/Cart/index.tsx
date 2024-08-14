@@ -47,11 +47,13 @@ type OrderProductColorPickerProps = {
   currentColor: RGB;
   currentColorId: string | null;
   setColorId: React.Dispatch<React.SetStateAction<string | null>>;
+  productId: string;
 };
 
 type CartUpdateBody = {
+  id: string;
   colorId?: string;
-  colorPick?: RGB | null;
+  rgb?: RGB | null;
 };
 
 const DebouncedInputNumber = (props: DebouncedInputNumberProps) => {
@@ -112,35 +114,35 @@ const OrderProductColorPicker = (props: OrderProductColorPickerProps) => {
     refreshCart,
     currentColor,
     currentColorId,
+    productId,
     setColorId,
   } = props;
   const authFetch = useAuthenticatedFetch();
 
   const onPicked = async (currentColorId: string, rgb: RGB) => {
-    const body: CartUpdateBody = {};
+    const body: CartUpdateBody = {
+      id: orderProductId,
+    };
     if (currentColorId) {
       body.colorId = currentColorId;
-      body.colorPick = null;
+      body.rgb = null;
     } else {
       body.colorId = "";
-      body.colorPick = {
+      body.rgb = {
         r: rgb.r,
         b: rgb.b,
         g: rgb.g,
       };
     }
-    await authFetch(
-      `${API_ROOT}/order/update-order-product/${orderProductId}`,
-      {
-        ...requestOptions,
-        body: JSON.stringify(body),
-        method: "PUT",
-        headers: {
-          ...requestOptions.headers,
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    await authFetch(`${API_ROOT}/order/create-order-product/${productId}`, {
+      ...requestOptions,
+      body: JSON.stringify(body),
+      method: "POST",
+      headers: {
+        ...requestOptions.headers,
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     refreshCart();
   };
 
@@ -179,6 +181,7 @@ function UserCart() {
   );
   const [isOpenColorPick, setIsOpenColorPick] = useState(false);
   const [currentEditingId, setCurrentEditingId] = useState("");
+  const [currentEditingProductId, setCurrentEditingProductId] = useState("");
   const [currentColor, setCurrrentColor] = useState({
     r: 255,
     g: 255,
@@ -380,6 +383,7 @@ function UserCart() {
     <div className="Cart">
       {contextHolder}
       <OrderProductColorPicker
+        productId={currentEditingProductId}
         isOpen={isOpenColorPick}
         setIsOpen={setIsOpenColorPick}
         accessToken={accessToken}
@@ -448,29 +452,45 @@ function UserCart() {
                     </Select>
                   </div>
                 )}
-                <Button
-                  className="rePick-color"
+                <div
                   style={{
-                    border: "1px solid black",
-                    marginLeft: "1rem",
-                    marginRight: "1rem",
-                    backgroundColor: `rgb(${
-                      item?.color?.r ? item?.color?.r : item.colorPick?.r ?? 255
-                    }, ${
-                      item?.color?.g ? item?.color?.g : item.colorPick?.g ?? 255
-                    }, ${
-                      item?.color?.b ? item?.color?.b : item.colorPick?.b ?? 255
-                    })`,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
                   }}
-                  onClick={() => {
-                    setCurrentEditingId(item.id);
-                    setColorId((item.colorId ?? "") + "");
-                    setCurrrentColor(
-                      item.colorId ? item.color : item.colorPick
-                    );
-                    setIsOpenColorPick(true);
-                  }}
-                ></Button>
+                >
+                  <Button
+                    className="rePick-color"
+                    style={{
+                      border: "1px solid black",
+                      marginLeft: "1rem",
+                      marginRight: "1rem",
+                      backgroundColor: `rgb(${
+                        item?.color?.r
+                          ? item?.color?.r
+                          : item.colorPick?.r ?? 255
+                      }, ${
+                        item?.color?.g
+                          ? item?.color?.g
+                          : item.colorPick?.g ?? 255
+                      }, ${
+                        item?.color?.b
+                          ? item?.color?.b
+                          : item.colorPick?.b ?? 255
+                      })`,
+                    }}
+                    onClick={() => {
+                      setCurrentEditingId(item.id);
+                      setCurrentEditingProductId(item.productId);
+                      setColorId((item.colorId ?? "") + "");
+                      setCurrrentColor(
+                        item.colorId ? item.color : item.colorPick
+                      );
+                      setIsOpenColorPick(true);
+                    }}
+                  ></Button>
+                  <div>{item.color.code}</div>
+                </div>
                 <DebouncedInputNumber
                   refreshCart={refreshCart}
                   className="cart-item-num-of-product"
