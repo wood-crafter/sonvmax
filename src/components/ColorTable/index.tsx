@@ -25,7 +25,7 @@ type ColorTableProps = {
   onPicked?: (currentColorId: string, rgb: RGB) => Promise<void>;
   currentColor?: RGB;
   setColorId?: React.Dispatch<React.SetStateAction<string | null>>;
-  currentColorId: string | null;
+  currentColorId?: string | null;
 };
 
 const ColorTable: React.FC<ColorTableProps> = (props) => {

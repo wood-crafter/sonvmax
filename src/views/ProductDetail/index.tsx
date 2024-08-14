@@ -54,7 +54,7 @@ function ProductDetail() {
     g: 255,
     b: 255,
   });
-  const [colorId, setColorId] = useState("");
+  const [colorId, setColorId] = useState<string | null>("");
   const [numOfProduct, setNumOfProduct] = useState(1);
   const [api, contextHolder] = notification.useNotification();
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
