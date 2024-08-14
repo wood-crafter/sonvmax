@@ -43,7 +43,7 @@ function Layout({
   return (
     <div className={`${isManager ? "ManagerLayout" : "Layout"} Layout-wrapper`}>
       <Nav isManager={isManager} />
-      <main>{children}</main>
+      <main className={`${isManager ? "ManagerBody" : ""}`}>{children}</main>
       {!isManager && <Footer />}
     </div>
   );

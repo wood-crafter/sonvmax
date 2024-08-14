@@ -20,3 +20,8 @@
   flex-basis: 0;
   flex-grow: 1;
 }
+
+.ManagerBody {
+  margin-left: 1rem;
+  color: black;
+}
