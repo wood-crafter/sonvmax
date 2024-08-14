@@ -358,7 +358,7 @@ function Profile() {
               }}
             >
               <Input className="marginTop1" value={me?.username} disabled />
-              <Input className="marginTop1" value={me?.roleId} disabled />
+              <Input className="marginTop1" value={me?.roleName} disabled />
               <Input
                 className="marginTop1"
                 value={new Date(me?.createdAt).toLocaleString()}

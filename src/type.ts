@@ -9,6 +9,7 @@ export type StaffInfo = {
   fullName: string;
   phoneNumber: string;
   roleId: string;
+  roleName: string
   type: "staff";
 };
 
