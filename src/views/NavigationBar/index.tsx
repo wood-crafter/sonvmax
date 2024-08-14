@@ -130,7 +130,7 @@ const useManagerMenuItems = () => {
         ]
       : []),
     {
-      label: <Link to="/change_password">Đổi mật khẩu</Link>,
+      label: <Link to="/manage/change_password">Đổi mật khẩu</Link>,
       key: "change_password",
       icon: <LockOutlined />,
     },

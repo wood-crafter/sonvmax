@@ -143,6 +143,14 @@ const AppRoutes = () => {
           }
         />
         <Route
+          path="change_password"
+          element={
+            <Layout hasNav isManager>
+              <ChangePassword />
+            </Layout>
+          }
+        />
+        <Route
           path="color"
           element={
             <Layout hasNav isManager roleAllow={[OWNER.role, STOCKER.role]}>
