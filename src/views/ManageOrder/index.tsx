@@ -352,48 +352,52 @@ function ManageOrder() {
     {
       title: "",
       key: "action",
-      render: (_, record: Order) => (
-        <Space size="middle">
-          {editingRow === record.id ? (
-            <>
-              <Popconfirm
-                title="Xác nhận cập nhật?"
-                onConfirm={async () => {
-                  await updateOrder({
-                    id: record.id,
-                    description,
-                  });
-                  setEditingRow(null);
-                  refreshOrder();
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Button type="primary">Xác nhận</Button>
-              </Popconfirm>
-              <Button onClick={() => setEditingRow(null)}>Huỷ</Button>
-            </>
-          ) : (
-            <>
-              <Button
-                onClick={() => {
-                  setEditingRow(record.id);
-                  setDescription(record.description || "");
-                }}
-              >
-                Sửa
-              </Button>
-              <Button
-                onClick={() => {
-                  createInvoice(record.id);
-                }}
-              >
-                Tạo hóa đơn
-              </Button>
-            </>
-          )}
-        </Space>
-      ),
+      render: (_, record: Order) => {
+        return (
+          <Space size="middle">
+            {editingRow === record.id ? (
+              <>
+                <Popconfirm
+                  title="Xác nhận cập nhật?"
+                  onConfirm={async () => {
+                    await updateOrder({
+                      id: record.id,
+                      description,
+                    });
+                    setEditingRow(null);
+                    refreshOrder();
+                  }}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button type="primary">Xác nhận</Button>
+                </Popconfirm>
+                <Button onClick={() => setEditingRow(null)}>Huỷ</Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  onClick={() => {
+                    setEditingRow(record.id);
+                    setDescription(record.description || "");
+                  }}
+                >
+                  Sửa
+                </Button>
+                {![-1, 0].includes(record.status) && (
+                  <Button
+                    onClick={() => {
+                      createInvoice(record.id);
+                    }}
+                  >
+                    Tạo hóa đơn
+                  </Button>
+                )}
+              </>
+            )}
+          </Space>
+        );
+      },
     },
   ];
 
