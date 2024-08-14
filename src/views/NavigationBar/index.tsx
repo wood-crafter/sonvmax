@@ -25,8 +25,14 @@ import {
 } from "@ant-design/icons";
 import { useCategories } from "../../hooks/useCategories";
 import { ACCOUTANT, OWNER, SALES, STOCKER } from "../../constant";
+import { AgentInfo, StaffInfo } from "../../type";
+import { NumberToVND } from "../../helper";
 
 type MenuItem = Required<MenuProps>["items"][number];
+
+function isAgentInfo(user: AgentInfo | StaffInfo | null): user is AgentInfo {
+  return (user as AgentInfo)?.agentName !== undefined;
+}
 
 const useManagerMenuItems = () => {
   const logout = useUserStore((state) => state.clear);
@@ -142,7 +148,10 @@ const useManagerMenuItems = () => {
   return managerItems;
 };
 
-const useClientMenuItems = (accessToken: string) => {
+const useClientMenuItems = (
+  accessToken: string,
+  userInfo: AgentInfo | null
+) => {
   const { data: categoryResponse } = useCategories(1);
   const logout = useUserStore((state) => state.clear);
 
@@ -192,6 +201,19 @@ const useClientMenuItems = (accessToken: string) => {
             key: "change_password",
             icon: <LockOutlined />,
           },
+          ...(userInfo
+            ? [
+                {
+                  label: (
+                    <div>
+                      Số dư: {NumberToVND.format(+userInfo.accountHave)}
+                    </div>
+                  ),
+                  key: "userInfo",
+                  disabled: true,
+                },
+              ]
+            : []),
           {
             label: <div onClick={logout}>Đăng xuất</div>,
             key: "logout",
@@ -210,10 +232,14 @@ const useClientMenuItems = (accessToken: string) => {
 
 function Nav({ isManager = false }: { isManager: boolean }) {
   const accessToken = useUserStore((state) => state.accessToken);
+  const userInfo = useUserStore((state) => state.userInformation);
   const [current, setCurrent] = useState("mail");
 
   const managerMenuItems = useManagerMenuItems();
-  const clientMenuItems = useClientMenuItems(accessToken);
+  const clientMenuItems = useClientMenuItems(
+    accessToken,
+    isAgentInfo(userInfo) ? userInfo : null
+  );
 
   return (
     <Menu

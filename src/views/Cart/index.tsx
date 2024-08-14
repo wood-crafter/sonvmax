@@ -27,6 +27,7 @@ import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { useVouchers } from "../../hooks/useVoucher";
 import { requestOptions } from "../../hooks/utils";
 import ColorTable from "../../components/ColorTable";
+import { useMeMutation } from "../../hooks/useMe";
 
 type DebouncedInputNumberProps = {
   defaultValue: number;
@@ -167,6 +168,8 @@ function UserCart() {
   const voucher = voucherResponse?.data;
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
+  const { trigger: triggerMe } = useMeMutation();
+  const setUserInformation = useUserStore((state) => state.setUserInformation);
   const [api, contextHolder] = notification.useNotification();
   const [cartsChecked, setCartsChecked] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
@@ -262,6 +265,8 @@ function UserCart() {
     });
 
     if (orderRes.ok) {
+      const me = await triggerMe();
+      setUserInformation(me);
       addSuccessNotification();
       refreshCart();
       setTotal(0);

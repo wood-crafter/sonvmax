@@ -1,4 +1,4 @@
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import "./index.css";
 import { useUserStore } from "../../store/user";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import { useLogin } from "../../hooks/useAuth";
 import { useMeMutation } from "../../hooks/useMe";
 
 function Login() {
+  const accessToken = useUserStore((state) => state.accessToken);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,9 +36,16 @@ function Login() {
     });
 
     if (res.accessToken) {
-      const payload = res.accessToken.split(".")[1];
-      const roleName = JSON.parse(atob(payload)).roleName;
       setAccessToken(res.accessToken);
+    } else {
+      setError(res.message);
+    }
+  };
+
+  useEffect(() => {
+    const triggerPersonalInfo = async () => {
+      const payload = accessToken.split(".")[1];
+      const roleName = JSON.parse(atob(payload)).roleName;
       const me = await triggerMe();
       setUserInformation(me);
 
@@ -46,10 +54,11 @@ function Login() {
       } else {
         navigate("/manage/products");
       }
-    } else {
-      setError(res.message);
+    };
+    if (accessToken) {
+      triggerPersonalInfo();
     }
-  };
+  }, [accessToken]);
 
   return (
     <div className="Login">
