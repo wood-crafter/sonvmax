@@ -489,7 +489,7 @@ function UserCart() {
                       setIsOpenColorPick(true);
                     }}
                   ></Button>
-                  <div>{item.color.code}</div>
+                  <div>{item?.color?.code}</div>
                 </div>
                 <DebouncedInputNumber
                   refreshCart={refreshCart}
