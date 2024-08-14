@@ -1,7 +1,7 @@
 import "./index.css";
 import type { MenuProps } from "antd";
 import { Menu } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../../store/user";
 import {
@@ -152,8 +152,14 @@ const useClientMenuItems = (
   accessToken: string,
   userInfo: AgentInfo | null
 ) => {
+  const setCategories = useUserStore((state) => state.setCategories);
   const { data: categoryResponse } = useCategories(1);
   const logout = useUserStore((state) => state.clear);
+  useEffect(() => {
+    if (categoryResponse) {
+      setCategories(categoryResponse.data);
+    }
+  }, [categoryResponse]);
 
   const clientItems: MenuItem[] = [
     {

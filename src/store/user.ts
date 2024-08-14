@@ -1,16 +1,18 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { AgentInfo, StaffInfo } from "../type";
+import { AgentInfo, Category, StaffInfo } from "../type";
 
 interface UserState {
   accessToken: string;
   roleName: string;
   level: string;
   id: string;
+  categoires: Category[] | null
   setAccessToken: (accessToken: string) => void;
   clear: () => void;
   userInformation: null | AgentInfo | StaffInfo
   setUserInformation: (user: AgentInfo | StaffInfo) => void
+  setCategories: (categoires: Category[]) => void
 }
 
 export const useUserStore = create(
@@ -21,7 +23,8 @@ export const useUserStore = create(
       level: "",
       id: '',
       userInformation: null,
-      setAccessToken: async (accessToken: string) => {
+      categoires: null,
+      setAccessToken: (accessToken: string) => {
         const payload = accessToken.split(".")[1];
         const roleName = JSON.parse(atob(payload)).roleName;
         const level = JSON.parse(atob(payload)).rank;
@@ -31,6 +34,9 @@ export const useUserStore = create(
       },
       setUserInformation: (user: AgentInfo| StaffInfo) => {
         set(() => ({userInformation: user}))
+      },
+      setCategories: (categoires) => {
+        set(() => ({ categoires }));
       },
       clear: () => set({ accessToken: "", roleName: "", level: "", id: "", userInformation: null }),
     }),

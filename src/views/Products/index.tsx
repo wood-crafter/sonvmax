@@ -11,6 +11,7 @@ import { useUserStore } from "../../store/user";
 
 function Products() {
   const level = useUserStore((state) => state.level);
+  const categoires = useUserStore((state) => state.categoires);
   const discount = DISCOUNT_AMOUNT[+level - 1] ?? 0;
   const { categoryId } = useParams<{ categoryId: string }>();
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,6 +30,9 @@ function Products() {
   return (
     <div className="Products">
       <h3 style={{ marginLeft: "2rem" }}>Danh sách sản phẩm</h3>
+      <div style={{ marginLeft: "2rem", marginRight: "2rem" }}>
+        {categoires?.find((it) => it.id === categoryId)?.description}
+      </div>
       <div
         className="products-container"
         style={{ gridTemplateColumns: `repeat(${ITEM_PER_ROW}, 1fr)` }}
