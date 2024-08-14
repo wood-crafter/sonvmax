@@ -173,6 +173,7 @@ function UserCart() {
   const [api, contextHolder] = notification.useNotification();
   const [cartsChecked, setCartsChecked] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
   const [selectedVoucher, setSelectedVoucher] = useState<string | undefined>(
     undefined
   );
@@ -270,6 +271,7 @@ function UserCart() {
       addSuccessNotification();
       refreshCart();
       setTotal(0);
+      setTotalPrice(0);
     } else {
       const orderJson = await orderRes.json();
       addFailNotification(orderRes.status, orderJson.message);
@@ -314,6 +316,10 @@ function UserCart() {
       ?.filter((item) => cartsChecked.includes(item.id))
       ?.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+    const currentTotalPrice = currentCart
+      ?.filter((item) => cartsChecked.includes(item.id))
+      ?.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
     const discountAmount = selectedVoucher
       ? voucher?.find((v) => v.id === selectedVoucher)?.discountAmount || 0
       : 0;
@@ -323,6 +329,7 @@ function UserCart() {
       : 0;
 
     setTotal(discountedTotal);
+    setTotalPrice(currentTotalPrice ?? 0);
   }, [cartsChecked.length, selectedVoucher, currentCart, voucher]);
 
   const handleOrderInforOk = () => {
@@ -382,11 +389,6 @@ function UserCart() {
           {currentCart.map((item: Cart) => {
             return (
               <div key={item.id} className="cart-item">
-                <Checkbox
-                  onChange={(e) => {
-                    handleChangeCheckedProduct(e, item.id);
-                  }}
-                />
                 <div className="cart-item-image-container">
                   <img
                     src={item.product.image}
@@ -447,17 +449,23 @@ function UserCart() {
                   max={100000}
                   defaultValue={item.quantity}
                 />
+                <Checkbox
+                  onChange={(e) => {
+                    handleChangeCheckedProduct(e, item.id);
+                  }}
+                  style={{ marginRight: "2rem" }}
+                />
                 <div className="cart-item-total">
                   Tổng: {NumberToVND.format(item.price * item.quantity)}
                 </div>
-                <div
+                <Button
                   className="cart-item-delete"
                   onClick={() => {
                     handleDeleteCart(item.id);
                   }}
                 >
                   Xoá
-                </div>
+                </Button>
               </div>
             );
           })}
@@ -471,12 +479,21 @@ function UserCart() {
             marginTop: "2rem",
             marginBottom: "2rem",
             display: "flex",
-            justifyContent: "flex-end",
+            flexDirection: "column",
+            alignItems: "flex-end",
           }}
         >
-          Tổng đơn hàng:
-          <div style={{ color: "red", marginLeft: "0.5rem" }}>
-            {NumberToVND.format(total)}
+          <div style={{ display: "flex" }}>
+            <strong>Tổng giá niêm yết:</strong>
+            <div style={{ color: "black", marginLeft: "0.5rem" }}>
+              {NumberToVND.format(totalPrice)}
+            </div>
+          </div>
+          <div style={{ display: "flex" }}>
+            <strong>Tổng thanh toán:</strong>
+            <div style={{ color: "red", marginLeft: "0.5rem" }}>
+              {NumberToVND.format(total)}
+            </div>
           </div>
         </div>
       )}
