@@ -69,6 +69,8 @@ export type Category = {
 }
 
 export type Order = {
+  address: string
+  phoneNumber: string
   id: string
   status: number
   totalAmount: number
@@ -221,6 +223,7 @@ export type Cart = {
 }
 
 type CartColor = {
+  code: string
   colorName: string
   priceColor: number
   r: number

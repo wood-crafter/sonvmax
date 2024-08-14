@@ -16,7 +16,11 @@ import { NumberToVND } from "../../helper";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useOrders } from "../../hooks/useOrder";
-import { QuestionCircleOutlined, SmileOutlined } from "@ant-design/icons";
+import {
+  QuestionCircleOutlined,
+  SmileOutlined,
+  FrownOutlined,
+} from "@ant-design/icons";
 import { API_ROOT } from "../../constant";
 import { requestOptions } from "../../hooks/utils";
 
@@ -26,6 +30,7 @@ function OrderHistory() {
   const [api, contextHolder] = notification.useNotification();
   const { data, isLoading } = useOrders();
   const [currentOrder, setCurrentOrder] = useState<any>(null);
+  const [metadataOrder, setMetadataOrder] = useState<any>(null);
   const orders = useMemo(
     () => data?.data.map((it) => ({ key: it.id, ...it })),
     [data?.data]
@@ -82,6 +87,35 @@ function OrderHistory() {
     });
   };
 
+  const handleCancelOrder = async (id: string) => {
+    const updateResponse = await authFetch(
+      `${API_ROOT}/order/update-order/${id}`,
+      {
+        ...requestOptions,
+        body: JSON.stringify({ status: -1 }),
+        method: "PUT",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (updateResponse.ok) {
+      api.open({
+        message: "Hủy đơn hàng",
+        description: "Hủy đơn hàng thành công",
+        icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+      });
+    } else {
+      api.open({
+        message: "Hủy đơn hàng",
+        description: "Hủy đơn hàng thất bại",
+        icon: <FrownOutlined style={{ color: "#108ee9" }} />,
+      });
+    }
+  };
+
   const statusToText = (status: number) => {
     switch (status) {
       case 0:
@@ -118,6 +152,11 @@ function OrderHistory() {
   };
 
   const columns: ColumnType<Order>[] = [
+    {
+      title: "Mã đơn hàng",
+      key: "id",
+      dataIndex: "id",
+    },
     {
       title: "Tổng thanh toán",
       dataIndex: "totalAmount",
@@ -161,6 +200,18 @@ function OrderHistory() {
           >
             <Button>Mua lại</Button>
           </Popconfirm>
+          {record.status === 0 && (
+            <Popconfirm
+              title="Hủy đơn hàng"
+              description="Bạn chắc chắn muốn hủy đơn hàng này?"
+              icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+              onConfirm={() => handleCancelOrder(record.id)}
+              okText="Xác nhận"
+              cancelText="Bỏ"
+            >
+              <Button style={{ color: "red" }}>Hủy đơn</Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
@@ -195,14 +246,33 @@ function OrderHistory() {
         return (
           <div
             style={{
-              width: "3rem",
-              height: "3rem",
-              border: "1px solid black",
-              backgroundColor: `rgb(${record.colorPick?.r ?? 255}, ${
-                record.colorPick?.g ?? 255
-              }, ${record.colorPick?.b ?? 255})`,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
             }}
-          ></div>
+          >
+            <div
+              style={{
+                width: "3rem",
+                height: "3rem",
+                border: "1px solid black",
+                backgroundColor: `rgb(${
+                  record?.colorDetails
+                    ? record?.colorDetails.r
+                    : record.colorPick?.r ?? 255
+                }, ${
+                  record?.colorDetails
+                    ? record?.colorDetails.g
+                    : record.colorPick?.g ?? 255
+                }, ${
+                  record?.colorDetails
+                    ? record?.colorDetails.g
+                    : record.colorPick?.b ?? 255
+                })`,
+              }}
+            ></div>
+            {record?.colorDetails && <div>{record?.colorDetails?.code}</div>}
+          </div>
         );
       },
     },
@@ -245,16 +315,46 @@ function OrderHistory() {
         onRow={(record) => ({
           onDoubleClick: () => {
             setCurrentOrder(record.orderProductSnapshots);
+            setMetadataOrder({
+              address: record.address,
+              phoneNumber: record.phoneNumber,
+              id: record.id,
+            });
           },
         })}
       />
       <Modal
-        title="Xem chi tiết đơn"
+        title={`Xem chi tiết đơn: ${metadataOrder?.id ?? ""}`}
         open={!!currentOrder}
-        onOk={() => setCurrentOrder(null)}
-        onCancel={() => setCurrentOrder(null)}
+        onOk={() => {
+          setCurrentOrder(null);
+          setMetadataOrder(null);
+        }}
+        onCancel={() => {
+          setCurrentOrder(null);
+          setMetadataOrder(null);
+        }}
         width={"100%"}
       >
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            color: "red",
+          }}
+        >
+          <div>
+            <div>
+              <strong>Địa chỉ: </strong>
+              {metadataOrder?.address}
+            </div>
+            <div>
+              <strong>Số điện thoại:</strong> {metadataOrder?.phoneNumber}
+            </div>
+          </div>
+        </div>
         <Table columns={orderColumns} dataSource={currentOrder} />
       </Modal>
     </div>
