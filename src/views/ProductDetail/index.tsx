@@ -153,6 +153,7 @@ function ProductDetail() {
   };
 
   const handleChangeColorComplete = (color: ColorResult) => {
+    setColorId("");
     setCurrentColor(color.rgb);
   };
 
