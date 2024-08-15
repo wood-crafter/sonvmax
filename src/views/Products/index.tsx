@@ -48,7 +48,7 @@ function Products() {
                 style={{
                   fontSize: "20px",
                   color: "red",
-                  textDecoration: "line-through",
+                  textDecoration: level && +level > 0 ? "line-through" : "",
                   fontWeight: "bold",
                 }}
               >
