@@ -22,6 +22,8 @@ import {
   DatabaseOutlined,
   LockOutlined,
   FileTextOutlined,
+  LogoutOutlined,
+  LoginOutlined,
 } from "@ant-design/icons";
 import { useCategories } from "../../hooks/useCategories";
 import { ACCOUTANT, OWNER, SALES, STOCKER } from "../../constant";
@@ -223,13 +225,23 @@ function Nav({ isManager = false }: { isManager: boolean }) {
                 ]
               : []),
             {
-              label: <div onClick={logout}>Đăng xuất</div>,
+              label: (
+                <div onClick={logout}>
+                  <LogoutOutlined style={{ marginRight: "0.5rem" }} />
+                  Đăng xuất
+                </div>
+              ),
               key: "logout",
             },
           ]
         : [
             {
-              label: <Link to="/login">Đăng nhập</Link>,
+              label: (
+                <Link to="/login">
+                  <LoginOutlined style={{ marginRight: "0.5rem" }} />
+                  Đăng nhập
+                </Link>
+              ),
               key: "login",
             },
           ]),
