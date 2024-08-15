@@ -23,6 +23,7 @@ function TransactionHistory() {
       {
         ...requestOptions,
         method: "PATCH",
+        body: JSON.stringify({ status: -1 }),
         headers: {
           ...requestOptions.headers,
           Authorization: `Bearer ${accessToken}`,
