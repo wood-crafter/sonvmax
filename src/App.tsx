@@ -21,6 +21,7 @@ import ManageVolume from "./views/ManageVolume";
 import { ManageCategories } from "./views/ManageCategories";
 import ChangePassword from "./views/ChangePassword";
 import ManageInvoice from "./views/ManageInvoice";
+import Transaction from "./views/Transaction";
 
 const AppRoutes = () => {
   return (
@@ -46,6 +47,14 @@ const AppRoutes = () => {
         element={
           <Layout hasNav requiredLogin>
             <UserCart />
+          </Layout>
+        }
+      />
+      <Route
+        path="/transaction"
+        element={
+          <Layout hasNav requiredLogin>
+            <Transaction />
           </Layout>
         }
       />

@@ -219,8 +219,21 @@ function Nav({ isManager = false }: { isManager: boolean }) {
                     label: (
                       <div>Số dư: {NumberToVND.format(+me?.accountHave)}</div>
                     ),
-                    key: "userInfo",
-                    disabled: true,
+                    key: "transaction",
+                    children: [
+                      {
+                        label: <Link to="/transaction">Nạp tiền</Link>,
+                        key: "transaction",
+                      },
+                      {
+                        label: (
+                          <Link to="/transaction_history">
+                            Lịch sử nạp tiền
+                          </Link>
+                        ),
+                        key: "transaction_history",
+                      },
+                    ],
                   },
                 ]
               : []),
