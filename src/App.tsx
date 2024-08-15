@@ -22,6 +22,7 @@ import { ManageCategories } from "./views/ManageCategories";
 import ChangePassword from "./views/ChangePassword";
 import ManageInvoice from "./views/ManageInvoice";
 import Transaction from "./views/Transaction";
+import TransactionHistory from "./views/TransactionHistory";
 
 const AppRoutes = () => {
   return (
@@ -55,6 +56,14 @@ const AppRoutes = () => {
         element={
           <Layout hasNav requiredLogin>
             <Transaction />
+          </Layout>
+        }
+      />
+      <Route
+        path="/transaction_history"
+        element={
+          <Layout hasNav requiredLogin>
+            <TransactionHistory />
           </Layout>
         }
       />

@@ -112,6 +112,20 @@ export type PagedResponse<T> = {
   data: T[]
 }
 
+export type Transaction = {
+  agentId: string;
+  createdAt: string;
+  description: string | null;
+  id: string;
+  image: string;
+  paymentDate: string;
+  staffId: string | null;
+  status: number;
+  totalAmount: string;
+  updatedAt: string;
+  updatedBy: string;
+};
+
 export type RequestOptions = {
   method?: string
   headers?: Record<string, string>

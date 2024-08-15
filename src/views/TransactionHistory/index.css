@@ -1,0 +1,11 @@
+.TransactionHistory {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 4rem);
+  margin: 2rem;
+}
+
+.TransactionHistory .status:hover {
+  cursor: pointer;
+}
