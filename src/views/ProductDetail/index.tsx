@@ -205,7 +205,7 @@ function ProductDetail() {
             />
           </div>
           <p className="full-width">
-            {level && (
+            {
               <div style={{ display: "flex" }}>
                 <div
                   style={{
@@ -220,7 +220,8 @@ function ProductDetail() {
                     fontSize: "20px",
                     color: "red",
                     fontWeight: "bold",
-                    textDecoration: "line-through",
+                    textDecoration:
+                      level && +level > 0 ? "line-through" : "none",
                     marginLeft: "1rem",
                   }}
                 >
@@ -233,35 +234,37 @@ function ProductDetail() {
                   )}
                 </div>
               </div>
+            }
+            {level && +level > 0 && (
+              <div style={{ display: "flex" }}>
+                <div
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Sau chiết khấu (- {`${discount}%`}) :
+                </div>
+                <div
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    marginLeft: "1rem",
+                  }}
+                >
+                  {NumberToVND.format(
+                    ((product?.volumes.find((it) => it.id === selectingVolume)
+                      ?.price ??
+                      product?.volumes[0]?.price ??
+                      0) *
+                      numOfProduct *
+                      (100 - discount)) /
+                      100
+                  )}
+                </div>
+              </div>
             )}
-            <div style={{ display: "flex" }}>
-              <div
-                style={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                }}
-              >
-                Sau chiết khấu (- {`${discount}%`}) :
-              </div>
-              <div
-                style={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                  marginLeft: "1rem",
-                }}
-              >
-                {NumberToVND.format(
-                  ((product?.volumes.find((it) => it.id === selectingVolume)
-                    ?.price ??
-                    product?.volumes[0]?.price ??
-                    0) *
-                    numOfProduct *
-                    (100 - discount)) /
-                    100
-                )}
-              </div>
-            </div>
-            {product?.canColorPick && (
+            {level && +level > 0 && product?.canColorPick && (
               <div style={{ display: "flex" }}>
                 <div
                   style={{
