@@ -9,30 +9,35 @@ import Table, { ColumnType } from "antd/es/table";
 import { notification, Button, Dropdown, Input, Menu } from "antd";
 import { NumberToVND } from "../../helper";
 import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
+import { API_ROOT } from "../../constant";
 
 function ManageTransaction() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
-  const { data: transaction } = useTransaction(1);
+  const { data: transaction, mutate: refreshTransaction } = useTransaction(1);
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [description, setDescription] = useState<string>("");
 
   const handleStatusChange = async (id: string, newStatus: number) => {
-    const response = await authFetch(`/transaction/update-status/${id}`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status: newStatus }),
-    });
+    const response = await authFetch(
+      `${API_ROOT}/transaction/update-status/${id}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      }
+    );
 
     if (response.ok) {
       api.open({
         message: "Cập nhật trạng thái thành công",
         icon: <SmileOutlined style={{ color: "#108ee9" }} />,
       });
+      refreshTransaction();
     } else {
       api.open({
         message: "Cập nhật trạng thái thất bại",
@@ -47,7 +52,7 @@ function ManageTransaction() {
 
   const saveDescription = async (record: Transaction) => {
     const response = await authFetch(
-      `/transaction/update-transaction/${record.id}`,
+      `${API_ROOT}/transaction/update-transaction/${record.id}`,
       {
         method: "PUT",
         headers: {
@@ -64,6 +69,7 @@ function ManageTransaction() {
         icon: <SmileOutlined style={{ color: "#108ee9" }} />,
       });
       setEditingKey(null);
+      refreshTransaction();
     } else {
       api.open({
         message: "Cập nhật ghi chú thất bại",
