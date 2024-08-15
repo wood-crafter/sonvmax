@@ -172,7 +172,7 @@ function Nav({ isManager = false }: { isManager: boolean }) {
     if (categoryResponse) {
       setCategories(categoryResponse.data);
     }
-  }, [categoryResponse]);
+  }, [categoryResponse, setCategories]);
 
   const managerMenuItems = useManagerMenuItems();
   const clientMenuItems = useMemo(() => {
@@ -271,7 +271,7 @@ function Nav({ isManager = false }: { isManager: boolean }) {
     ];
 
     return clientItems;
-  }, [accessToken, userInfo]);
+  }, [accessToken, categoryResponse, logout, userInfo]);
 
   return (
     <Menu
