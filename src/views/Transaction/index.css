@@ -3,4 +3,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  color: black;
+}
+
+.Transaction .description-zone {
+  color: black;
 }

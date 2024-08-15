@@ -23,6 +23,7 @@ import ChangePassword from "./views/ChangePassword";
 import ManageInvoice from "./views/ManageInvoice";
 import Transaction from "./views/Transaction";
 import TransactionHistory from "./views/TransactionHistory";
+import ManageTransaction from "./views/ManageTransaction";
 
 const AppRoutes = () => {
   return (
@@ -189,6 +190,14 @@ const AppRoutes = () => {
           element={
             <Layout hasNav isManager roleAllow={[OWNER.role, ACCOUTANT.role]}>
               <ManageVoucher />
+            </Layout>
+          }
+        />
+        <Route
+          path="transaction"
+          element={
+            <Layout hasNav isManager roleAllow={[ACCOUTANT.role]}>
+              <ManageTransaction />
             </Layout>
           }
         />
