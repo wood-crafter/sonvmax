@@ -180,17 +180,6 @@ function ManageOrder() {
           </Menu.Item>
         );
       }
-      if ([1, 2, 3].includes(record.status)) {
-        statusMenuItems.push(
-          <Menu.Item
-            key="-1"
-            icon={<UserOutlined />}
-            onClick={() => updateOrder({ id: record.id, status: -1 })}
-          >
-            Huỷ bỏ
-          </Menu.Item>
-        );
-      }
     }
     return <Menu>{statusMenuItems}</Menu>;
   };
