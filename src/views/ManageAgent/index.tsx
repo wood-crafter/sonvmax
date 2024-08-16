@@ -32,6 +32,7 @@ const { Option } = Select;
 function ManageAgent() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
+  const roleName = useUserStore((state) => state.roleName);
   const [api, contextHolder] = notification.useNotification();
   const { data: rolesResponse } = useRoles(1);
   const { data, mutate: refreshAgents } = useAgents(1, 9999);
@@ -270,85 +271,97 @@ function ManageAgent() {
     }
   };
 
-  const columns: ColumnType<Agent>[] = [
-    {
-      title: "Tên đại lý",
-      dataIndex: "agentName",
-      key: "agentName",
-      sorter: (a, b) => a.agentName.localeCompare(b.agentName),
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "Công nợ tối đa",
-      dataIndex: "debitLimit",
-      key: "debitLimit",
-      render: (debitLimit: number) => (
-        <div>{NumberToVND.format(debitLimit)}</div>
-      ),
-      sorter: (a, b) => a.debitLimit - b.debitLimit,
-    },
-    {
-      title: "Công nợ hiện tại",
-      dataIndex: "accountDebit",
-      key: "accountDebit",
-      render: (accountDebit: number) => (
-        <div>{NumberToVND.format(accountDebit)}</div>
-      ),
-      sorter: (a, b) => a.accountDebit - b.accountDebit,
-    },
-    {
-      title: "Tài khoản hiện có",
-      dataIndex: "accountHave",
-      key: "accountHave",
-      render: (accountHave: number) => (
-        <div>{NumberToVND.format(accountHave)}</div>
-      ),
-      sorter: (a, b) => a.accountHave - b.accountHave,
-    },
-    {
-      title: "Nhân viên quản lý",
-      dataIndex: "staffId",
-      key: "staffId",
-      render: (_, record) => (
-        <div>{sales?.find((it) => it.id === record.staffId)?.fullName}</div>
-      ),
-    },
-    {
-      title: "Cấp đại lý",
-      dataIndex: "rank",
-      key: "rank",
-      sorter: (a, b) => a.rank - b.rank,
-    },
-    {
-      title: "",
-      key: "action",
-      render: (_, record: Agent) => (
-        <Space size="middle">
-          <Button
-            onClick={() => {
-              showModal(record);
-            }}
-          >
-            Sửa
-          </Button>
-          <Popconfirm
-            title="Xoá đại lý"
-            description="Bạn chắc chắn muốn xoá đại lý này?"
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            onConfirm={() => handleDeleteRecord(record)}
-            okText="Xoá"
-            cancelText="Huỷ"
-          >
-            <Button>Xoá</Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+  const columns: ColumnType<Agent>[] = useMemo(() => {
+    return [
+      {
+        title: "Tên đại lý",
+        dataIndex: "agentName",
+        key: "agentName",
+        sorter: (a, b) => a.agentName.localeCompare(b.agentName),
+      },
+      {
+        title: "Email",
+        dataIndex: "email",
+        key: "email",
+      },
+      {
+        title: "Công nợ tối đa",
+        dataIndex: "debitLimit",
+        key: "debitLimit",
+        render: (debitLimit: number) => (
+          <div>{NumberToVND.format(debitLimit)}</div>
+        ),
+        sorter: (a, b) => a.debitLimit - b.debitLimit,
+      },
+      {
+        title: "Công nợ hiện tại",
+        dataIndex: "accountDebit",
+        key: "accountDebit",
+        render: (accountDebit: number) => (
+          <div>{NumberToVND.format(accountDebit)}</div>
+        ),
+        sorter: (a, b) => a.accountDebit - b.accountDebit,
+      },
+      {
+        title: "Tài khoản hiện có",
+        dataIndex: "accountHave",
+        key: "accountHave",
+        render: (accountHave: number) => (
+          <div>{NumberToVND.format(accountHave)}</div>
+        ),
+        sorter: (a, b) => a.accountHave - b.accountHave,
+      },
+      ...(roleName !== "SALES"
+        ? [
+            {
+              title: "Nhân viên quản lý",
+              dataIndex: "staffId",
+              key: "staffId",
+              render: (_: any, record: Agent) => (
+                <div>
+                  {sales?.find((it) => it.id === record.staffId)?.fullName}
+                </div>
+              ),
+            },
+          ]
+        : []),
+      {
+        title: "Cấp đại lý",
+        dataIndex: "rank",
+        key: "rank",
+        sorter: (a, b) => a.rank - b.rank,
+      },
+      ...(roleName !== "SALES"
+        ? [
+            {
+              title: "",
+              key: "action",
+              render: (_: any, record: Agent) => (
+                <Space size="middle">
+                  <Button
+                    onClick={() => {
+                      showModal(record);
+                    }}
+                  >
+                    Sửa
+                  </Button>
+                  <Popconfirm
+                    title="Xoá đại lý"
+                    description="Bạn chắc chắn muốn xoá đại lý này?"
+                    icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+                    onConfirm={() => handleDeleteRecord(record)}
+                    okText="Xoá"
+                    cancelText="Huỷ"
+                  >
+                    <Button>Xoá</Button>
+                  </Popconfirm>
+                </Space>
+              ),
+            },
+          ]
+        : []),
+    ];
+  }, [roleName, sales]);
 
   const reAddingUpdateProps = (record: Agent) => {
     setDebitLimit(record?.debitLimit + "");
@@ -362,15 +375,17 @@ function ManageAgent() {
     <div className="ManageAgent">
       {contextHolder}
       <h2>Quản lý đại lý</h2>
-      <Button
-        onClick={() => {
-          setIsAddModalOpen(true);
-        }}
-        type="primary"
-        style={{ marginBottom: 16 }}
-      >
-        Thêm đại lý
-      </Button>
+      {roleName !== "SALES" && (
+        <Button
+          onClick={() => {
+            setIsAddModalOpen(true);
+          }}
+          type="primary"
+          style={{ marginBottom: 16 }}
+        >
+          Thêm đại lý
+        </Button>
+      )}
       <Table columns={columns} dataSource={agents} />
       <Modal
         title="Sửa thông tin khách hàng"
