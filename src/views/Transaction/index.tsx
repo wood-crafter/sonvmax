@@ -237,9 +237,9 @@ function Transaction() {
           onOk={handleOk}
           onCancel={handleCancel}
         >
-          <p>Ngân hàng: TP Bank</p>
-          <p>STK: 02580832101</p>
-          <p>Chủ tài khoản: Phan Văn Hùng</p>
+          <p>Ngân hàng: Techcombank</p>
+          <p>STK: 2010666161</p>
+          <p>Chủ tài khoản: Nguyễn Kim Hưng</p>
           <p>Số tiền: {NumberToVND.format(amount)}</p>
           <p>Bằng chữ: {capitalizeFirstLetter(convertNumberToText(amount))}</p>
           <p>Ghi chú: {description}</p>
