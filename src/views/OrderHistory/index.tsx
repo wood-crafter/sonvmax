@@ -28,7 +28,7 @@ function OrderHistory() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
-  const { data, isLoading } = useOrders();
+  const { data, isLoading, mutate: refreshOrders } = useOrders();
   const [currentOrder, setCurrentOrder] = useState<any>(null);
   const [metadataOrder, setMetadataOrder] = useState<any>(null);
   const orders = useMemo(
@@ -89,7 +89,7 @@ function OrderHistory() {
 
   const handleCancelOrder = async (id: string) => {
     const updateResponse = await authFetch(
-      `${API_ROOT}/order/update-order/${id}`,
+      `${API_ROOT}/order/update-order-status/${id}`,
       {
         ...requestOptions,
         body: JSON.stringify({ status: -1 }),
@@ -107,6 +107,7 @@ function OrderHistory() {
         description: "Hủy đơn hàng thành công",
         icon: <SmileOutlined style={{ color: "#108ee9" }} />,
       });
+      refreshOrders();
     } else {
       api.open({
         message: "Hủy đơn hàng",
