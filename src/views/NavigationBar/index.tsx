@@ -123,6 +123,15 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
+    ...([OWNER.role, STOCKER.role].includes(roleName)
+      ? [
+          {
+            label: <Link to="/manage/ticket">Quản lý xuất kho</Link>,
+            key: "ticket",
+            icon: <FileTextOutlined />,
+          },
+        ]
+      : []),
     ...([ACCOUTANT.role].includes(roleName)
       ? [
           {
