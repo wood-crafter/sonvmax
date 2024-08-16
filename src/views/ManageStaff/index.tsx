@@ -289,6 +289,7 @@ function ManageStaff() {
               <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
             </label>
             <Input
+              style={{ backgroundColor: "rgb(220, 220, 220)" }}
               value={currentEditing?.fullName}
               type="text"
               name="fullName"
@@ -300,6 +301,7 @@ function ManageStaff() {
             </label>
             <Input
               value={currentEditing?.username}
+              style={{ backgroundColor: "rgb(220, 220, 220)" }}
               type="text"
               name="username"
               readOnly

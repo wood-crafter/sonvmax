@@ -400,6 +400,7 @@ function ManageAgent() {
               <div style={{ color: "red", marginLeft: "0.2rem" }}>*</div>
             </label>
             <Input
+              style={{ backgroundColor: "rgb(220, 220, 220)" }}
               value={currentEditing?.email}
               type="text"
               name="agent-email"
