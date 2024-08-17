@@ -30,6 +30,7 @@ import { useCategories } from "../../hooks/useCategories";
 import { ACCOUTANT, OWNER, SALES, STOCKER } from "../../constant";
 import { AgentInfo, StaffInfo } from "../../type";
 import { NumberToVND } from "../../helper";
+import { useMeMutation } from "../../hooks/useMe";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -169,6 +170,36 @@ const useManagerMenuItems = () => {
   return managerItems;
 };
 
+function AccountBalance() {
+  const accessToken = useUserStore((state) => state.accessToken);
+  const userInfo = useUserStore((state) => state.userInformation);
+  const setUserInformation = useUserStore((state) => state.setUserInformation);
+  const { trigger: triggerMe } = useMeMutation();
+
+  useEffect(() => {
+    const triggerPersonalInfo = async () => {
+      const me = await triggerMe();
+      setUserInformation(me);
+    };
+
+    if (accessToken) {
+      const intervalId = setInterval(triggerPersonalInfo, 2000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [accessToken, setUserInformation, triggerMe]);
+
+  const me = isAgentInfo(userInfo) ? userInfo : null;
+
+  if (!me?.accountHave) {
+    return null;
+  }
+
+  return (
+    <div>Số dư: {NumberToVND.format(+me?.accountHave)}</div>
+  )
+}
+
 function Nav({ isManager = false }: { isManager: boolean }) {
   const accessToken = useUserStore((state) => state.accessToken);
   const userInfo = useUserStore((state) => state.userInformation);
@@ -236,7 +267,7 @@ function Nav({ isManager = false }: { isManager: boolean }) {
               ? [
                   {
                     label: (
-                      <div>Số dư: {NumberToVND.format(+me?.accountHave)}</div>
+                      <AccountBalance />
                     ),
                     key: "transaction",
                     children: [
