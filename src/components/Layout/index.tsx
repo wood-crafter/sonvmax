@@ -1,10 +1,11 @@
 import "./index.css";
-import React from "react";
+import React, { useEffect } from "react";
 import Nav from "../../views/NavigationBar";
 import { useUserStore } from "../../store/user";
 import { Navigate } from "react-router-dom";
 import { ADMIN_ROLES, SALES } from "../../constant";
 import Footer from "../../views/Footer";
+import { useMeMutation } from "../../hooks/useMe";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -23,6 +24,22 @@ function Layout({
 }: LayoutProps): React.ReactNode {
   const accessToken = useUserStore((state) => state.accessToken);
   const roleName = useUserStore((state) => state.roleName);
+  const { trigger: triggerMe } = useMeMutation();
+  const setUserInformation = useUserStore((state) => state.setUserInformation);
+
+  useEffect(() => {
+    const triggerPersonalInfo = async () => {
+      const me = await triggerMe();
+      setUserInformation(me);
+    };
+
+    if (accessToken) {
+      const intervalId = setInterval(triggerPersonalInfo, 2000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [accessToken, setUserInformation, triggerMe]);
+
   if (!hasNav) {
     return (
       <div className={isManager ? "ManagerLayout" : "Layout"}>{children}</div>
