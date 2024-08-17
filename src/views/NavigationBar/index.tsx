@@ -79,7 +79,7 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
-    ...([STOCKER.role, SALES.role].includes(roleName)
+    ...([ACCOUTANT.role, SALES.role].includes(roleName)
       ? [
           {
             label: <Link to="/manage/orders">Quản lý đơn</Link>,

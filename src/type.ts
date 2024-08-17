@@ -70,6 +70,7 @@ export type Category = {
 
 export type Order = {
   address: string
+  phoneNumberCustom: string
   phoneNumber: string
   id: string
   status: number
@@ -81,6 +82,8 @@ export type Order = {
   updatedAt: Date
   orderProductSnapshots: any[]
   voucherOrders: {code: string, discountAmount: number}[]
+  addressCustom: string
+  warehouseOrders?: any
 }
 
 type InvoiceDetails = {
@@ -90,6 +93,7 @@ type InvoiceDetails = {
   dueDate: string;
   id: string;
   totalAmount: number
+  order: Order
 }
 
 export type Invoice = {
@@ -101,6 +105,10 @@ export type Invoice = {
   invoiceId: string;
   staffId: string;
   updatedAt: string;
+  order: Order
+  phoneNumber: string
+  address: string
+  totalAmount: string
 }
 
 export type Ticket = any
