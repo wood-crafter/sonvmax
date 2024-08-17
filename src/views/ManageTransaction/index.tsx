@@ -86,8 +86,8 @@ function ManageTransaction() {
     },
     {
       title: "Tên khách hàng",
-      dataIndex: "agentName",
-      key: "agentName",
+      dataIndex: "agentFullName",
+      key: "agentFullName",
     },
     {
       title: "Tổng nạp",
@@ -122,6 +122,7 @@ function ManageTransaction() {
       title: "Hành động",
       key: "actions",
       render: (_, record: Transaction) => {
+        if (record.status === -1) return;
         return editingKey === record.id ? (
           <div style={{ display: "flex" }}>
             <Button
