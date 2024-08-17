@@ -13,7 +13,7 @@ import { useTickets } from "../../hooks/useTicket";
 import "./index.css";
 import { ColumnType } from "antd/es/table";
 import { Ticket, WarehouseOrders } from "../../type";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { API_ROOT } from "../../constant";
 import { requestOptions } from "../../hooks/utils";
@@ -116,10 +116,12 @@ function ManageTicket() {
   const handleUpdate = async () => {
     const item: any = [];
     Object.keys(orderQuantities).forEach((it) => {
-      const itemToPush: any = {};
-      itemToPush.id = it;
-      itemToPush.actualQuantity = orderQuantities[it];
-      item.push(itemToPush);
+      if (orderQuantities[it] !== 0) {
+        const itemToPush: any = {};
+        itemToPush.id = it;
+        itemToPush.actualQuantity = orderQuantities[it];
+        item.push(itemToPush);
+      }
     });
     const body = {
       warehouseOrders: {
@@ -324,6 +326,9 @@ function ManageTicket() {
           case 2:
             statusText = <span style={{ color: "green" }}>Chuẩn bị xong</span>;
             break;
+          case -1:
+            statusText = <span style={{ color: "red" }}>Hủy bỏ</span>;
+            break;
           default:
             statusText = <span>Mã lỗi</span>;
         }
@@ -341,7 +346,7 @@ function ManageTicket() {
         columns={columns}
         dataSource={data?.data}
         onRow={(record) => ({
-          onClick: () => handleRowClick(record),
+          onDoubleClick: () => handleRowClick(record),
         })}
       />
       {selectedTicket && (
@@ -372,7 +377,11 @@ function ManageTicket() {
       <Modal
         title="Chi tiết hủy đơn"
         open={isCancelDetails}
-        onCancel={() => setIsCancelDetails(true)}
+        onCancel={() => setIsCancelDetails(false)}
+        onOk={() => {
+          handleCancelTicket();
+          setIsCancelDetails(false);
+        }}
         width={"80%"}
       >
         <Input
@@ -381,14 +390,6 @@ function ManageTicket() {
             setDescriptionCancel(e.target.value);
           }}
         />
-        <Button
-          disabled={!!descriptionCancel}
-          onClick={() => {
-            handleCancelTicket();
-          }}
-        >
-          Hủy đơn
-        </Button>
       </Modal>
     </div>
   );

@@ -126,18 +126,25 @@ function ManageOrder() {
             onClick={() => updateOrder({ id: record.id, status: -1 })}
           >
             Huỷ bỏ
-          </Menu.Item>
-        );
-      }
-    } else if (roleName === ACCOUTANT.role) {
-      if (record.status === 0) {
-        statusMenuItems.push(
+          </Menu.Item>,
           <Menu.Item
             key="1"
             icon={<UserOutlined />}
             onClick={() => updateOrder({ id: record.id, status: 1 })}
           >
             Xác nhận
+          </Menu.Item>
+        );
+      }
+    } else if (roleName === ACCOUTANT.role) {
+      if (record.status === 1) {
+        statusMenuItems.push(
+          <Menu.Item
+            key="2"
+            icon={<UserOutlined />}
+            onClick={() => updateOrder({ id: record.id, status: 2 })}
+          >
+            Duyệt
           </Menu.Item>,
           <Menu.Item
             key="-1"
@@ -149,24 +156,14 @@ function ManageOrder() {
         );
       }
     } else if (roleName === STOCKER.role) {
-      if (record.status === 1) {
+      if (record.status === 2) {
         statusMenuItems.push(
           <Menu.Item
             key="2"
             icon={<UserOutlined />}
-            onClick={() => updateOrder({ id: record.id, status: 2 })}
-          >
-            Đang chuẩn bị
-          </Menu.Item>
-        );
-      } else if (record.status === 2) {
-        statusMenuItems.push(
-          <Menu.Item
-            key="3"
-            icon={<UserOutlined />}
             onClick={() => updateOrder({ id: record.id, status: 3 })}
           >
-            Đang giao
+            Đang chuẩn bị
           </Menu.Item>
         );
       } else if (record.status === 3) {
@@ -175,6 +172,16 @@ function ManageOrder() {
             key="4"
             icon={<UserOutlined />}
             onClick={() => updateOrder({ id: record.id, status: 4 })}
+          >
+            Đang giao
+          </Menu.Item>
+        );
+      } else if (record.status === 4) {
+        statusMenuItems.push(
+          <Menu.Item
+            key="5"
+            icon={<UserOutlined />}
+            onClick={() => updateOrder({ id: record.id, status: 5 })}
           >
             Giao thành công
           </Menu.Item>
@@ -316,12 +323,8 @@ function ManageOrder() {
         const status = statusToText(record.status);
         const canUpdate =
           (roleName === "SALES" && record.status === 0) ||
-          (roleName === "ACCOUNTANT" && record.status === 0) ||
-          (roleName === "STOCKER" &&
-            ([1, 2, 3].includes(record.status) ||
-              (record.status === 1 && [2, -1].includes(record.status)) ||
-              (record.status === 2 && [3, -1].includes(record.status)) ||
-              (record.status === 3 && [4, -1].includes(record.status))));
+          (roleName === "ACCOUNTANT" && record.status === 1) ||
+          (roleName === "STOCKER" && [2, 3, 4].includes(record.status));
 
         return canUpdate ? (
           <Dropdown overlay={getStatusMenu(record)}>
