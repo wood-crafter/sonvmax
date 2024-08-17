@@ -3,7 +3,7 @@ import "./index.css";
 import { Product } from "../../type";
 import { NumberToVND } from "../../helper";
 import { useProducts } from "../../hooks/useProduct";
-import { DISCOUNT_AMOUNT, ITEM_PER_ROW } from "../../constant";
+import { DISCOUNT_AMOUNT } from "../../constant";
 import { Pagination } from "antd";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -33,14 +33,11 @@ function Products() {
       <div style={{ marginLeft: "2rem", marginRight: "2rem" }}>
         {categoires?.find((it) => it.id === categoryId)?.description}
       </div>
-      <div
-        className="products-container"
-        style={{ gridTemplateColumns: `repeat(${ITEM_PER_ROW}, 1fr)` }}
-      >
+      <div className="products-container">
         {products.map((item: Product) => (
           <div key={item.id} className="grid-item">
-            <Link to={`/product_detail/${item.id}`}>
-              <img src={item.image} style={{ height: "70%", width: "100%" }} />
+            <Link to={`/product_detail/${item.id}`} className="Product-item-image-wrapper">
+              <img src={item.image} />
             </Link>
             <div className="product-name">{item.nameProduct}</div>
             {level && (
