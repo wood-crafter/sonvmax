@@ -103,6 +103,9 @@ export type Invoice = {
   updatedAt: string;
 }
 
+export type Ticket = any
+export type WarehouseOrders = any
+
 export type PagedResponse<T> = {
   message: string
   page: number
