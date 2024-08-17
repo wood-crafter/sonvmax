@@ -8,6 +8,7 @@ import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { FrownOutlined, SmileOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
+import { useNavigate } from "react-router-dom";
 
 function convertNumberToText(number: number) {
   const units = [
@@ -107,6 +108,7 @@ function Transaction() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
+  const navigate = useNavigate();
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -178,6 +180,8 @@ function Transaction() {
         message: "Tạo phiếu nạp tiền thành công",
         icon: <SmileOutlined style={{ color: "#108ee9" }} />,
       });
+
+      navigate("/transaction_history");
     } else {
       api.open({
         message: "Tạo phiếu nạp tiền thất bại",
