@@ -205,15 +205,20 @@ function ManageOrder() {
         };
       case 2:
         return {
-          text: "Đang chuẩn bị",
+          text: "Duyệt",
           color: "blue",
         };
       case 3:
         return {
-          text: "Đang giao",
+          text: "Đang chuẩn bị",
           color: "purple",
         };
       case 4:
+        return {
+          text: "Đang giao",
+          color: "rgb(220, 243, 245)",
+        };
+      case 5:
         return {
           text: "Giao thành công",
           color: "green",
