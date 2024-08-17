@@ -24,7 +24,7 @@ import { Order } from "../../type";
 import { NumberToVND } from "../../helper";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
-import { ACCOUTANT, API_ROOT, SALES, STOCKER } from "../../constant";
+import { ACCOUTANT, API_ROOT, SALES } from "../../constant";
 import { useOrders } from "../../hooks/useOrder";
 import { requestOptions } from "../../hooks/utils";
 
@@ -152,28 +152,6 @@ function ManageOrder() {
             onClick={() => updateOrder({ id: record.id, status: -1 })}
           >
             Huỷ bỏ
-          </Menu.Item>
-        );
-      }
-    } else if (roleName === STOCKER.role) {
-      if (record.status === 2) {
-        statusMenuItems.push(
-          <Menu.Item
-            key="2"
-            icon={<UserOutlined />}
-            onClick={() => updateOrder({ id: record.id, status: 3 })}
-          >
-            Đang chuẩn bị
-          </Menu.Item>
-        );
-      } else if (record.status === 3) {
-        statusMenuItems.push(
-          <Menu.Item
-            key="4"
-            icon={<UserOutlined />}
-            onClick={() => updateOrder({ id: record.id, status: 4 })}
-          >
-            Đang giao
           </Menu.Item>
         );
       } else if (record.status === 4) {

@@ -117,11 +117,7 @@ const AppRoutes = () => {
         <Route
           path="orders"
           element={
-            <Layout
-              hasNav
-              isManager
-              roleAllow={[STOCKER.role, ACCOUTANT.role, SALES.role]}
-            >
+            <Layout hasNav isManager roleAllow={[ACCOUTANT.role, SALES.role]}>
               <ManageOrder />
             </Layout>
           }
