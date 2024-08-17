@@ -216,7 +216,7 @@ function ManageOrder() {
       case 4:
         return {
           text: "Đang giao",
-          color: "rgb(220, 243, 245)",
+          color: "rgb(0, 73, 91)",
         };
       case 5:
         return {
