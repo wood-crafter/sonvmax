@@ -32,11 +32,50 @@ function ManageTicket() {
     Record<string, number>
   >({});
   const [isButtonActive, setIsButtonActive] = useState(false);
+  const [currentCancel, setCurrentCancel] = useState("");
+  const [descriptionCancel, setDescriptionCancel] = useState("");
+  const [isCancelDetails, setIsCancelDetails] = useState(false);
   const authFetch = useAuthenticatedFetch();
 
-  const handleCancelTicket = useCallback((ticketId: string) => {
-    console.info(`Cancel ticket with ID: ${ticketId}`);
-  }, []);
+  const handleCancelTicket = async () => {
+    if (!currentCancel) {
+      api.open({
+        message: "Tạo phiếu xuất lỗi",
+        icon: <FrownOutlined style={{ color: "red" }} />,
+      });
+    }
+    const updateTicketRes = await authFetch(
+      `${API_ROOT}/ticket/${currentCancel}`,
+      {
+        ...requestOptions,
+        method: "PUT",
+        body: JSON.stringify({
+          statusTicket: -1,
+          description: descriptionCancel,
+        }),
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (updateTicketRes.ok) {
+      api.open({
+        message: "Hủy phiếu thành công",
+        icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+      });
+      refreshTickets();
+      setIsCancelDetails(false);
+      setDescriptionCancel("");
+      setCurrentCancel("");
+    } else {
+      api.open({
+        message: "Hủy phiếu thất bại",
+        icon: <FrownOutlined style={{ color: "#red" }} />,
+      });
+    }
+  };
 
   const handleRowClick = (record: Ticket) => {
     setSelectedTicket(record);
@@ -262,7 +301,13 @@ function ManageTicket() {
           case 0:
             statusText = <span style={{ color: "orange" }}>Chưa chuẩn bị</span>;
             dropdownMenu = (
-              <Menu onClick={() => handleCancelTicket(record?.ticket?.id)}>
+              <Menu
+                onClick={() => {
+                  setCurrentCancel(record?.ticket?.id);
+                  setIsCancelDetails(true);
+                  setDescriptionCancel("");
+                }}
+              >
                 <Menu.Item key="cancel" style={{ color: "red" }}>
                   Hủy bỏ
                 </Menu.Item>
@@ -324,6 +369,27 @@ function ManageTicket() {
           />
         </Modal>
       )}
+      <Modal
+        title="Chi tiết hủy đơn"
+        open={isCancelDetails}
+        onCancel={() => setIsCancelDetails(true)}
+        width={"80%"}
+      >
+        <Input
+          value={descriptionCancel}
+          onChange={(e) => {
+            setDescriptionCancel(e.target.value);
+          }}
+        />
+        <Button
+          disabled={!!descriptionCancel}
+          onClick={() => {
+            handleCancelTicket();
+          }}
+        >
+          Hủy đơn
+        </Button>
+      </Modal>
     </div>
   );
 }
