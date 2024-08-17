@@ -79,7 +79,7 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
-    ...([STOCKER.role, ACCOUTANT.role, SALES.role].includes(roleName)
+    ...([STOCKER.role, SALES.role].includes(roleName)
       ? [
           {
             label: <Link to="/manage/orders">Quản lý đơn</Link>,
@@ -195,9 +195,7 @@ function AccountBalance() {
     return null;
   }
 
-  return (
-    <div>Số dư: {NumberToVND.format(+me?.accountHave)}</div>
-  )
+  return <div>Số dư: {NumberToVND.format(+me?.accountHave)}</div>;
 }
 
 function Nav({ isManager = false }: { isManager: boolean }) {
@@ -266,9 +264,7 @@ function Nav({ isManager = false }: { isManager: boolean }) {
             ...(me
               ? [
                   {
-                    label: (
-                      <AccountBalance />
-                    ),
+                    label: <AccountBalance />,
                     key: "transaction",
                     children: [
                       {

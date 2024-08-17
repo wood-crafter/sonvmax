@@ -198,6 +198,7 @@ function ManageTicket() {
                 style={{
                   width: "3rem",
                   height: "3rem",
+                  border: "1px solid black",
                   backgroundColor: `rgb(${record.colorDetails.r}, ${record.colorDetails.g}, ${record.colorDetails.b})`,
                 }}
               ></div>
@@ -218,6 +219,7 @@ function ManageTicket() {
                 style={{
                   width: "3rem",
                   height: "3rem",
+                  border: "1px solid black",
                   backgroundColor: `rgb(${record.colorPick.r}, ${record.colorPick.g}, ${record.colorPick.b})`,
                 }}
               ></div>

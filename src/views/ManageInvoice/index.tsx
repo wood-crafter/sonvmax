@@ -36,7 +36,6 @@ function ManageInvoice() {
       title: "Ngày tạo",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (text: string) => new Date(text).toLocaleDateString("vi-VN"),
     },
   ];
 
