@@ -3,7 +3,7 @@ import React from "react";
 import Nav from "../../views/NavigationBar";
 import { useUserStore } from "../../store/user";
 import { Navigate } from "react-router-dom";
-import { ADMIN_ROLES, SALES } from "../../constant";
+import { ACCOUTANT, ADMIN_ROLES, SALES, STOCKER } from "../../constant";
 import Footer from "../../views/Footer";
 
 type LayoutProps = {
@@ -35,6 +35,12 @@ function Layout({
     }
     if (roleName === SALES.role) {
       return <Navigate to={SALES.defaultPath} replace={true} />;
+    }
+    if (roleName === STOCKER.role) {
+      return <Navigate to={STOCKER.defaultPath} replace={true} />;
+    }
+    if (roleName === ACCOUTANT.role) {
+      return <Navigate to={ACCOUTANT.defaultPath} replace={true} />;
     }
     return <Navigate to="/manage/products" replace={true} />;
   }
