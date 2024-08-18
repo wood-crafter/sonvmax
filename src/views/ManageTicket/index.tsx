@@ -81,12 +81,16 @@ function ManageTicket() {
     setSelectedTicket(record);
     const initialQuantities: Record<string, number> = {};
     const orderQuantity: Record<string, number> = {};
+    let nothingInOrder = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     record.ticket?.order?.warehouseOrders.forEach((order: any) => {
       initialQuantities[order.id] = 0;
       orderQuantity[order.id] = 0;
+      if (order.quantity) nothingInOrder = false;
     });
+
+    if (nothingInOrder) return;
 
     setOrderQuantities(orderQuantity);
     setInitialOrderQuantities(initialQuantities);
