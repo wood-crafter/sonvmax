@@ -105,11 +105,7 @@ const AppRoutes = () => {
         <Route
           path="products"
           element={
-            <Layout
-              hasNav
-              isManager
-              roleAllow={[OWNER.role, STOCKER.role, ACCOUTANT.role]}
-            >
+            <Layout hasNav isManager roleAllow={[OWNER.role, ACCOUTANT.role]}>
               <ManageProduct />
             </Layout>
           }
@@ -117,7 +113,11 @@ const AppRoutes = () => {
         <Route
           path="orders"
           element={
-            <Layout hasNav isManager roleAllow={[ACCOUTANT.role, SALES.role]}>
+            <Layout
+              hasNav
+              isManager
+              roleAllow={[OWNER.role, ACCOUTANT.role, SALES.role]}
+            >
               <ManageOrder />
             </Layout>
           }
@@ -137,7 +137,7 @@ const AppRoutes = () => {
         <Route
           path="invoice"
           element={
-            <Layout hasNav isManager roleAllow={[ACCOUTANT.role]}>
+            <Layout hasNav isManager roleAllow={[OWNER.role, ACCOUTANT.role]}>
               <ManageInvoice />
             </Layout>
           }
@@ -145,7 +145,7 @@ const AppRoutes = () => {
         <Route
           path="volumes"
           element={
-            <Layout hasNav isManager roleAllow={[OWNER.role, STOCKER.role]}>
+            <Layout hasNav isManager roleAllow={[OWNER.role]}>
               <ManageVolume />
             </Layout>
           }
@@ -169,7 +169,7 @@ const AppRoutes = () => {
         <Route
           path="color"
           element={
-            <Layout hasNav isManager roleAllow={[OWNER.role, STOCKER.role]}>
+            <Layout hasNav isManager roleAllow={[OWNER.role]}>
               <ManageColor />
             </Layout>
           }
@@ -193,7 +193,7 @@ const AppRoutes = () => {
         <Route
           path="transaction"
           element={
-            <Layout hasNav isManager roleAllow={[ACCOUTANT.role]}>
+            <Layout hasNav isManager roleAllow={[OWNER.role, ACCOUTANT.role]}>
               <ManageTransaction />
             </Layout>
           }
@@ -201,7 +201,7 @@ const AppRoutes = () => {
         <Route
           path="categories"
           element={
-            <Layout hasNav isManager roleAllow={[OWNER.role, STOCKER.role]}>
+            <Layout hasNav isManager roleAllow={[OWNER.role]}>
               <ManageCategories />
             </Layout>
           }
