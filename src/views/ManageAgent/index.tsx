@@ -122,11 +122,6 @@ function ManageAgent() {
   const [currentEditing, setCurrentEditing] = useState<Agent | null>(null);
   const handleUpdateAgent = async () => {
     const updateData: any = {
-      ...currentEditing,
-      roleId: roles?.find((it) => it.name === "AGENT")?.id,
-      debitLimit: +debitLimit,
-      accountDebit: +accountDebit,
-      accountHave: +accountHave,
       rank: +rank,
     };
 
@@ -418,6 +413,8 @@ function ManageAgent() {
               }}
               placeholder={currentEditing.debitLimit.toString()}
               maxLength={16}
+              readOnly
+              style={{ backgroundColor: "rgb(220, 220, 220)" }}
             />
             <label htmlFor="accountDebit" style={{ display: "flex" }}>
               Dư nợ hiện tại:{" "}
@@ -431,6 +428,8 @@ function ManageAgent() {
               }}
               placeholder={currentEditing.accountDebit.toString()}
               maxLength={16}
+              readOnly
+              style={{ backgroundColor: "rgb(220, 220, 220)" }}
             />
             <label htmlFor="accountHave" style={{ display: "flex" }}>
               Tài khoản hiện có:{" "}
@@ -444,6 +443,8 @@ function ManageAgent() {
               }}
               placeholder={currentEditing.accountHave.toString()}
               maxLength={16}
+              readOnly
+              style={{ backgroundColor: "rgb(220, 220, 220)" }}
             />
             <label htmlFor="rank" style={{ display: "flex" }}>
               Cấp đại lý:{" "}
