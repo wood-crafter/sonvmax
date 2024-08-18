@@ -42,7 +42,7 @@ export const ACCOUTANT = {
 
 export const STOCKER = {
   role: 'STOCKER',
-  defaultPath: '/manage/products'
+  defaultPath: '/manage/ticket'
 }
 
 export const DISCOUNT_AMOUNT = [40, 30, 20]
