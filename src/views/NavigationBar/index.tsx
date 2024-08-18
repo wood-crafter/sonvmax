@@ -70,7 +70,7 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
-    ...([OWNER.role, ACCOUTANT.role].includes(roleName)
+    ...([OWNER.role].includes(roleName)
       ? [
           {
             label: <Link to="/manage/voucher">Quản lý voucher</Link>,
@@ -79,7 +79,7 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
-    ...([ACCOUTANT.role, SALES.role].includes(roleName)
+    ...([OWNER.role, ACCOUTANT.role, SALES.role].includes(roleName)
       ? [
           {
             label: <Link to="/manage/orders">Quản lý đơn</Link>,
@@ -88,7 +88,7 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
-    ...([OWNER.role, STOCKER.role, ACCOUTANT.role].includes(roleName)
+    ...([OWNER.role, ACCOUTANT.role].includes(roleName)
       ? [
           {
             label: <Link to="/manage/products">Quản lý sản phẩm</Link>,
@@ -97,7 +97,7 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
-    ...([OWNER.role, STOCKER.role].includes(roleName)
+    ...([OWNER.role].includes(roleName)
       ? [
           {
             label: <Link to="/manage/volumes">Quản lý đóng gói</Link>,
@@ -106,7 +106,7 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
-    ...([OWNER.role, STOCKER.role].includes(roleName)
+    ...([OWNER.role].includes(roleName)
       ? [
           {
             label: <Link to="/manage/categories">Quản lý danh mục</Link>,
@@ -115,7 +115,7 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
-    ...([ACCOUTANT.role].includes(roleName)
+    ...([OWNER.role, ACCOUTANT.role, STOCKER.role].includes(roleName)
       ? [
           {
             label: <Link to="/manage/invoice">Quản lý hóa đơn</Link>,
@@ -133,7 +133,7 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
-    ...([ACCOUTANT.role].includes(roleName)
+    ...([OWNER.role, ACCOUTANT.role].includes(roleName)
       ? [
           {
             label: <Link to="/manage/transaction">Quản lý nạp tiền</Link>,
@@ -142,7 +142,7 @@ const useManagerMenuItems = () => {
           },
         ]
       : []),
-    ...([OWNER.role, STOCKER.role].includes(roleName)
+    ...([OWNER.role].includes(roleName)
       ? [
           {
             label: <Link to="/manage/color">Quản lý màu</Link>,
