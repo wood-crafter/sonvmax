@@ -306,7 +306,8 @@ function ManageOrder() {
         const status = statusToText(record.status);
         const canUpdate =
           (roleName === "SALES" && record.status === 0) ||
-          (roleName === "ACCOUNTANT" && record.status === 1) ||
+          (roleName === "ACCOUNTANT" &&
+            (record.status === 1 || record.status === 4)) ||
           (roleName === "STOCKER" && [2, 3, 4].includes(record.status));
 
         return canUpdate ? (
