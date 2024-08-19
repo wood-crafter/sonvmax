@@ -137,7 +137,11 @@ const AppRoutes = () => {
         <Route
           path="invoice"
           element={
-            <Layout hasNav isManager roleAllow={[OWNER.role, ACCOUTANT.role]}>
+            <Layout
+              hasNav
+              isManager
+              roleAllow={[STOCKER.role, OWNER.role, ACCOUTANT.role]}
+            >
               <ManageInvoice />
             </Layout>
           }
