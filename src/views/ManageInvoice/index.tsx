@@ -3,13 +3,18 @@ import "./index.css";
 import { useInvoices } from "../../hooks/useInvoice";
 import { Modal, Spin, Table } from "antd";
 import { Invoice } from "../../type";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { NumberToVND } from "../../helper";
+import { useUserStore } from "../../store/user";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 function ManageInvoice() {
+  const roleName = useUserStore((state) => state.roleName);
   const { data, isLoading } = useInvoices(1);
   const [isOpen, setIsOpen] = useState(false);
   const [currentRecord, setCurrentRecord] = useState<Invoice | null>(null);
+  const modalContentRef = useRef<HTMLDivElement>(null);
 
   if (isLoading) return <Spin />;
 
@@ -147,9 +152,42 @@ function ManageInvoice() {
     },
   ];
 
+  const exportPDF = async () => {
+    if (modalContentRef.current) {
+      const modalElement = modalContentRef.current;
+
+      modalElement.style.overflow = "visible";
+
+      const canvas = await html2canvas(modalElement, {
+        scale: 4,
+        useCORS: true,
+        allowTaint: true,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+
+      const pdf = new jsPDF({
+        orientation: imgWidth > imgHeight ? "landscape" : "portrait",
+        unit: "px",
+        format: [imgWidth, imgHeight],
+      });
+
+      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+
+      pdf.save(`phieubanhang${currentRecord?.invoiceId}.pdf`);
+    } else {
+      console.error("Modal content not found!");
+    }
+  };
+
   return (
     <div className="ManageInvoice">
-      <h2>Quản lý hóa đơn</h2>
+      <h2>
+        {roleName === "STOCKER" ? "Quản lý phiếu xuất kho" : "Quản lý hóa đơn"}
+      </h2>
       <Table
         dataSource={tableData}
         columns={columns}
@@ -163,84 +201,89 @@ function ManageInvoice() {
       <Modal
         title=""
         open={isOpen}
-        onOk={() => setIsOpen(false)}
+        onOk={() => {
+          exportPDF();
+          setIsOpen(false);
+        }}
         onCancel={() => setIsOpen(false)}
         width={"100%"}
         okText={"Xuất file PDF"}
       >
-        <div style={{ display: "flex", width: "100%" }}>
-          <div style={{ marginRight: "1rem" }}>
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRPBu76Cz7KqOg25hxVlahntLe2SPjlQvvkQ&s" />
+        <div ref={modalContentRef} style={{ padding: "1rem" }}>
+          <div style={{ display: "flex", width: "100%" }}>
+            <div style={{ marginRight: "1rem" }}>
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRPBu76Cz7KqOg25hxVlahntLe2SPjlQvvkQ&s" />
+            </div>
+            <div style={{ flexGrow: 1, marginRight: "5rem" }}>
+              <h2>CÔNG TY CỔ PHẦN SƠN VMAX</h2>
+              <h3>
+                DC: LK1-D06 khu đô thị Splendora Bắc An Khánh, An Khánh, Hoài
+                Đức, Hà Nội
+              </h3>
+              <h3>DT: 0243.2828.333 - Hotline: 096.555.8485</h3>
+              <h1
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                {roleName === "STOCKER" ? "PHIẾU XUẤT KHO" : "HÓA ĐƠN BÁN HÀNG"}
+              </h1>
+              <h2
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                {currentRecord?.createdAt}
+              </h2>
+            </div>
           </div>
-          <div style={{ flexGrow: 1, marginRight: "5rem" }}>
-            <h2>CÔNG TY CỔ PHẦN SƠN VMAX</h2>
-            <h3>
-              DC: LK1-D06 khu đô thị Splendora Bắc An Khánh, An Khánh, Hoài Đức,
-              Hà Nội
-            </h3>
-            <h3>DT: 0243.2828.333 - Hotline: 096.555.8485</h3>
-            <h1
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              HÓA ĐƠN BÁN HÀNG
-            </h1>
-            <h2
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              Ngày 06 tháng 08 năm 2024
-            </h2>
-          </div>
-        </div>
-        <h5>Khách hàng: {currentRecord?.agentName}</h5>
-        <h5>
-          Điện thoại:{" "}
-          {currentRecord?.order?.phoneNumberCustom ??
-            currentRecord?.phoneNumber}
-        </h5>
-        <h5>
-          Địa chỉ:{" "}
-          {currentRecord?.order?.addressCustom ?? currentRecord?.address}
-        </h5>
-        <h5>Đơn vị ship:</h5>
-        <Table
-          dataSource={currentRecord?.invoice?.order?.warehouseOrders ?? []}
-          columns={invoiceColumns}
-          pagination={false}
-        />
-        <h2>
-          Tổng tiền hàng:{" "}
-          {NumberToVND.format(+(currentRecord?.totalAmount ?? "0"))}
-        </h2>
-        <h5>Bằng chữ:</h5>
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            justifyContent: "space-around",
-          }}
-        >
+          <h5>Khách hàng: {currentRecord?.agentName}</h5>
+          <h5>
+            Điện thoại:{" "}
+            {currentRecord?.order?.phoneNumberCustom ??
+              currentRecord?.phoneNumber}
+          </h5>
+          <h5>
+            Địa chỉ:{" "}
+            {currentRecord?.order?.addressCustom ?? currentRecord?.address}
+          </h5>
+          <h5>Đơn vị ship:</h5>
+          <Table
+            dataSource={currentRecord?.invoice?.order?.warehouseOrders ?? []}
+            columns={invoiceColumns}
+            pagination={false}
+          />
+          <h2>
+            Tổng tiền hàng:{" "}
+            {NumberToVND.format(+(currentRecord?.totalAmount ?? "0"))}
+          </h2>
+          <h5>Bằng chữ:</h5>
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              height: "10rem",
+              width: "100%",
+              justifyContent: "space-around",
             }}
           >
-            <strong>Thủ kho</strong>
-            <strong>{currentRecord?.invoice?.createdBy}</strong>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                height: "10rem",
+              }}
+            >
+              <strong>Thủ kho</strong>
+              <strong>{currentRecord?.invoice?.createdBy}</strong>
+            </div>
+            <strong>Người giao hàng</strong>
+            <strong>Người nhận hàng</strong>
+            <strong>Quản đốc</strong>
           </div>
-          <strong>Người giao hàng</strong>
-          <strong>Người nhận hàng</strong>
-          <strong>Quản đốc</strong>
         </div>
       </Modal>
     </div>

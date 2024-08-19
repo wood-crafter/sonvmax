@@ -118,7 +118,13 @@ const useManagerMenuItems = () => {
     ...([OWNER.role, ACCOUTANT.role, STOCKER.role].includes(roleName)
       ? [
           {
-            label: <Link to="/manage/invoice">Quản lý hóa đơn</Link>,
+            label: (
+              <Link to="/manage/invoice">
+                {roleName === "STOCKER"
+                  ? "Quản lý phiếu xuất kho"
+                  : "Quản lý hóa đơn"}
+              </Link>
+            ),
             key: "invoice",
             icon: <FileTextOutlined />,
           },
