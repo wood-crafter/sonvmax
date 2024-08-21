@@ -400,6 +400,55 @@ function ManageOrder() {
       },
     },
     {
+      title: "Màu",
+      key: "color",
+      render: (_, record) => {
+        return (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                width: "3rem",
+                height: "3rem",
+                border: "1px solid black",
+                backgroundColor: `rgb(${
+                  record?.colorDetails
+                    ? record?.colorDetails.r
+                    : record.colorPick?.r ?? 255
+                }, ${
+                  record?.colorDetails
+                    ? record?.colorDetails.g
+                    : record.colorPick?.g ?? 255
+                }, ${
+                  record?.colorDetails
+                    ? record?.colorDetails.g
+                    : record.colorPick?.b ?? 255
+                })`,
+              }}
+            ></div>
+            {record?.colorDetails && <div>{record?.colorDetails?.code}</div>}
+          </div>
+        );
+      },
+    },
+    {
+      title: "Quy cách đóng gói",
+      key: "volume",
+      render: (record) => {
+        return <div>{record?.volumeDetails?.volume}</div>;
+      },
+    },
+    {
+      title: "Ngày đặt",
+      key: "createdAt",
+      dataIndex: "createdAt",
+    },
+    {
       title: "Giá",
       key: "price",
       render: (record) => {
