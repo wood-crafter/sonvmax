@@ -1,8 +1,8 @@
 import "./index.css";
 import type { MenuProps } from "antd";
-import { Menu } from "antd";
+import { Input, Menu } from "antd";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useUserStore } from "../../store/user";
 import {
   ShoppingCartOutlined,
@@ -205,12 +205,14 @@ function AccountBalance() {
 }
 
 function Nav({ isManager = false }: { isManager: boolean }) {
+  const navigate = useNavigate();
   const accessToken = useUserStore((state) => state.accessToken);
   const userInfo = useUserStore((state) => state.userInformation);
   const [current, setCurrent] = useState("mail");
   const setCategories = useUserStore((state) => state.setCategories);
   const { data: categoryResponse } = useCategories(1);
   const logout = useUserStore((state) => state.clear);
+  const [searchName, setSearchName] = useState("");
 
   useEffect(() => {
     if (categoryResponse) {
@@ -244,6 +246,21 @@ function Nav({ isManager = false }: { isManager: boolean }) {
         label: <Link to="/products">Sản phẩm</Link>,
         key: "products",
         icon: <BgColorsOutlined />,
+      },
+      {
+        label: (
+          <Input
+            placeholder="Tìm sản phẩm"
+            style={{ color: "black" }}
+            onChange={(e) => {
+              setSearchName(e.target.value);
+            }}
+            onPressEnter={() => {
+              navigate(`/products?searchName=${searchName}`);
+            }}
+          />
+        ),
+        key: "searchProduct",
       },
       ...(accessToken
         ? [
@@ -313,7 +330,7 @@ function Nav({ isManager = false }: { isManager: boolean }) {
     ];
 
     return clientItems;
-  }, [accessToken, categoryResponse, logout, userInfo]);
+  }, [accessToken, categoryResponse, logout, navigate, searchName, userInfo]);
 
   return (
     <Menu

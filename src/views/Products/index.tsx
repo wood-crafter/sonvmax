@@ -5,7 +5,7 @@ import { NumberToVND } from "../../helper";
 import { useProducts } from "../../hooks/useProduct";
 import { DISCOUNT_AMOUNT } from "../../constant";
 import { Pagination } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useUserStore } from "../../store/user";
 
@@ -14,12 +14,16 @@ function Products() {
   const categoires = useUserStore((state) => state.categoires);
   const discount = DISCOUNT_AMOUNT[+level - 1] ?? 0;
   const { categoryId } = useParams<{ categoryId: string }>();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const searchName = queryParams.get("searchName");
   const [currentPage, setCurrentPage] = useState(1);
   const { data, mutate: refreshProducts } = useProducts(
     currentPage,
     10,
     true,
-    categoryId
+    categoryId,
+    searchName ?? ""
   );
   const products = data?.data ?? [];
 

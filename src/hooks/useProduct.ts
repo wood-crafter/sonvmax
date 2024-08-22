@@ -3,19 +3,16 @@ import { API_ROOT } from "../constant"
 import { PagedResponse, Product } from "../type"
 import { requestOptions } from "./utils";
 
-export function useProducts(page: number, size = 20, active = false, categoryId:string | undefined = undefined) {
+export function useProducts(page: number, size = 20, active = false, categoryId:string | undefined = undefined, searchName: string) {
+  let url = ''
   if (categoryId) {
-    const url = `/product/get-products-by-category/${categoryId}?page=${page}&size=${size}` + (active ? `&active=${active}` : '')
-    const { data, isLoading, error, mutate } = useSWR(url, fetchProducts)
-
-    return {
-      data,
-      isLoading,
-      error,
-      mutate,
-    }
+    url = `/product/get-products-by-category/${categoryId}?page=${page}&size=${size}` + (active ? `&active=${active}` : '')
+  } else {
+    url = `/product/get-product?page=${page}&size=${size}` + (active ? `&active=${active}` : '')
   }
-  const url = `/product/get-product?page=${page}&size=${size}` + (active ? `&active=${active}` : '')
+  if (searchName) {
+    url = `/product/get-product-by-name/?searchName=${searchName}&page=${page}&size=${size}` + (active ? `&active=${active}` : '')
+  }
   const { data, isLoading, error, mutate } = useSWR(url, fetchProducts)
 
   return {
