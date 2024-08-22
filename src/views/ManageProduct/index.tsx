@@ -176,9 +176,10 @@ function AddProductButton(props: AddProductButtonProps) {
       addFailNoti(createResponse.status, createResponse.statusText);
     } else {
       addSuccessNoti();
+      setIsModalOpen(false);
+      clearAddInput();
     }
     refreshProducts();
-    clearAddInput();
   };
   const handleAddCancel = () => {
     setIsModalOpen(false);

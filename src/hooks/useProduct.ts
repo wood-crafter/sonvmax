@@ -11,7 +11,7 @@ export function useProducts(page: number, size = 20, active = false, categoryId:
     url = `/product/get-product?page=${page}&size=${size}` + (active ? `&active=${active}` : '')
   }
   if (searchName) {
-    url = `/product/get-product-by-name/?searchName=${searchName}&page=${page}&size=${size}` + (active ? `&active=${active}` : '')
+    url = `/product/get-product-by-name/?nameProduct=${searchName}&page=${page}&size=${size}` + (active ? `&active=${active}` : '')
   }
   const { data, isLoading, error, mutate } = useSWR(url, fetchProducts)
 
