@@ -84,6 +84,7 @@ export type Order = {
   voucherOrders: {code: string, discountAmount: number}[]
   addressCustom: string
   warehouseOrders?: any
+  agentName?: string
 }
 
 type InvoiceDetails = {

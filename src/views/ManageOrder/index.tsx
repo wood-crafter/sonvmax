@@ -57,6 +57,8 @@ function ManageOrder() {
   const [currentOrder, setCurrentOrder] = useState<any>(null);
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [agentName, setAgentName] = useState("");
+  const [orderId, setOrderId] = useState("");
 
   const updateOrder = async (UpdateProps: UpdateProps) => {
     const { id, status, description } = UpdateProps;
@@ -229,6 +231,8 @@ function ManageOrder() {
                 ? record.phoneNumberCustom
                 : record.phoneNumber
             );
+            setAgentName(record.agentName ?? "");
+            setOrderId(record.id);
             setCurrentOrder(record.orderProductSnapshots);
           }}
         >
@@ -455,12 +459,16 @@ function ManageOrder() {
         onOk={() => {
           setCurrentOrder(null);
           setPhoneNumber("");
+          setAgentName("");
+          setOrderId("");
           setAddress("");
         }}
         onCancel={() => {
           setCurrentOrder(null);
           setPhoneNumber("");
           setAddress("");
+          setAgentName("");
+          setOrderId("");
         }}
         width={"100%"}
       >
@@ -474,6 +482,8 @@ function ManageOrder() {
           }}
         >
           <div>
+            <div>{orderId && <strong>Mã đơn hàng: {orderId}</strong>}</div>
+            <div>{agentName && <strong>Tên đại lý: {agentName}</strong>}</div>
             <div>{address && <strong>Địa chỉ: {address}</strong>}</div>
             <div>
               {phoneNumber && <strong>Số điện thoại: {phoneNumber}</strong>}
