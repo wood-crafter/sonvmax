@@ -787,7 +787,7 @@ function ManageProduct() {
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const { data: categoryResponse } = useCategories(1);
-  const { data, isLoading, mutate: refreshProducts } = useProducts(1);
+  const { data, isLoading, mutate: refreshProducts } = useProducts(1, 99999);
   const products = useMemo(
     () => data?.data.map((it) => ({ key: it.id, ...it })),
     [data?.data]

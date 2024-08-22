@@ -41,6 +41,7 @@ export async function fetchProducts({url, searchName}: {url: string, searchName:
 
   if (searchName) {
     nextRequestOptions.body = JSON.stringify({nameProduct: searchName})
+    nextRequestOptions.method = 'POST'
   }
   const res = await fetch(`${API_ROOT}${url}`, nextRequestOptions)
 
