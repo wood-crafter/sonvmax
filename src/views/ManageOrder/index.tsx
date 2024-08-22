@@ -55,6 +55,8 @@ function ManageOrder() {
   const [editingRow, setEditingRow] = useState<string | null>(null);
   const [description, setDescription] = useState<string>("");
   const [currentOrder, setCurrentOrder] = useState<any>(null);
+  const [address, setAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const updateOrder = async (UpdateProps: UpdateProps) => {
     const { id, status, description } = UpdateProps;
@@ -219,6 +221,14 @@ function ManageOrder() {
           className="order-id"
           style={{ color: "blue" }}
           onClick={() => {
+            setAddress(
+              record.addressCustom ? record.addressCustom : record.address
+            );
+            setPhoneNumber(
+              record.phoneNumberCustom
+                ? record.phoneNumberCustom
+                : record.phoneNumber
+            );
             setCurrentOrder(record.orderProductSnapshots);
           }}
         >
@@ -442,10 +452,34 @@ function ManageOrder() {
       <Modal
         title="Xem chi tiết đơn"
         open={!!currentOrder}
-        onOk={() => setCurrentOrder(null)}
-        onCancel={() => setCurrentOrder(null)}
+        onOk={() => {
+          setCurrentOrder(null);
+          setPhoneNumber("");
+          setAddress("");
+        }}
+        onCancel={() => {
+          setCurrentOrder(null);
+          setPhoneNumber("");
+          setAddress("");
+        }}
         width={"100%"}
       >
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            color: "red",
+          }}
+        >
+          <div>
+            <div>{address && <strong>Địa chỉ: {address}</strong>}</div>
+            <div>
+              {phoneNumber && <strong>Số điện thoại: {phoneNumber}</strong>}
+            </div>
+          </div>
+        </div>
         <Table columns={orderColumns} dataSource={currentOrder} />
       </Modal>
     </div>
