@@ -246,6 +246,7 @@ export type Cart = {
   }
   color: CartColor
   volumeId: string
+  originalPrice: number
 }
 
 type CartColor = {
