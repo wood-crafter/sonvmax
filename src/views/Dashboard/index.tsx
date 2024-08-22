@@ -28,12 +28,18 @@ ChartJS.register(
 function Dashboard() {
   const { data: dashboard } = useDashboard("day", 7);
 
-  const chartData: ChartData<'line'> = {
-    labels: dashboard?.data.map(() => '') || [],
+  const chartData: ChartData<"line"> = {
+    labels: dashboard?.data.map(() => "") || [],
     datasets: [
       {
         label: "Tổng doanh thu",
-        data: dashboard?.data.map((item) => item.totalRevenue?.totalRevenue || 0) || [],
+        data:
+          dashboard?.data.map((item) => {
+            return {
+              x: item.totalRevenue.date,
+              y: item.totalRevenue?.totalRevenue || 0,
+            };
+          }) || [],
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: true,
@@ -47,7 +53,7 @@ function Dashboard() {
     ],
   };
 
-  const options: ChartOptions<'line'> = {
+  const options: ChartOptions<"line"> = {
     responsive: true,
     plugins: {
       legend: {
@@ -56,11 +62,13 @@ function Dashboard() {
       },
       tooltip: {
         callbacks: {
-          label: (tooltipItem: TooltipItem<'line'>) => {
+          label: (tooltipItem: TooltipItem<"line">) => {
             return [
-              `Doanh thu: ${new Intl.NumberFormat("vi-VN").format(tooltipItem.parsed.y)} VND`,
-              'Ngày: ' + dashboard?.data?.[tooltipItem.dataIndex].date,
-            ]
+              `Tổng doanh thu: ${new Intl.NumberFormat("vi-VN").format(
+                tooltipItem.parsed.y
+              )} VND`,
+              "Ngày: " + dashboard?.data?.[tooltipItem.dataIndex].date,
+            ];
           },
         },
       },
