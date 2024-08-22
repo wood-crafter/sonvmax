@@ -7,6 +7,31 @@ import {
 } from "./useAuthenticatedFetch";
 import { requestOptions } from "./utils";
 
+export type DashboardData = {
+  
+  date: string;
+  totalRevenue: {
+      date: string;
+      totalRevenue: number;
+  };
+  totalOrders: {
+      date: string;
+      placed: number;
+      completed: number;
+      cancelled: number;
+  };
+  averageOrderValue: {
+      date: string;
+      averageOrderValue: number;
+  };
+  totalProductsSold: {
+      date: string;
+      totalProductsSold: number;
+  };
+  topSellingProducts: unknown[];
+  topAgents: unknown[]; 
+}
+
 export function useDashboard(sortBy = 'day', period = 7) {
   const fetcher = useAuthenticatedFetch();
 
@@ -28,5 +53,5 @@ export async function fetchDashboard({ url, fetcher }: FetchWithAuthOptions) {
     ...requestOptions,
   });
 
-  return res.json() as Promise<PagedResponse<any>>;
+  return res.json() as Promise<PagedResponse<DashboardData>>;
 }

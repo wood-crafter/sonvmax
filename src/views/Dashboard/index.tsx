@@ -1,44 +1,82 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import "./index.css";
 import { useDashboard } from "../../hooks/useDashboard";
-import { Line } from "@ant-design/charts";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ChartOptions,
+  ChartData,
+  TooltipItem,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 function Dashboard() {
   const { data: dashboard } = useDashboard("day", 7);
 
-  const chartData =
-    dashboard?.data.map((item: any) => ({
-      date: item.date,
-      totalRevenue: item.totalRevenue?.totalRevenue || 0,
-    })) || [];
+  const chartData: ChartData<'line'> = {
+    labels: dashboard?.data.map(() => '') || [],
+    datasets: [
+      {
+        label: "Tổng doanh thu",
+        data: dashboard?.data.map((item) => item.totalRevenue?.totalRevenue || 0) || [],
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointBackgroundColor: "rgba(75, 192, 192, 1)",
+        pointBorderColor: "#fff",
+        pointHoverBackgroundColor: "#fff",
+        pointHoverBorderColor: "rgba(75, 192, 192, 1)",
+      },
+    ],
+  };
 
-  const config = {
-    data: chartData,
-    xField: "date",
-    yField: "totalRevenue",
-    smooth: true,
-    xAxis: {
-      title: {
-        text: "Date",
+  const options: ChartOptions<'line'> = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top" as const,
       },
-      tickCount: 7,
-    },
-    yAxis: {
-      title: {
-        text: "Total Revenue (VND)",
+      tooltip: {
+        callbacks: {
+          label: (tooltipItem: TooltipItem<'line'>) => {
+            return [
+              `Doanh thu: ${new Intl.NumberFormat("vi-VN").format(tooltipItem.parsed.y)} VND`,
+              'Ngày: ' + dashboard?.data?.[tooltipItem.dataIndex].date,
+            ]
+          },
+        },
       },
-      label: {
-        formatter: (v: number) => new Intl.NumberFormat("vi-VN").format(v),
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Ngày",
+        },
       },
-    },
-    label: {},
-    point: {
-      size: 5,
-      shape: "diamond",
-    },
-    tooltip: {
-      title: () => {
-        return "Tổng doanh thu";
+      y: {
+        title: {
+          display: true,
+          text: "Tổng doanh thu (VND)",
+        },
       },
     },
   };
@@ -46,19 +84,7 @@ function Dashboard() {
   return (
     <div className="Dashboard">
       <div className="chart-container">
-        <Line {...config} />
-      </div>
-      <div className="chart-container">
-        <Line {...config} />
-      </div>
-      <div className="chart-container">
-        <Line {...config} />
-      </div>
-      <div className="chart-container">
-        <Line {...config} />
-      </div>
-      <div className="chart-container">
-        <Line {...config} />
+        <Line data={chartData} options={options} />
       </div>
     </div>
   );
