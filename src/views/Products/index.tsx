@@ -36,11 +36,14 @@ function Products() {
       <div className="products-container">
         {products.map((item: Product) => (
           <div key={item.id} className="grid-item">
-            <Link to={`/product_detail/${item.id}`} className="Product-item-image-wrapper">
+            <Link
+              to={`/product_detail/${item.id}`}
+              className="Product-item-image-wrapper"
+            >
               <img src={item.image} />
             </Link>
             <div className="product-name">{item.nameProduct}</div>
-            {level && (
+            {level && +level > 0 && (
               <div
                 style={{
                   fontSize: "20px",
