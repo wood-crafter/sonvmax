@@ -3,7 +3,7 @@ import { API_ROOT } from "../constant"
 import { PagedResponse, Product } from "../type"
 import { requestOptions } from "./utils";
 
-export function useProducts(page: number, size = 20, active = false, categoryId:string | undefined = undefined, searchName: string) {
+export function useProducts(page: number, size = 20, active = false, categoryId:string | undefined = undefined, searchName: string | undefined = undefined) {
   let url = ''
   if (categoryId) {
     url = `/product/get-products-by-category/${categoryId}?page=${page}&size=${size}` + (active ? `&active=${active}` : '')
