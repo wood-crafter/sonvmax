@@ -1,0 +1,9 @@
+.Dashboard {
+  padding: 1rem;
+  box-sizing: border-box;
+  background-color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}

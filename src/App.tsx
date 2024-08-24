@@ -25,6 +25,7 @@ import Transaction from "./views/Transaction";
 import TransactionHistory from "./views/TransactionHistory";
 import ManageTransaction from "./views/ManageTransaction";
 import ManageTicket from "./views/ManageTicket";
+import Dashboard from "./views/Dashboard";
 
 const AppRoutes = () => {
   return (
@@ -119,6 +120,14 @@ const AppRoutes = () => {
               roleAllow={[OWNER.role, ACCOUTANT.role, SALES.role]}
             >
               <ManageOrder />
+            </Layout>
+          }
+        />
+        <Route
+          path="dashboard"
+          element={
+            <Layout hasNav isManager>
+              <Dashboard />
             </Layout>
           }
         />
