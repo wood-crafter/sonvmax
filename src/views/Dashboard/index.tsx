@@ -1,5 +1,5 @@
 import "./index.css";
-import { useDashboard } from "../../hooks/useDashboard";
+import { DashboardData, useDashboard } from "../../hooks/useDashboard";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,24 +22,70 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
-function Dashboard() {
-  const { data: dashboard } = useDashboard("day", 7);
+function useLineChartOptions(minX: string) {
+  const options: ChartOptions<"line"> = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+      },
+      tooltip: {
+        callbacks: {
+          title: () => "",
+          label: (tooltipItem: TooltipItem<"line">) => {
+            const dashboardData = tooltipItem.raw as DashboardDataPoint
 
-  const chartData: ChartData<"line"> = {
-    labels: dashboard?.data.map(() => "") || [],
+            return "Ngày: " + dashboardData.date
+          },
+          afterLabel: (tooltipItem: TooltipItem<"line">) => {
+            const dashboardData = tooltipItem.raw as DashboardDataPoint
+
+            return `Tổng doanh thu: ${new Intl.NumberFormat("vi-VN").format(
+              dashboardData.totalRevenue
+            )} VND`
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Ngày",
+        },
+        min: minX,
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Tổng doanh thu (VND)",
+        },
+      },
+    },
+  };
+
+  return options
+}
+
+function useLineChartData(dashboardData: DashboardData[] = []) {
+  const chartData: ChartData<"line", DashboardDataPoint[]> = {
+    labels: dashboardData.map(() => ""),
     datasets: [
       {
         label: "Tổng doanh thu",
         data:
-          dashboard?.data.map((item) => {
-            return {
-              x: item.totalRevenue.date,
-              y: item.totalRevenue?.totalRevenue || 0,
-            };
-          }) || [],
+          dashboardData.map((item) => ({
+            date: item.date,
+            totalRevenue: item.totalRevenue.totalRevenue,
+          })),
+        parsing: {
+          xAxisKey: "date",
+          yAxisKey: "totalRevenue",
+        },
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: true,
@@ -53,41 +99,21 @@ function Dashboard() {
     ],
   };
 
-  const options: ChartOptions<"line"> = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: true,
-        position: "top" as const,
-      },
-      tooltip: {
-        callbacks: {
-          label: (tooltipItem: TooltipItem<"line">) => {
-            return [
-              `Tổng doanh thu: ${new Intl.NumberFormat("vi-VN").format(
-                tooltipItem.parsed.y
-              )} VND`,
-              "Ngày: " + dashboard?.data?.[tooltipItem.dataIndex].date,
-            ];
-          },
-        },
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Ngày",
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Tổng doanh thu (VND)",
-        },
-      },
-    },
-  };
+  return chartData
+}
+
+type DashboardDataPoint = {
+  date: string;
+  totalRevenue: number;
+};
+
+function Dashboard() {
+  const { data: dashboard } = useDashboard("day", 7);
+
+  const dashboardData = dashboard?.data ?? []
+
+  const options = useLineChartOptions(dashboardData[0]?.date ?? "")
+  const chartData = useLineChartData(dashboardData)
 
   return (
     <div className="Dashboard">

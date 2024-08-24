@@ -8,7 +8,6 @@ import {
 import { requestOptions } from "./utils";
 
 export type DashboardData = {
-  
   date: string;
   totalRevenue: {
       date: string;
