@@ -4,7 +4,7 @@ import { Invoice, PagedResponse } from "../type"
 import { requestOptions } from "./utils";
 import { FetchWithAuthOptions, useAuthenticatedFetch } from "./useAuthenticatedFetch";
 
-export function useInvoices(page: number, size = 999) {
+export function useInvoices(page: number, size = 99999) {
   const fetcher = useAuthenticatedFetch();
   const url = `/invoice/?page=${page}&size=${size}`
   const { data, isLoading, error, mutate } = useSWR({url, fetcher}, fetchInvoices)

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import "./index.css";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { useTransaction } from "../../hooks/useTransaction";
 import { Transaction } from "../../type";
 import Table, { ColumnType } from "antd/es/table";
-import { notification, Button, Dropdown, Input, Menu, Space } from "antd";
+import { notification, Button, Input, Space } from "antd";
 import { NumberToVND } from "../../helper";
 import {
   SmileOutlined,
@@ -20,8 +20,6 @@ function ManageTransaction() {
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const { data: transaction, mutate: refreshTransaction } = useTransaction(1);
-  const [editingKey, setEditingKey] = useState<string | null>(null);
-  const [description, setDescription] = useState<string>("");
 
   const handleStatusChange = async (id: string, newStatus: number) => {
     const response = await authFetch(
@@ -45,38 +43,6 @@ function ManageTransaction() {
     } else {
       api.open({
         message: "Cập nhật trạng thái thất bại",
-        icon: <FrownOutlined style={{ color: "red" }} />,
-      });
-    }
-  };
-
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDescription(e.target.value);
-  };
-
-  const saveDescription = async (record: Transaction) => {
-    const response = await authFetch(
-      `${API_ROOT}/transaction/update-transaction/${record.id}`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ description }),
-      }
-    );
-
-    if (response.ok) {
-      api.open({
-        message: "Cập nhật ghi chú thành công",
-        icon: <SmileOutlined style={{ color: "#108ee9" }} />,
-      });
-      setEditingKey(null);
-      refreshTransaction();
-    } else {
-      api.open({
-        message: "Cập nhật ghi chú thất bại",
         icon: <FrownOutlined style={{ color: "red" }} />,
       });
     }
@@ -185,50 +151,44 @@ function ManageTransaction() {
         title: "Ghi chú",
         dataIndex: "description",
         key: "description",
-        render: (_, record: Transaction) => {
-          return editingKey === record.id ? (
-            <Input
-              value={description}
-              onChange={handleDescriptionChange}
-              style={{ marginBottom: "10px" }}
-            />
-          ) : (
-            <div>{record.description || ""}</div>
-          );
-        },
       },
       {
         title: "Hành động",
         key: "actions",
-        render: (_, record: Transaction) => {
-          if (record.status === -1) return;
-          return editingKey === record.id ? (
+        render: (_: number, record: Transaction) => {
+          if (record.status !== 0) return;
+          return (
             <div style={{ display: "flex" }}>
               <Button
-                onClick={() => saveDescription(record)}
-                style={{ marginRight: "10px" }}
+                onClick={() => {
+                  handleStatusChange(record.id, 1);
+                }}
+                style={{ color: "green", marginRight: "0.2rem" }}
               >
-                OK
+                Đã nhận tiền
               </Button>
-              <Button onClick={() => setEditingKey(null)}>Hủy</Button>
+              <Button
+                onClick={() => {
+                  handleStatusChange(record.id, -1);
+                }}
+                style={{ color: "red" }}
+              >
+                Hủy bỏ
+              </Button>
             </div>
-          ) : (
-            <Button
-              onClick={() => {
-                setEditingKey(record.id);
-                setDescription(record.description || "");
-              }}
-            >
-              Sửa
-            </Button>
           );
         },
+        filters: [
+          { text: "Chờ xác nhận", value: 0 },
+          { text: "Xác nhận", value: 1 },
+          { text: "Hủy bỏ", value: -1 },
+        ],
       },
       {
         title: "Trạng thái",
         dataIndex: "status",
         key: "status",
-        render: (status: number, record: Transaction) => {
+        render: (status: number) => {
           let statusText: React.ReactNode;
 
           switch (status) {
@@ -240,30 +200,7 @@ function ManageTransaction() {
               break;
             case 0:
               statusText = (
-                <Dropdown
-                  overlay={
-                    <Menu
-                      onClick={({ key }) =>
-                        handleStatusChange(record.id, Number(key))
-                      }
-                      items={[
-                        {
-                          key: "1",
-                          label: (
-                            <span style={{ color: "green" }}>Xác nhận</span>
-                          ),
-                        },
-                        {
-                          key: "-1",
-                          label: <span style={{ color: "red" }}>Hủy bỏ</span>,
-                        },
-                      ]}
-                    />
-                  }
-                  trigger={["click"]}
-                >
-                  <Button style={{ color: "orange" }}>Chờ xác nhận</Button>
-                </Dropdown>
+                <span style={{ color: "orange" }}>Chờ xác nhận</span>
               );
               break;
             default:
@@ -282,7 +219,7 @@ function ManageTransaction() {
     ];
 
     return columns;
-  }, [description, editingKey, transaction?.data]);
+  }, [transaction?.data]);
 
   return (
     <div className="ManageTransaction">

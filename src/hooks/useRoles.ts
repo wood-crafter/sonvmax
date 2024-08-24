@@ -7,7 +7,7 @@ import {
 } from "./useAuthenticatedFetch";
 import useSWRMutation from "swr/mutation";
 
-export function useRoles(page: number, size = 20) {
+export function useRoles(page: number, size = 999) {
   const authedFetch = useAuthenticatedFetch();
 
   return useSWR(
