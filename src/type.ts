@@ -69,6 +69,7 @@ export type Category = {
 }
 
 export type Order = {
+  agentId: string
   address: string
   phoneNumberCustom: string
   phoneNumber: string
