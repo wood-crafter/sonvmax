@@ -314,7 +314,12 @@ function Nav({ isManager = false }: { isManager: boolean }) {
               : []),
             {
               label: (
-                <div onClick={logout}>
+                <div
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
+                >
                   <LogoutOutlined style={{ marginRight: "0.5rem" }} />
                   Đăng xuất
                 </div>
