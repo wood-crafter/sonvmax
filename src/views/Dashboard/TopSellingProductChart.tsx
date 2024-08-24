@@ -4,6 +4,8 @@ import type { ChartData, ChartOptions, TooltipItem } from "chart.js";
 import { NumberToVND } from "../../helper";
 
 function useTopSellingProductChartOptions(dashboardData: DashboardData[]) {
+  const maxTotalSold = Math.max(...dashboardData.map((it) => it.topSellingProducts[0].totalSold))
+
   const options: ChartOptions<'bar'> = {
     plugins: {
       legend: {
@@ -41,6 +43,7 @@ function useTopSellingProductChartOptions(dashboardData: DashboardData[]) {
           display: true,
           text: "Số lượng",
         },
+        max: Math.floor(maxTotalSold * 1.1),
         ticks: {
           stepSize: 1,
         }
@@ -57,7 +60,10 @@ function useTopSellingProductChartData(dashboardData: DashboardData[]) {
     datasets: [
       {
         label: 'Sản phẩm bán chạy nhất',
-        data: dashboardData.map((item) => item.topSellingProducts[0].totalSold),
+        data: dashboardData.map((item, i) => item.topSellingProducts[0].totalSold && i % 3 + 1),
+        borderColor: "rgba(175, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderWidth: 1,
       }
     ],
   }
