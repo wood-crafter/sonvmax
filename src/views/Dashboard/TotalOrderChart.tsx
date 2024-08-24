@@ -24,7 +24,7 @@ function useTotalOrderChartOptions() {
         },
         stacked: true,
         ticks: {
-          stepSize: 1,
+          precision: 0,
         },
       },
     },

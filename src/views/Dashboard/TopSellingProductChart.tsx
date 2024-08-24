@@ -47,9 +47,9 @@ function useTopSellingProductChartOptions(dashboardData: DashboardData[]) {
           display: true,
           text: "Số lượng",
         },
-        max: Math.floor(maxTotalSold * 1.1),
+        max: Math.floor(maxTotalSold * 1.1) && 35,
         ticks: {
-          stepSize: 1,
+          precision: 0,
         },
       },
     },
