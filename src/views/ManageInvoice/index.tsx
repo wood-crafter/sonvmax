@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "./index.css";
 import { useInvoices } from "../../hooks/useInvoice";
-import { Modal, Spin, Table } from "antd";
+import { Button, Input, Modal, Space, Spin, Table } from "antd";
 import { Invoice } from "../../type";
 import { useRef, useState } from "react";
 import { NumberToVND } from "../../helper";
 import { useUserStore } from "../../store/user";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { SearchOutlined } from "@ant-design/icons";
+import { ColumnType } from "antd/es/table";
 
 function ManageInvoice() {
   const roleName = useUserStore((state) => state.roleName);
@@ -116,11 +118,54 @@ function ManageInvoice() {
     },
   ];
 
-  const columns = [
+  const columns: ColumnType<Invoice>[] = [
     {
       title: "Đại lý",
       dataIndex: "agentName",
       key: "agentName",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            placeholder="Tìm đại lý"
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() => confirm()}
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => confirm()}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Tìm kiếm
+            </Button>
+            <Button
+              onClick={() => clearFilters && clearFilters()}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Bỏ lựa chọn
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      ),
+      onFilter: (value, record) =>
+        record.agentName
+          .toLowerCase()
+          .includes((value as string).toLowerCase()),
     },
     {
       title: "Tổng tiền",
@@ -149,6 +194,13 @@ function ManageInvoice() {
           </div>
         );
       },
+      filters: [
+        { text: "Đang chuẩn bị", value: 3 },
+        { text: "Đang giao", value: 4 },
+        { text: "Giao thành công", value: 5 },
+        ...(roleName === "STOCKER" ? [{ text: "Hủy bỏ", value: -1 }] : []),
+      ],
+      onFilter: (value, record) => record.order.status === value,
     },
   ];
 

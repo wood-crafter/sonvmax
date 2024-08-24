@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import "./index.css";
 import {
   Table,
@@ -10,12 +10,14 @@ import {
   Input,
   Popconfirm,
   Select,
+  InputRef,
 } from "antd";
 import { ColumnType } from "antd/es/table";
 import {
   SmileOutlined,
   QuestionCircleOutlined,
   FrownOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { Agent } from "../../type";
 import { useAgents } from "../../hooks/useAgent";
@@ -40,6 +42,7 @@ function ManageAgent() {
   const sales = salesResponse?.data;
   const agents = data?.data ?? [];
   const roles = rolesResponse?.data;
+  const searchInput = useRef<InputRef | null>(null);
 
   const missingAddPropsNotification = () => {
     api.open({
@@ -267,12 +270,74 @@ function ManageAgent() {
   };
 
   const columns: ColumnType<Agent>[] = useMemo(() => {
+    const uniqueStaffIds = new Set<string>();
+    const staffFilters = agents
+      .filter((agent) => {
+        if (!uniqueStaffIds.has(agent.staffId)) {
+          uniqueStaffIds.add(agent.staffId);
+          return true;
+        }
+        return false;
+      })
+      .map((agent) => ({
+        text: sales?.find((it) => it.id === agent.staffId)?.fullName,
+        value: agent.staffId,
+      }));
     return [
       {
         title: "Tên đại lý",
         dataIndex: "agentName",
         key: "agentName",
         sorter: (a, b) => a.agentName.localeCompare(b.agentName),
+        filterDropdown: ({
+          setSelectedKeys,
+          selectedKeys,
+          confirm,
+          clearFilters,
+        }) => (
+          <div style={{ padding: 8 }}>
+            <Input
+              ref={searchInput}
+              placeholder="Tìm tên đại lý"
+              value={selectedKeys[0]}
+              onChange={(e) =>
+                setSelectedKeys(e.target.value ? [e.target.value] : [])
+              }
+              onPressEnter={() => confirm()}
+              style={{ marginBottom: 8, display: "block" }}
+            />
+            <Space>
+              <Button
+                type="primary"
+                onClick={() => confirm()}
+                icon={<SearchOutlined />}
+                size="small"
+                style={{ width: 90 }}
+              >
+                Tìm kiếm
+              </Button>
+              <Button
+                onClick={() => clearFilters && clearFilters()}
+                size="small"
+                style={{ width: 90 }}
+              >
+                Bỏ lựa chọn
+              </Button>
+            </Space>
+          </div>
+        ),
+        filterIcon: (filtered) => (
+          <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+        ),
+        onFilter: (value, record) =>
+          record.agentName
+            .toLowerCase()
+            .includes((value as string).toLowerCase()),
+        onFilterDropdownVisibleChange: (visible) => {
+          if (visible) {
+            setTimeout(() => searchInput.current?.select(), 100);
+          }
+        },
       },
       {
         title: "Email",
@@ -317,6 +382,8 @@ function ManageAgent() {
                   {sales?.find((it) => it.id === record.staffId)?.fullName}
                 </div>
               ),
+              filters: staffFilters,
+              onFilter: (value: any, record: Agent) => record.staffId === value,
             },
           ]
         : []),
@@ -325,6 +392,12 @@ function ManageAgent() {
         dataIndex: "rank",
         key: "rank",
         sorter: (a, b) => a.rank - b.rank,
+        filters: [
+          { text: "Cấp 1", value: 1 },
+          { text: "Cấp 2", value: 2 },
+          { text: "Cấp 3", value: 3 },
+        ],
+        onFilter: (value, record) => record.rank === value,
       },
       ...(roleName !== "SALES"
         ? [
@@ -356,7 +429,7 @@ function ManageAgent() {
           ]
         : []),
     ];
-  }, [roleName, sales]);
+  }, [agents, handleDeleteRecord, roleName, sales, showModal]);
 
   const reAddingUpdateProps = (record: Agent) => {
     setDebitLimit(record?.debitLimit + "");

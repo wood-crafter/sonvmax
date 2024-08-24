@@ -69,6 +69,7 @@ export type Category = {
 }
 
 export type Order = {
+  agentId: string
   address: string
   phoneNumberCustom: string
   phoneNumber: string
@@ -84,6 +85,7 @@ export type Order = {
   voucherOrders: {code: string, discountAmount: number}[]
   addressCustom: string
   warehouseOrders?: any
+  agentName?: string
 }
 
 type InvoiceDetails = {
@@ -124,6 +126,7 @@ export type PagedResponse<T> = {
 }
 
 export type Transaction = {
+  agentFullName: string
   agentId: string;
   createdAt: string;
   description: string | null;
@@ -245,6 +248,7 @@ export type Cart = {
   }
   color: CartColor
   volumeId: string
+  originalPrice: number
 }
 
 type CartColor = {

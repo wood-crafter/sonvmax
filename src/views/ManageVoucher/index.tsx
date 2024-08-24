@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./index.css";
 import {
   Table,
@@ -11,12 +11,14 @@ import {
   Popconfirm,
   Spin,
   Select,
+  InputRef,
 } from "antd";
 import { ColumnType } from "antd/es/table";
 import {
   SmileOutlined,
   QuestionCircleOutlined,
   FrownOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { Voucher } from "../../type";
 import { requestOptions } from "../../hooks/utils";
@@ -59,6 +61,7 @@ function ManageVoucher() {
   };
 
   const [code, setCode] = useState("");
+  const searchInput = useRef<InputRef | null>(null);
   const [agent, setAgent] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [discountAmount, setDiscountAmount] = useState(1);
@@ -186,6 +189,53 @@ function ManageVoucher() {
       dataIndex: "code",
       key: "code",
       sorter: (a, b) => a.code.localeCompare(b.code),
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            ref={searchInput}
+            placeholder="Tìm mã voucher"
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() => confirm()}
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => confirm()}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Tìm kiếm
+            </Button>
+            <Button
+              onClick={() => clearFilters && clearFilters()}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Bỏ lựa chọn
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      ),
+      onFilter: (value, record) =>
+        record.code.toLowerCase().includes((value as string).toLowerCase()),
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
     },
     {
       title: "Giá giảm",
@@ -207,6 +257,11 @@ function ManageVoucher() {
         if (!a.activeVoucher && b.activeVoucher) return -1;
         return 1;
       },
+      filters: [
+        { text: "Hoạt động", value: true },
+        { text: "Tạm dừng", value: false },
+      ],
+      onFilter: (value, record) => record.activeVoucher === value,
     },
     {
       title: "Đại lý thụ hưởng",
@@ -218,6 +273,12 @@ function ManageVoucher() {
             ?.agentName ?? "--"}
         </div>
       ),
+      filters:
+        agents?.data.map((agent) => ({
+          text: agent.agentName,
+          value: agent.id,
+        })) ?? [],
+      onFilter: (value, record) => record.agentId === value,
     },
     {
       title: "",

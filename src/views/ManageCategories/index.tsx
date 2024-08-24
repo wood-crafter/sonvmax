@@ -7,7 +7,11 @@ import {
   Space,
   Table,
 } from "antd";
-import { QuestionCircleOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  QuestionCircleOutlined,
+  DeleteOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { NotificationInstance } from "antd/es/notification/interface";
 import type { ColumnsType } from "antd/es/table";
 import { useCallback, useState } from "react";
@@ -341,6 +345,47 @@ function useCategoryTableColumns(
         ) : (
           record.name
         ),
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            placeholder="Search name"
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() => confirm()}
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => confirm()}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Tìm
+            </Button>
+            <Button
+              onClick={() => clearFilters && clearFilters()}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Xóa
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      ),
+      onFilter: (value, record) =>
+        record.name.toLowerCase().includes((value as string).toLowerCase()),
     },
     {
       title: "Description",
@@ -357,20 +402,20 @@ function useCategoryTableColumns(
         ),
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       render: (_, record) => {
         const isEditing = editingKey === record.id;
         return isEditing ? (
           <Space size="middle">
             <Button onClick={() => handleEditCategory(record)} type="primary">
-              Save
+              Lưu
             </Button>
-            <Button onClick={handleCancelEditing}>Cancel</Button>
+            <Button onClick={handleCancelEditing}>Hủy bỏ</Button>
           </Space>
         ) : (
           <Space size="middle">
-            <Button onClick={() => handleStartEditing(record)}>Edit</Button>
+            <Button onClick={() => handleStartEditing(record)}>Sửa</Button>
             <Popconfirm
               title="Xoá danh mục"
               description={`Bạn chắc chắn muốn xoá danh mục này? Việc xoá danh mục sẽ đồng thời xoá các sản phẩm liên quan`}

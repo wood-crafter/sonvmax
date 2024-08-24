@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./index.css";
 import {
   Table,
@@ -16,6 +16,7 @@ import {
   SmileOutlined,
   QuestionCircleOutlined,
   FrownOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { Role, Staff } from "../../type";
 import { useStaffs } from "../../hooks/useStaff";
@@ -24,6 +25,7 @@ import { useUserStore } from "../../store/user";
 import { API_ROOT } from "../../constant";
 import { useRoles } from "../../hooks/useRoles";
 import { requestOptions } from "../../hooks/utils";
+import type { InputRef } from "antd";
 
 type UpdateData = {
   gender: number;
@@ -40,6 +42,7 @@ function ManageStaff() {
   const { data, mutate: refreshStaffs } = useStaffs(1);
   const staffs = data?.data ?? [];
   const roles = rolesResponse?.data;
+  const searchInput = useRef<InputRef | null>(null);
 
   const missingAddPropsNotification = () => {
     api.open({
@@ -195,6 +198,53 @@ function ManageStaff() {
       dataIndex: "fullName",
       key: "fullName",
       sorter: (a, b) => a.fullName.localeCompare(b.fullName),
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            ref={searchInput}
+            placeholder="Tìm họ và tên"
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() => confirm()}
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => confirm()}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Tìm kiếm
+            </Button>
+            <Button
+              onClick={() => clearFilters && clearFilters()}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Bỏ lựa chọn
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      ),
+      onFilter: (value, record) =>
+        record.fullName.toLowerCase().includes((value as string).toLowerCase()),
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
     },
     {
       title: "Email",
@@ -224,6 +274,11 @@ function ManageStaff() {
         if (!a.isActive && b.isActive) return -1;
         return 1;
       },
+      filters: [
+        { text: "Hoạt động", value: true },
+        { text: "Tạm dừng", value: false },
+      ],
+      onFilter: (value, record) => record.isActive === value,
     },
     {
       title: "Giới tính",

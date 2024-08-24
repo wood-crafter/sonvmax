@@ -187,6 +187,7 @@ function UserCart() {
     g: 255,
     b: 255,
   });
+  const level = useUserStore((state) => state.level);
   const [colorId, setColorId] = useState<string | null>("");
   const [isOpenOrderDetail, setIsOpenOrderDetail] = useState(false);
   const [orderAddress, setOrderAddress] = useState(
@@ -349,7 +350,7 @@ function UserCart() {
 
     const currentTotalPrice = currentCart
       ?.filter((item) => cartsChecked.includes(item.id))
-      ?.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      ?.reduce((sum, item) => sum + item.originalPrice * item.quantity, 0);
 
     const discountAmount = selectedVoucher
       ? voucher?.find((v) => v.id === selectedVoucher)?.discountAmount || 0
@@ -556,6 +557,32 @@ function UserCart() {
               {NumberToVND.format(totalPrice)}
             </div>
           </div>
+          {selectedVoucher &&
+            voucher?.find((it) => it.id === selectedVoucher) && (
+              <div style={{ display: "flex" }}>
+                <strong>Giá giảm voucher:</strong>
+                <div style={{ color: "black", marginLeft: "0.5rem" }}>
+                  -{" "}
+                  {NumberToVND.format(
+                    totalPrice *
+                      ((voucher?.find((it) => it.id === selectedVoucher)
+                        ?.discountAmount ?? 0) /
+                        100)
+                  )}
+                </div>
+              </div>
+            )}
+          {level && totalPrice > 0 && (
+            <div style={{ display: "flex" }}>
+              <strong>Giá giảm cấp đại lý:</strong>
+              <div style={{ color: "black", marginLeft: "0.5rem" }}>
+                -{" "}
+                {NumberToVND.format(
+                  totalPrice * (level === "1" ? 0.4 : level === "2" ? 0.3 : 0.2)
+                )}
+              </div>
+            </div>
+          )}
           <div style={{ display: "flex" }}>
             <strong>Tổng thanh toán:</strong>
             <div style={{ color: "red", marginLeft: "0.5rem" }}>
@@ -578,6 +605,9 @@ function UserCart() {
             placeholder="Chọn voucher"
             style={{ width: "20%" }}
           >
+            <Select.Option key={"noVoucher"} value={""}>
+              Bỏ chọn
+            </Select.Option>
             {voucher.map((v) => (
               <Select.Option key={v.id} value={v.id}>
                 {v.code} - {v.discountAmount}%

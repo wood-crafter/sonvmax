@@ -7,8 +7,13 @@ import {
   Modal,
   Input,
   notification,
+  Space,
 } from "antd";
-import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
+import {
+  SmileOutlined,
+  FrownOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { useTickets } from "../../hooks/useTicket";
 import "./index.css";
 import { ColumnType } from "antd/es/table";
@@ -282,6 +287,49 @@ function ManageTicket() {
       render: (_, record: Ticket) => {
         return <div>{record?.ticket?.orderId}</div>;
       },
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            placeholder="Tìm mã đơn"
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() => confirm()}
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => confirm()}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Tìm kiếm
+            </Button>
+            <Button
+              onClick={() => clearFilters && clearFilters()}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Bỏ lựa chọn
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      ),
+      onFilter: (value, record) =>
+        record?.ticket?.orderId
+          .toString()
+          .toLowerCase()
+          .includes((value as string).toLowerCase()),
     },
     {
       title: "Địa chỉ giao",
@@ -295,6 +343,27 @@ function ManageTicket() {
       render: (_, record: Ticket) => {
         return <div>{record?.ticket?.dueDate}</div>;
       },
+      sorter: (a: Ticket, b: Ticket) => {
+        const parseDate = (dateStr: string) => {
+          const [time, dayMonthYear] = dateStr.split(" ");
+          const [day, month, year] = dayMonthYear.split("/").map(Number);
+          const [hours, minutes, seconds] = time.split(":").map(Number);
+
+          return new Date(
+            year,
+            month - 1,
+            day,
+            hours,
+            minutes,
+            seconds
+          ).getTime();
+        };
+
+        const dateA = parseDate(a?.ticket?.dueDate || "");
+        const dateB = parseDate(b?.ticket?.dueDate || "");
+        return dateA - dateB;
+      },
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Trạng thái",
@@ -341,6 +410,13 @@ function ManageTicket() {
 
         return <div>{statusText}</div>;
       },
+      filters: [
+        { text: "Chưa chuẩn bị", value: 0 },
+        { text: "Đang chuẩn bị", value: 1 },
+        { text: "Chuẩn bị xong", value: 2 },
+        { text: "Hủy bỏ", value: -1 },
+      ],
+      onFilter: (value, record) => record?.ticket?.statusTicket === value,
     },
   ];
 
