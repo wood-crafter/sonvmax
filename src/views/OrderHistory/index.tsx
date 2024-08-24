@@ -319,6 +319,8 @@ function OrderHistory() {
             setMetadataOrder({
               address: record.address,
               phoneNumber: record.phoneNumber,
+              addressCustom: record.addressCustom,
+              phoneNumberCustom: record.phoneNumberCustom,
               id: record.id,
             });
           },
@@ -349,10 +351,15 @@ function OrderHistory() {
           <div>
             <div>
               <strong>Địa chỉ: </strong>
-              {metadataOrder?.address}
+              {metadataOrder?.addressCustom
+                ? metadataOrder?.addressCustom
+                : metadataOrder?.address}
             </div>
             <div>
-              <strong>Số điện thoại:</strong> {metadataOrder?.phoneNumber}
+              <strong>Số điện thoại:</strong>{" "}
+              {metadataOrder?.phoneNumberCustom
+                ? metadataOrder?.phoneNumberCustom
+                : metadataOrder?.phoneNumber}
             </div>
           </div>
         </div>
