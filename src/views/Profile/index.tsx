@@ -209,7 +209,7 @@ function Profile() {
               <strong className="marginTop1">Cấp đại lý:</strong>
               <strong className="marginTop1">Công nợ tối đa:</strong>
               <strong className="marginTop1">Tài khoản hiện có:</strong>
-              <strong className="marginTop1">Dư nợ:</strong>
+              <strong className="marginTop1">Dư nợ hiện tại:</strong>
               <strong className="marginTop1">Ngày gia nhập:</strong>
             </div>
             <div
