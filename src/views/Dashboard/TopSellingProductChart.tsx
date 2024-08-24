@@ -65,7 +65,7 @@ function useTopSellingProductChartData(dashboardData: DashboardData[]) {
       {
         label: "Sản phẩm bán chạy nhất",
         data: dashboardData.map(
-          (item, i) => item.topSellingProducts[0]?.totalSold && (i % 3) + 1
+          (item) => item.topSellingProducts[0]?.totalSold
         ),
         borderColor: "rgba(175, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
