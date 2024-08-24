@@ -1,5 +1,5 @@
 import "./index.css";
-import { useDashboard } from "../../hooks/useDashboard";
+import { DashboardData, useDashboard } from "../../hooks/useDashboard";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,10 +14,9 @@ import {
 } from "chart.js";
 import { RevenueChart } from "./RevenueChart";
 import { TopSellingProductChart } from "./TopSellingProductChart";
-import { Spin } from "antd";
-import { useEffect, useState } from "react";
+import { Spin, Tabs } from "antd";
+import { useEffect, useMemo, useState } from "react";
 import { TotalOrderChart } from "./TotalOrderChart";
-import { ChartDivider } from "./ChartDivider/ChartDivider";
 
 ChartJS.register(
   CategoryScale,
@@ -49,9 +48,35 @@ function useWindowWidth() {
   return windowWidth;
 }
 
+const useDashboardTabs = (dashboardData: DashboardData[]) => {
+  const tabs = useMemo(() => {
+    return [
+      {
+        label: 'Tổng doanh thu',
+        key: '1',
+        children: <RevenueChart dashboardData={dashboardData} />
+      },
+      {
+        label: 'Sản phẩm bán chạy',
+        key: '2',
+        children: <TopSellingProductChart dashboardData={dashboardData} />
+      },
+      {
+        label: 'Tổng đơn hàng',
+        key: '3',
+        children: <TotalOrderChart dashboardData={dashboardData} />
+      }
+    ]
+  }, [dashboardData]);
+
+  return tabs;
+}
+
 function Dashboard() {
   const { data: dashboard, isLoading } = useDashboard("day", 7);
   const windowWidth = useWindowWidth();
+
+  const tabs = useDashboardTabs(dashboard?.data ?? [])
 
   if (isLoading)
     return (
@@ -67,8 +92,6 @@ function Dashboard() {
       </div>
     );
 
-  const dashboardData = dashboard?.data ?? [];
-
   return (
     <div
       className="Dashboard"
@@ -76,12 +99,10 @@ function Dashboard() {
       key={windowWidth}
     >
       <div className="chart-container">
-        <ChartDivider>Tổng doanh thu</ChartDivider>
-        <RevenueChart dashboardData={dashboardData} />
-        <ChartDivider>Sản phẩm bán chạy nhất</ChartDivider>
-        <TopSellingProductChart dashboardData={dashboardData} />
-        <ChartDivider>Số lượng đơn hàng</ChartDivider>
-        <TotalOrderChart dashboardData={dashboardData} />
+        <Tabs
+          defaultActiveKey="1"
+          items={tabs}
+        />
       </div>
     </div>
   );
