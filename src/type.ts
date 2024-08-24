@@ -126,6 +126,7 @@ export type PagedResponse<T> = {
 }
 
 export type Transaction = {
+  agentFullName: string
   agentId: string;
   createdAt: string;
   description: string | null;
