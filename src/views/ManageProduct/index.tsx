@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./index.css";
 import {
   Table,
@@ -11,6 +11,7 @@ import {
   Popconfirm,
   Spin,
   Select,
+  InputRef,
 } from "antd";
 import type { ColumnType } from "antd/es/table";
 import {
@@ -19,6 +20,7 @@ import {
   QuestionCircleOutlined,
   PlusSquareOutlined,
   DeleteOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import {
   Category,
@@ -666,6 +668,7 @@ function ProductTable(props: ProductTableProps) {
   const [selectedVolumePrices, setSelectedVolumePrices] = useState<{
     [key: string]: number;
   }>(getDefaultSelectedVolumePrices(products));
+  const searchInput = useRef<InputRef | null>(null);
 
   useEffect(() => {
     setSelectedVolumePrices(getDefaultSelectedVolumePrices(products));
@@ -678,107 +681,175 @@ function ProductTable(props: ProductTableProps) {
     }));
   };
 
-  const columns: ColumnType<Product>[] = [
-    {
-      title: "Tên sản phẩm",
-      dataIndex: "nameProduct",
-      key: "nameProduct",
-      sorter: (a, b) => a.nameProduct.localeCompare(b.nameProduct),
-    },
-    {
-      title: "Hình ảnh",
-      dataIndex: "image",
-      key: "image",
-      render: (image: string) => (
-        <img style={{ maxWidth: "5rem", maxHeight: "5rem" }} src={image} />
-      ),
-    },
-    {
-      title: "Giá theo khối lượng",
-      dataIndex: "volumes",
-      key: "volumes",
-      render: (_, record: Product) => {
-        return (
-          <div style={{ display: "flex" }}>
-            <Select
-              style={{ minWidth: "8rem" }}
-              defaultValue={record.volumes[0]?.id}
-              onChange={(value) =>
-                handleVolumeChange(
-                  record.id,
-                  record.volumes.find((it) => it.id === value)?.price ?? 0
-                )
+  const columns: ColumnType<Product>[] = useMemo(() => {
+    // Create filters for category and activeProduct
+    const categoryFilters =
+      categories?.map((cat) => ({
+        text: cat.name,
+        value: cat.id,
+      })) || [];
+
+    const activeProductFilters = [
+      { text: "Hoạt động", value: true },
+      { text: "Tạm dừng", value: false },
+    ];
+
+    return [
+      {
+        title: "Tên sản phẩm",
+        dataIndex: "nameProduct",
+        key: "nameProduct",
+        sorter: (a, b) => a.nameProduct.localeCompare(b.nameProduct),
+        filterDropdown: ({
+          setSelectedKeys,
+          selectedKeys,
+          confirm,
+          clearFilters,
+        }) => (
+          <div style={{ padding: 8 }}>
+            <Input
+              ref={searchInput}
+              placeholder="Tìm tên sản phẩm"
+              value={selectedKeys[0]}
+              onChange={(e) =>
+                setSelectedKeys(e.target.value ? [e.target.value] : [])
               }
-            >
-              {record.volumes?.map((it) => (
-                <Select.Option key={it.id} value={it.id}>
-                  {volumes?.find((volume) => volume.id === it.id)?.volume}
-                </Select.Option>
-              ))}
-            </Select>
-            {selectedVolumePrices[record.id] > 0 && (
-              <div
-                style={{
-                  marginLeft: "1rem",
-                  display: "flex",
-                  alignItems: "center",
-                }}
+              onPressEnter={() => confirm()}
+              style={{ marginBottom: 8, display: "block" }}
+            />
+            <Space>
+              <Button
+                type="primary"
+                onClick={() => confirm()}
+                icon={<SearchOutlined />}
+                size="small"
+                style={{ width: 90 }}
               >
-                {NumberToVND.format(selectedVolumePrices[record.id])}
-              </div>
-            )}
+                Tìm kiếm
+              </Button>
+              <Button
+                onClick={() => clearFilters && clearFilters()}
+                size="small"
+                style={{ width: 90 }}
+              >
+                Bỏ lựa chọn
+              </Button>
+            </Space>
           </div>
-        );
+        ),
+        filterIcon: (filtered) => (
+          <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+        ),
+        onFilter: (value, record) =>
+          record.nameProduct
+            .toLowerCase()
+            .includes((value as string).toLowerCase()),
       },
-    },
-    {
-      title: "Chi tiết",
-      dataIndex: "description",
-      key: "description",
-    },
-    {
-      title: "Loại sản phẩm",
-      dataIndex: "categoryId",
-      key: "categoryId",
-      render: (value: string) => (
-        <div>{categories?.find((it) => it.id === value)?.name}</div>
-      ),
-      sorter: (a, b) => a.categoryId.localeCompare(b.categoryId),
-    },
-    {
-      title: "Hoạt động",
-      dataIndex: "activeProduct",
-      key: "activeProduct",
-      render: (isActive: boolean) => (
-        <p style={{ color: isActive ? "green" : "red" }}>
-          {isActive ? "Hoạt động" : "Tạm dừng"}
-        </p>
-      ),
-      sorter: (a, b) => {
-        if (!a.activeProduct && b.activeProduct) return -1;
-        return 1;
+      {
+        title: "Hình ảnh",
+        dataIndex: "image",
+        key: "image",
+        render: (image: string) => (
+          <img style={{ maxWidth: "5rem", maxHeight: "5rem" }} src={image} />
+        ),
       },
-    },
-    {
-      title: "",
-      key: "action",
-      render: (_, record: Product) => (
-        <Space size="middle">
-          <Button onClick={() => showModal(record)}>Sửa</Button>
-          <Popconfirm
-            title="Xoá sản phẩm"
-            description="Bạn chắc chắn muốn xoá sản phẩm này?"
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            onConfirm={() => handleDeleteRecord(record)}
-            okText="Xoá"
-            cancelText="Huỷ"
-          >
-            <Button>Xoá</Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+      {
+        title: "Giá theo khối lượng",
+        dataIndex: "volumes",
+        key: "volumes",
+        render: (_, record: Product) => {
+          return (
+            <div style={{ display: "flex" }}>
+              <Select
+                style={{ minWidth: "8rem" }}
+                defaultValue={record.volumes[0]?.id}
+                onChange={(value) =>
+                  handleVolumeChange(
+                    record.id,
+                    record.volumes.find((it) => it.id === value)?.price ?? 0
+                  )
+                }
+              >
+                {record.volumes?.map((it) => (
+                  <Select.Option key={it.id} value={it.id}>
+                    {volumes?.find((volume) => volume.id === it.id)?.volume}
+                  </Select.Option>
+                ))}
+              </Select>
+              {selectedVolumePrices[record.id] > 0 && (
+                <div
+                  style={{
+                    marginLeft: "1rem",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  {NumberToVND.format(selectedVolumePrices[record.id])}
+                </div>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        title: "Chi tiết",
+        dataIndex: "description",
+        key: "description",
+      },
+      {
+        title: "Loại sản phẩm",
+        dataIndex: "categoryId",
+        key: "categoryId",
+        render: (value: string) => (
+          <div>{categories?.find((it) => it.id === value)?.name}</div>
+        ),
+        sorter: (a, b) => a.categoryId.localeCompare(b.categoryId),
+        filters: categoryFilters,
+        onFilter: (value, record) => record.categoryId === value,
+      },
+      {
+        title: "Hoạt động",
+        dataIndex: "activeProduct",
+        key: "activeProduct",
+        render: (isActive: boolean) => (
+          <p style={{ color: isActive ? "green" : "red" }}>
+            {isActive ? "Hoạt động" : "Tạm dừng"}
+          </p>
+        ),
+        sorter: (a, b) => {
+          if (!a.activeProduct && b.activeProduct) return -1;
+          return 1;
+        },
+        filters: activeProductFilters,
+        onFilter: (value, record) => record.activeProduct === value,
+      },
+      {
+        title: "",
+        key: "action",
+        render: (_, record: Product) => (
+          <Space size="middle">
+            <Button onClick={() => showModal(record)}>Sửa</Button>
+            <Popconfirm
+              title="Xoá sản phẩm"
+              description="Bạn chắc chắn muốn xoá sản phẩm này?"
+              icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+              onConfirm={() => handleDeleteRecord(record)}
+              okText="Xoá"
+              cancelText="Huỷ"
+            >
+              <Button>Xoá</Button>
+            </Popconfirm>
+          </Space>
+        ),
+      },
+    ];
+  }, [
+    categories,
+    selectedVolumePrices,
+    volumes,
+    showModal,
+    handleDeleteRecord,
+  ]);
   return <Table columns={columns} dataSource={products} />;
 }
 
