@@ -131,18 +131,18 @@ function ManageOrder() {
       if (record.status === 0) {
         statusMenuItems.push(
           <Menu.Item
-            key="-1"
-            icon={<UserOutlined />}
-            onClick={() => updateOrder({ id: record.id, status: -1 })}
-          >
-            Huỷ bỏ
-          </Menu.Item>,
-          <Menu.Item
             key="1"
             icon={<UserOutlined />}
             onClick={() => updateOrder({ id: record.id, status: 1 })}
           >
             Xác nhận
+          </Menu.Item>,
+          <Menu.Item
+            key="-1"
+            icon={<UserOutlined />}
+            onClick={() => updateOrder({ id: record.id, status: -1 })}
+          >
+            Huỷ bỏ
           </Menu.Item>
         );
       }

@@ -74,6 +74,7 @@ function OrderHistory() {
       );
     });
 
+    //TODO: readd to cart status notifi
     Promise.allSettled(orderPromises).then((results) => {
       const allSuccessful = results.every(
         (result) => result.status === "fulfilled"
@@ -131,15 +132,20 @@ function OrderHistory() {
         };
       case 2:
         return {
-          text: "Đang chuẩn bị",
+          text: "Duyệt",
           color: "blue",
         };
       case 3:
         return {
-          text: "Đang giao",
+          text: "Đang chuẩn bị",
           color: "purple",
         };
       case 4:
+        return {
+          text: "Đang giao",
+          color: "rgb(13, 119, 143)",
+        };
+      case 5:
         return {
           text: "Giao thành công",
           color: "green",
