@@ -112,7 +112,7 @@ function Dashboard() {
     >
       <div className="chart-container">
         <Tabs
-          defaultActiveKey="2"
+          defaultActiveKey="1"
           items={tabs}
         />
       </div>
