@@ -3,7 +3,7 @@ import type { DashboardData } from "../../hooks/useDashboard";
 import { Line } from "react-chartjs-2";
 
 
-function useLineChartOptions(minX: string) {
+function useRevenueChartOptions(minX: string) {
   const options: ChartOptions<"line"> = {
     responsive: true,
     plugins: {
@@ -49,7 +49,7 @@ function useLineChartOptions(minX: string) {
   return options
 }
 
-function useLineChartData(dashboardData: DashboardData[] = []) {
+function useRevenueChartData(dashboardData: DashboardData[] = []) {
   const chartData: ChartData<"line", RevenueChartDataPoint[]> = {
     labels: dashboardData.map(() => ""),
     datasets: [
@@ -92,8 +92,8 @@ type RevenueChartProps = {
 export function RevenueChart(props: RevenueChartProps) {
   const { dashboardData } = props
 
-  const options = useLineChartOptions(dashboardData[0]?.date ?? "")
-  const chartData = useLineChartData(dashboardData)
+  const options = useRevenueChartOptions(dashboardData[0]?.date ?? "")
+  const chartData = useRevenueChartData(dashboardData)
 
   return (
     <div className="RevenueChart">
