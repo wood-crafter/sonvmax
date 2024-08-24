@@ -11,6 +11,7 @@ export type StaffInfo = {
   roleId: string;
   roleName: string
   type: "staff";
+  email: string
 };
 
 export type AgentInfo = {

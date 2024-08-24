@@ -40,7 +40,7 @@ function Profile() {
   useEffect(() => {
     if (me) {
       setFullName(me?.fullName);
-      setEmail(isAgentInfo(me) ? me?.email : "");
+      setEmail(me.email);
       setPhoneNumber(me?.phoneNumber);
       setAgentName(isAgentInfo(me) ? me?.agentName : "");
       setAddress(isAgentInfo(me) ? me?.address : "");
@@ -237,11 +237,7 @@ function Profile() {
                 value={NumberToVND.format(+me?.accountDebit)}
                 disabled
               />
-              <Input
-                className="marginTop1"
-                value={new Date(me?.createdAt).toLocaleString()}
-                disabled
-              />
+              <Input className="marginTop1" value={me?.createdAt} disabled />
             </div>
           </div>
         </div>
@@ -323,6 +319,7 @@ function Profile() {
                 disabled={!isEditing}
               />
               <Select
+                className="marginTop1"
                 value={gender}
                 onChange={(value) => setGender(value)}
                 disabled={!isEditing}
@@ -359,11 +356,7 @@ function Profile() {
             >
               <Input className="marginTop1" value={me?.username} disabled />
               <Input className="marginTop1" value={me?.roleName} disabled />
-              <Input
-                className="marginTop1"
-                value={new Date(me?.createdAt).toLocaleString()}
-                disabled
-              />
+              <Input className="marginTop1" value={me?.createdAt} disabled />
             </div>
           </div>
         </div>

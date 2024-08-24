@@ -81,7 +81,7 @@ function ManageInvoice() {
           return (
             <div>
               rgb(
-              {`${record.colorPick.r}, ${record.colorPick.g}, ${record.colorPick.b}`}
+              {`${record.colorPick?.r}, ${record.colorPick?.g}, ${record.colorPick?.b}`}
               )
             </div>
           );
