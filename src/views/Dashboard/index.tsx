@@ -17,6 +17,7 @@ import { TopSellingProductChart } from "./TopSellingProductChart";
 import { Spin, Tabs } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { TotalOrderChart } from "./TotalOrderChart";
+import { AverageOrderValueChart } from "./AverageOrderValueChart";
 
 ChartJS.register(
   CategoryScale,
@@ -65,6 +66,11 @@ const useDashboardTabs = (dashboardData: DashboardData[]) => {
         label: 'Tổng đơn hàng',
         key: '3',
         children: <TotalOrderChart dashboardData={dashboardData} />
+      },
+      {
+        label: 'Giá trị đơn hàng trung bình',
+        key: '4',
+        children: <AverageOrderValueChart dashboardData={dashboardData} />,
       }
     ]
   }, [dashboardData]);
@@ -100,7 +106,7 @@ function Dashboard() {
     >
       <div className="chart-container">
         <Tabs
-          defaultActiveKey="1"
+          defaultActiveKey="4"
           items={tabs}
         />
       </div>

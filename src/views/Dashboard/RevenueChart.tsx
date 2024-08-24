@@ -2,7 +2,6 @@ import type { ChartData, ChartOptions, TooltipItem } from "chart.js";
 import type { DashboardData } from "../../hooks/useDashboard";
 import { Line } from "react-chartjs-2";
 
-
 function useRevenueChartOptions(minX: string) {
   const options: ChartOptions<"line"> = {
     responsive: true,
@@ -15,16 +14,16 @@ function useRevenueChartOptions(minX: string) {
         callbacks: {
           title: () => "",
           label: (tooltipItem: TooltipItem<"line">) => {
-            const dashboardData = tooltipItem.raw as RevenueChartDataPoint
+            const dashboardData = tooltipItem.raw as RevenueChartDataPoint;
 
-            return "Ngày: " + dashboardData.date
+            return "Ngày: " + dashboardData.date;
           },
           afterLabel: (tooltipItem: TooltipItem<"line">) => {
-            const dashboardData = tooltipItem.raw as RevenueChartDataPoint
+            const dashboardData = tooltipItem.raw as RevenueChartDataPoint;
 
             return `Tổng doanh thu: ${new Intl.NumberFormat("vi-VN").format(
               dashboardData.totalRevenue
-            )} VND`
+            )} VND`;
           },
         },
       },
@@ -46,7 +45,7 @@ function useRevenueChartOptions(minX: string) {
     },
   };
 
-  return options
+  return options;
 }
 
 function useRevenueChartData(dashboardData: DashboardData[] = []) {
@@ -55,11 +54,10 @@ function useRevenueChartData(dashboardData: DashboardData[] = []) {
     datasets: [
       {
         label: "Tổng doanh thu",
-        data:
-          dashboardData.map((item) => ({
-            date: item.date,
-            totalRevenue: item.totalRevenue.totalRevenue,
-          })),
+        data: dashboardData.map((item) => ({
+          date: item.date,
+          totalRevenue: item.totalRevenue.totalRevenue,
+        })),
         parsing: {
           xAxisKey: "date",
           yAxisKey: "totalRevenue",
@@ -77,7 +75,7 @@ function useRevenueChartData(dashboardData: DashboardData[] = []) {
     ],
   };
 
-  return chartData
+  return chartData;
 }
 
 type RevenueChartDataPoint = {
@@ -87,13 +85,13 @@ type RevenueChartDataPoint = {
 
 type RevenueChartProps = {
   dashboardData: DashboardData[];
-}
+};
 
 export function RevenueChart(props: RevenueChartProps) {
-  const { dashboardData } = props
+  const { dashboardData } = props;
 
-  const options = useRevenueChartOptions(dashboardData[0]?.date ?? "")
-  const chartData = useRevenueChartData(dashboardData)
+  const options = useRevenueChartOptions(dashboardData[0]?.date ?? "");
+  const chartData = useRevenueChartData(dashboardData);
 
   return (
     <div className="RevenueChart">
