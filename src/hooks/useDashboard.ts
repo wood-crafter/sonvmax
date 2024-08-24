@@ -9,10 +9,7 @@ import { requestOptions } from "./utils";
 
 export type DashboardData = {
   date: string;
-  totalRevenue: {
-      date: string;
-      totalRevenue: number;
-  };
+  totalRevenue: DashboardDataTotalRevenue;
   totalOrders: {
       date: string;
       placed: number;
@@ -27,8 +24,20 @@ export type DashboardData = {
       date: string;
       totalProductsSold: number;
   };
-  topSellingProducts: unknown[];
+  topSellingProducts: DashboardDataTopSellingProducts[];
   topAgents: unknown[]; 
+}
+
+export type DashboardDataTotalRevenue = {
+  date: string;
+  totalRevenue: number;
+}
+
+export type DashboardDataTopSellingProducts = {
+  productId: string;
+  productName: string;
+  totalSold: number;
+  totalRevenue: number;
 }
 
 export function useDashboard(sortBy = 'day', period = 7) {
