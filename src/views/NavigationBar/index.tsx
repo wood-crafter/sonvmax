@@ -25,6 +25,7 @@ import {
   LogoutOutlined,
   LoginOutlined,
   DollarOutlined,
+  BarChartOutlined,
 } from "@ant-design/icons";
 import { useCategories } from "../../hooks/useCategories";
 import { ACCOUTANT, OWNER, SALES, STOCKER } from "../../constant";
@@ -45,6 +46,7 @@ const useManagerMenuItems = () => {
   const managerItems: MenuItem[] = [
     {
       label: <Link to="/manage/dashboard">Thống kê</Link>,
+      icon: <BarChartOutlined />,
       key: "dashboard",
     },
     ...([OWNER.role].includes(roleName)
