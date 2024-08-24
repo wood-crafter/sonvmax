@@ -206,7 +206,7 @@ function ManageStaff() {
       }) => (
         <div style={{ padding: 8 }}>
           <Input
-            ref={searchInput} // Attach the ref here
+            ref={searchInput}
             placeholder="Tìm họ và tên"
             value={selectedKeys[0]}
             onChange={(e) =>
@@ -230,7 +230,7 @@ function ManageStaff() {
               size="small"
               style={{ width: 90 }}
             >
-              Reset
+              Bỏ lựa chọn
             </Button>
           </Space>
         </div>
@@ -242,7 +242,7 @@ function ManageStaff() {
         record.fullName.toLowerCase().includes((value as string).toLowerCase()),
       onFilterDropdownVisibleChange: (visible) => {
         if (visible) {
-          setTimeout(() => searchInput.current?.select(), 100); // Focus and select the input text
+          setTimeout(() => searchInput.current?.select(), 100);
         }
       },
     },
