@@ -16,6 +16,8 @@ import { RevenueChart } from "./RevenueChart";
 import { TopSellingProductChart } from "./TopSellingProductChart";
 import { Spin } from "antd";
 import { useEffect, useState } from "react";
+import { TotalOrderChart } from "./TotalOrderChart";
+import { ChartDivider } from "./ChartDivider/ChartDivider";
 
 ChartJS.register(
   CategoryScale,
@@ -29,22 +31,27 @@ ChartJS.register(
   Filler
 );
 
-function Dashboard() {
-  const { data: dashboard, isLoading } = useDashboard("day", 7);
-  // ? workaround to re-render the chart when the window is resized
-  const [dashboardContainerKey, setDashboardContainerKey] = useState(0);
+function useWindowWidth() {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     const handleResize = () => {
-      setDashboardContainerKey((prev) => prev + 1);
-    }
+      setWindowWidth(window.innerWidth);
+    };
 
     window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("resize", handleResize);
-    }
+    };
   }, []);
+
+  return windowWidth;
+}
+
+function Dashboard() {
+  const { data: dashboard, isLoading } = useDashboard("day", 7);
+  const windowWidth = useWindowWidth();
 
   if (isLoading)
     return (
@@ -63,10 +70,18 @@ function Dashboard() {
   const dashboardData = dashboard?.data ?? [];
 
   return (
-    <div className="Dashboard" key={dashboardContainerKey}>
+    <div
+      className="Dashboard"
+      // ? workaround to re-render the chart when the window is resized
+      key={windowWidth}
+    >
       <div className="chart-container">
+        <ChartDivider>Tổng doanh thu</ChartDivider>
         <RevenueChart dashboardData={dashboardData} />
+        <ChartDivider>Sản phẩm bán chạy nhất</ChartDivider>
         <TopSellingProductChart dashboardData={dashboardData} />
+        <ChartDivider>Số lượng đơn hàng</ChartDivider>
+        <TotalOrderChart dashboardData={dashboardData} />
       </div>
     </div>
   );
