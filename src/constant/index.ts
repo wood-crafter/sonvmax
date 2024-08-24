@@ -45,4 +45,9 @@ export const STOCKER = {
   defaultPath: '/manage/ticket'
 }
 
+export const AGENT = {
+  role: 'AGENT',
+  defaultPath: '/'
+}
+
 export const DISCOUNT_AMOUNT = [40, 30, 20]

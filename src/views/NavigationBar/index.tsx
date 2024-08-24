@@ -28,7 +28,7 @@ import {
   BarChartOutlined,
 } from "@ant-design/icons";
 import { useCategories } from "../../hooks/useCategories";
-import { ACCOUTANT, OWNER, SALES, STOCKER } from "../../constant";
+import { ACCOUTANT, AGENT, OWNER, SALES, STOCKER } from "../../constant";
 import { AgentInfo, StaffInfo } from "../../type";
 import { NumberToVND } from "../../helper";
 import { useMeMutation } from "../../hooks/useMe";
@@ -215,6 +215,7 @@ function Nav({ isManager = false }: { isManager: boolean }) {
   const accessToken = useUserStore((state) => state.accessToken);
   const userInfo = useUserStore((state) => state.userInformation);
   const [current, setCurrent] = useState("mail");
+  const roleName = useUserStore((state) => state.roleName);
   const setCategories = useUserStore((state) => state.setCategories);
   const { data: categoryResponse } = useCategories(1);
   const logout = useUserStore((state) => state.clear);
@@ -270,16 +271,24 @@ function Nav({ isManager = false }: { isManager: boolean }) {
       },
       ...(accessToken
         ? [
-            {
-              label: <Link to="/cart">Giỏ hàng</Link>,
-              key: "cart",
-              icon: <ShoppingCartOutlined />,
-            },
-            {
-              label: <Link to="/order/history">Lịch sử mua</Link>,
-              key: "orderHistory",
-              icon: <HistoryOutlined />,
-            },
+            ...(!roleName || roleName === AGENT.role
+              ? [
+                  {
+                    label: <Link to="/cart">Giỏ hàng</Link>,
+                    key: "cart",
+                    icon: <ShoppingCartOutlined />,
+                  },
+                ]
+              : []),
+            ...(!roleName || roleName === AGENT.role
+              ? [
+                  {
+                    label: <Link to="/order/history">Lịch sử mua</Link>,
+                    key: "orderHistory",
+                    icon: <HistoryOutlined />,
+                  },
+                ]
+              : []),
             {
               label: <Link to="/profile">Hồ sơ</Link>,
               key: "profile",
@@ -290,7 +299,7 @@ function Nav({ isManager = false }: { isManager: boolean }) {
               key: "change_password",
               icon: <LockOutlined />,
             },
-            ...(me
+            ...(me && (!roleName || roleName === AGENT.role)
               ? [
                   {
                     label: <AccountBalance />,
@@ -317,7 +326,7 @@ function Nav({ isManager = false }: { isManager: boolean }) {
                 <div
                   onClick={() => {
                     logout();
-                    navigate("/");
+                    // navigate("/");
                   }}
                 >
                   <LogoutOutlined style={{ marginRight: "0.5rem" }} />

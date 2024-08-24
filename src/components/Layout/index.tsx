@@ -47,6 +47,9 @@ function Layout({
   if (requiredLogin && !accessToken) {
     return <Navigate to="/home" replace={true} />;
   }
+  if (!isManager && accessToken && !roleAllow.includes(roleName)) {
+    return <Navigate to="/home" replace={true} />;
+  }
   return (
     <div className={`${isManager ? "ManagerLayout" : "Layout"} Layout-wrapper`}>
       <Nav isManager={isManager} />

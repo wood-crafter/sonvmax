@@ -13,7 +13,7 @@ import ManageColor from "./views/ManageColor";
 import { ManageRoles } from "./views/ManageRoles";
 import ManageVoucher from "./views/ManageVoucher";
 import UserCart from "./views/Cart";
-import { ACCOUTANT, OWNER, SALES, STOCKER } from "./constant";
+import { ACCOUTANT, AGENT, OWNER, SALES, STOCKER } from "./constant";
 import ManageOrder from "./views/ManageOrder";
 import OrderHistory from "./views/OrderHistory";
 import Profile from "./views/Profile";
@@ -49,7 +49,7 @@ const AppRoutes = () => {
       <Route
         path="/cart"
         element={
-          <Layout hasNav requiredLogin>
+          <Layout hasNav requiredLogin roleAllow={[AGENT.role]}>
             <UserCart />
           </Layout>
         }
@@ -81,7 +81,7 @@ const AppRoutes = () => {
       <Route
         path="/order/history"
         element={
-          <Layout hasNav requiredLogin>
+          <Layout hasNav requiredLogin roleAllow={[AGENT.role]}>
             <OrderHistory />
           </Layout>
         }

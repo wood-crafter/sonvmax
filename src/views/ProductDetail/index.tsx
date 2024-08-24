@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
-import { API_ROOT, DISCOUNT_AMOUNT } from "../../constant";
+import { ADMIN_ROLES, API_ROOT, DISCOUNT_AMOUNT } from "../../constant";
 import { useProductsById } from "../../hooks/useProduct";
 import { Button, InputNumber, notification, Select } from "antd";
 import "./index.css";
@@ -44,6 +44,7 @@ function VolumeSelect(props: VolumeSelectProps) {
 
 function ProductDetail() {
   const { trigger: triggerMe } = useMeMutation();
+  const roleName = useUserStore((state) => state.roleName);
   const setUserInformation = useUserStore((state) => state.setUserInformation);
   const level = useUserStore((state) => state.level);
   const discount = DISCOUNT_AMOUNT[+level - 1] ?? 0;
@@ -179,7 +180,7 @@ function ProductDetail() {
 
   return (
     <div className="ProductDetail">
-      <h2>Chi tiết sản phẩm</h2>
+      <h2 style={{ color: "black" }}>Chi tiết sản phẩm</h2>
       {contextHolder}
       {product?.canColorPick && (
         <ColorTable
@@ -337,19 +338,21 @@ function ProductDetail() {
           )}
           <h3 style={{ width: "100%" }}>Chi tiết</h3>
           <p className="full-width">{product?.description}</p>
-          <div className="add-to-cart">
-            <InputNumber
-              min={1}
-              max={100000}
-              defaultValue={1}
-              value={numOfProduct}
-              onChange={(value) => setNumOfProduct(value ? value : 0)}
-              changeOnWheel
-            />
-            <button style={{ marginLeft: "1rem" }} onClick={handleAddToCart}>
-              Thêm vào giỏ
-            </button>
-          </div>
+          {!ADMIN_ROLES.includes(roleName) && (
+            <div className="add-to-cart">
+              <InputNumber
+                min={1}
+                max={100000}
+                defaultValue={1}
+                value={numOfProduct}
+                onChange={(value) => setNumOfProduct(value ? value : 0)}
+                changeOnWheel
+              />
+              <button style={{ marginLeft: "1rem" }} onClick={handleAddToCart}>
+                Thêm vào giỏ
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
