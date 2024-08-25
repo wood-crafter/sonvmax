@@ -532,7 +532,7 @@ function ManageOrder() {
   return (
     <div className="ManageOrder">
       {contextHolder}
-      <h2>Quản lý đơn</h2>
+      <h2 style={{ color: "black" }}>Quản lý đơn</h2>
       <Table columns={columns} dataSource={orders} />
       <Modal
         title="Xem chi tiết đơn"

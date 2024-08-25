@@ -3,7 +3,7 @@ import React from "react";
 import Nav from "../../views/NavigationBar";
 import { useUserStore } from "../../store/user";
 import { Navigate } from "react-router-dom";
-import { ACCOUTANT, ADMIN_ROLES, SALES, STOCKER } from "../../constant";
+import { ACCOUTANT, ADMIN_ROLES, AGENT, SALES, STOCKER } from "../../constant";
 import Footer from "../../views/Footer";
 
 type LayoutProps = {
@@ -47,7 +47,7 @@ function Layout({
   if (requiredLogin && !accessToken) {
     return <Navigate to="/home" replace={true} />;
   }
-  if (!isManager && accessToken && !roleAllow.includes(roleName)) {
+  if (!isManager && accessToken && roleAllow.includes(AGENT.role)) {
     return <Navigate to="/home" replace={true} />;
   }
   return (

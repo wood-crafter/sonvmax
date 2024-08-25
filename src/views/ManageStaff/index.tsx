@@ -320,7 +320,7 @@ function ManageStaff() {
   return (
     <div className="ManageStaff">
       {contextHolder}
-      <h2>Quản lý nhân viên</h2>
+      <h2 style={{ color: "black" }}>Quản lý nhân viên</h2>
       <Button
         onClick={() => {
           setIsAddModalOpen(true);

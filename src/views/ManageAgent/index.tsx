@@ -442,7 +442,7 @@ function ManageAgent() {
   return (
     <div className="ManageAgent">
       {contextHolder}
-      <h2>Quản lý đại lý</h2>
+      <h2 style={{ color: "black" }}>Quản lý đại lý</h2>
       {roleName !== "SALES" && (
         <Button
           onClick={() => {

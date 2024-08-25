@@ -117,7 +117,7 @@ function Profile() {
     return (
       <div className="AgentProfile Profile">
         {contextHolder}
-        <h2>Hồ sơ Đại lý</h2>
+        <h2 style={{ color: "black" }}>Hồ sơ Đại lý</h2>
         <div
           style={{
             width: "100%",
@@ -265,7 +265,7 @@ function Profile() {
     return (
       <div className="StaffProfile Profile">
         {contextHolder}
-        <h2>Hồ sơ Nhân viên</h2>
+        <h2 style={{ color: "black" }}>Hồ sơ Nhân viên</h2>
         <div
           style={{
             width: "100%",

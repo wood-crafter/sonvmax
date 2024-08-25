@@ -31,7 +31,7 @@ export function ManageCategories() {
 
   return (
     <div className="ManageCategories">
-      <h2>Quản lý danh mục</h2>
+      <h2 style={{ color: "black" }}>Quản lý danh mục</h2>
       {contextHolder}
       <AddCategoryButton
         notificationApi={notificationApi}

@@ -305,7 +305,7 @@ function ManageVoucher() {
 
   return (
     <div className="ManageVoucher">
-      <h2>Quản lý voucher</h2>
+      <h2 style={{ color: "black" }}>Quản lý voucher</h2>
       {contextHolder}
       <Button
         onClick={() => {

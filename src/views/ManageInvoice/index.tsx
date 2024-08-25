@@ -237,7 +237,7 @@ function ManageInvoice() {
 
   return (
     <div className="ManageInvoice">
-      <h2>
+      <h2 style={{ color: "black" }}>
         {roleName === "STOCKER" ? "Quản lý phiếu xuất kho" : "Quản lý hóa đơn"}
       </h2>
       <Table

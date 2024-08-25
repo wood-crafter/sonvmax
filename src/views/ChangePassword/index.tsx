@@ -75,7 +75,7 @@ function ChangePassword() {
           borderRadius: "1rem",
         }}
       >
-        <h2>Đổi mật khẩu</h2>
+        <h2 style={{ color: "black" }}>Đổi mật khẩu</h2>
         <Form form={form} onFinish={handleFinish} layout="vertical">
           <Form.Item
             name="oldPassword"
