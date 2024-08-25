@@ -47,7 +47,12 @@ function Layout({
   if (requiredLogin && !accessToken) {
     return <Navigate to="/home" replace={true} />;
   }
-  if (!isManager && accessToken && roleAllow.includes(AGENT.role)) {
+  if (
+    !isManager &&
+    accessToken &&
+    roleAllow.includes(AGENT.role) &&
+    roleName !== AGENT.role
+  ) {
     return <Navigate to="/home" replace={true} />;
   }
   return (
