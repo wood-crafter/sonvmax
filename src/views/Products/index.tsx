@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./index.css";
 import { Product } from "../../type";
 import { NumberToVND } from "../../helper";
@@ -26,6 +26,10 @@ function Products() {
     searchName ?? ""
   );
   const products = data?.data ?? [];
+
+  useEffect(() => {
+    if (searchName) setCurrentPage(1);
+  }, [searchName]);
 
   const onPageChange = (newPage: number) => {
     setCurrentPage(newPage);

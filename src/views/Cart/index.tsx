@@ -315,11 +315,15 @@ function UserCart() {
     }
   };
 
-  const updateOrderProduct = async (id: string, volumeId: string) => {
-    await authFetch(`${API_ROOT}/order/update-order-product/${id}`, {
+  const updateOrderProduct = async (
+    productId: string,
+    volumeId: string,
+    id: string
+  ) => {
+    await authFetch(`${API_ROOT}/order/create-order-product/${productId}`, {
       ...requestOptions,
-      body: JSON.stringify({ volumeId: volumeId }),
-      method: "PUT",
+      body: JSON.stringify({ volumeId: volumeId, id }),
+      method: "POST",
       headers: {
         ...requestOptions.headers,
         Authorization: `Bearer ${accessToken}`,
@@ -465,7 +469,7 @@ function UserCart() {
                     <Select
                       defaultValue={item.volumeId}
                       onChange={(value: string) => {
-                        updateOrderProduct(item.id, value);
+                        updateOrderProduct(item.productId, value, item.id);
                       }}
                     >
                       {item?.product?.volumes?.map((volume) => {
@@ -506,6 +510,12 @@ function UserCart() {
                       })`,
                     }}
                     onClick={() => {
+                      if (!item.product.canColorPick) {
+                        api.open({
+                          message: "Sản phẩm này không cho phép chọn màu",
+                          icon: <FrownOutlined style={{ color: "red" }} />,
+                        });
+                      }
                       setCurrentEditingId(item.id);
                       setCurrentEditingProductId(item.productId);
                       setColorId((item.colorId ?? "") + "");
