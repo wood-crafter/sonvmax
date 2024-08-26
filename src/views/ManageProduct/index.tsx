@@ -174,14 +174,15 @@ function AddProductButton(props: AddProductButtonProps) {
         },
       }
     );
-    if (createResponse.status !== 201) {
+    if (!createResponse.ok) {
       addFailNoti(createResponse.status, createResponse.statusText);
     } else {
       addSuccessNoti();
       setIsModalOpen(false);
       clearAddInput();
+      setIsModalOpen(false);
+      refreshProducts();
     }
-    refreshProducts();
   };
   const handleAddCancel = () => {
     setIsModalOpen(false);
@@ -469,6 +470,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
     if (updateResponse.ok) {
       updateSuccessNoti();
       refreshProducts();
+      setIsModalOpen(false);
     } else {
       updateFailNoti(updateResponse.status, updateResponse.statusText);
     }

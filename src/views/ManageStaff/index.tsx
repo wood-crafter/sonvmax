@@ -93,15 +93,30 @@ function ManageStaff() {
     }
     const updateBody = JSON.stringify(updateData);
 
-    await authFetch(`${API_ROOT}/staff/update-staff/${currentEditing?.id}`, {
-      ...requestOptions,
-      body: updateBody,
-      method: "PUT",
-      headers: {
-        ...requestOptions.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const updateRes = await authFetch(
+      `${API_ROOT}/staff/update-staff/${currentEditing?.id}`,
+      {
+        ...requestOptions,
+        body: updateBody,
+        method: "PUT",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    if (updateRes.ok) {
+      api.open({
+        message: "Tạo thành công",
+        icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+      });
+    } else {
+      api.open({
+        message: "Tạo thất bại",
+        icon: <FrownOutlined style={{ color: "red" }} />,
+      });
+    }
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
