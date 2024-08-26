@@ -232,6 +232,7 @@ export type ChildColor = {
 }
 
 export type Cart = {
+  colorClassification: number
   id: string;
   orderId: string | null;
   productId: string;

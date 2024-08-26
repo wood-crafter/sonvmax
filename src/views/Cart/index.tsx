@@ -179,6 +179,7 @@ function UserCart() {
   const [selectedVoucher, setSelectedVoucher] = useState<string | undefined>(
     undefined
   );
+  const [colorPrice, setColorPrice] = useState(0);
   const [isOpenColorPick, setIsOpenColorPick] = useState(false);
   const [currentEditingId, setCurrentEditingId] = useState("");
   const [currentEditingProductId, setCurrentEditingProductId] = useState("");
@@ -352,6 +353,23 @@ function UserCart() {
       ?.filter((item) => cartsChecked.includes(item.id))
       ?.reduce((sum, item) => sum + item.originalPrice * item.quantity, 0);
 
+    const colorPrice = currentCart
+      ?.filter((item) => cartsChecked.includes(item.id))
+      ?.reduce(
+        (sum, item) =>
+          sum +
+          item.originalPrice *
+            item.quantity *
+            (item.colorClassification === 1
+              ? 0.05
+              : item.colorClassification === 2
+              ? 0.1
+              : item.colorClassification === 3
+              ? 0.2
+              : 0),
+        0
+      );
+
     const discountAmount = selectedVoucher
       ? voucher?.find((v) => v.id === selectedVoucher)?.discountAmount || 0
       : 0;
@@ -362,7 +380,14 @@ function UserCart() {
 
     setTotal(discountedTotal);
     setTotalPrice(currentTotalPrice ?? 0);
-  }, [cartsChecked.length, selectedVoucher, currentCart, voucher]);
+    setColorPrice(colorPrice ?? 0);
+  }, [
+    cartsChecked.length,
+    selectedVoucher,
+    currentCart,
+    voucher,
+    cartsChecked,
+  ]);
 
   const handleOrderInforOk = () => {
     if (!orderAddress || !phoneNumber) {
@@ -557,6 +582,14 @@ function UserCart() {
               {NumberToVND.format(totalPrice)}
             </div>
           </div>
+          {colorPrice && (
+            <div style={{ display: "flex" }}>
+              <strong>Tổng giá pha màu:</strong>
+              <div style={{ color: "black", marginLeft: "0.5rem" }}>
+                + {NumberToVND.format(colorPrice)}
+              </div>
+            </div>
+          )}
           {selectedVoucher &&
             voucher?.find((it) => it.id === selectedVoucher) && (
               <div style={{ display: "flex" }}>
@@ -564,7 +597,7 @@ function UserCart() {
                 <div style={{ color: "black", marginLeft: "0.5rem" }}>
                   -{" "}
                   {NumberToVND.format(
-                    totalPrice *
+                    (totalPrice + colorPrice) *
                       ((voucher?.find((it) => it.id === selectedVoucher)
                         ?.discountAmount ?? 0) /
                         100)
@@ -578,7 +611,8 @@ function UserCart() {
               <div style={{ color: "black", marginLeft: "0.5rem" }}>
                 -{" "}
                 {NumberToVND.format(
-                  totalPrice * (level === "1" ? 0.4 : level === "2" ? 0.3 : 0.2)
+                  (totalPrice + colorPrice) *
+                    (level === "1" ? 0.4 : level === "2" ? 0.3 : 0.2)
                 )}
               </div>
             </div>
