@@ -582,7 +582,7 @@ function UserCart() {
               {NumberToVND.format(totalPrice)}
             </div>
           </div>
-          {colorPrice && (
+          {colorPrice !== 0 && (
             <div style={{ display: "flex" }}>
               <strong>Tổng giá pha màu:</strong>
               <div style={{ color: "black", marginLeft: "0.5rem" }}>
