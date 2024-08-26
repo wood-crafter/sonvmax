@@ -20,11 +20,7 @@ function Footer() {
 
           <div>
             <a href="/">
-              <img
-                alt="Sơn VMAX"
-                src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/logoa14d.png?1677557355750"
-                width="100%"
-              />
+              <img alt="Sơn VMAX" src="/public/logoa14d.png" width="100%" />
             </a>
           </div>
 
@@ -66,7 +62,7 @@ function Footer() {
           <h4 style={{ color: "#fff" }}>Mạng xã hội</h4>
           <a href="http://online.gov.vn/Home/WebDetails/96201" target="_blank">
             <img
-              src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/bcta14d.png?1677557355750"
+              src="/public/bcta14d.png"
               style={{ maxWidth: "60%", marginTop: "20px" }}
             />
           </a>
@@ -83,28 +79,16 @@ function Footer() {
         </div>
         <div>
           <Link to="/">
-            <img
-              alt="Sơn VMAX"
-              src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/g6a14d.png?1677557355750"
-            />
+            <img alt="Sơn VMAX" src="/public/g6a14d.png" />
           </Link>
           <Link to="/">
-            <img
-              alt="Sơn VMAX"
-              src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/g5a14d.png?1677557355750"
-            />
+            <img alt="Sơn VMAX" src="/public/g5a14d.png" />
           </Link>
           <Link to="/">
-            <img
-              alt="Sơn VMAX"
-              src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/g4a14d.png?1677557355750"
-            />
+            <img alt="Sơn VMAX" src="/public/g4a14d.png" />
           </Link>
           <Link to="/">
-            <img
-              alt="Sơn VMAX"
-              src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/g1a14d.png?1677557355750"
-            />
+            <img alt="Sơn VMAX" src="/public/g1a14d.png" />
           </Link>
         </div>
       </div>

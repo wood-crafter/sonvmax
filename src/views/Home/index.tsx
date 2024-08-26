@@ -64,10 +64,10 @@ function TopProductGrid({ products }: TopProductGridProps) {
 function QualityCertificates() {
   return (
     <div className="quality-certification-container">
-      <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_1a14d.jpg?1677557355750" />
-      <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_2a14d.png?1677557355750" />
-      <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_3a14d.jpg?1677557355750" />
-      <img src="https://sonvmax.com/bizweb.dktcdn.net/100/156/168/themes/694077/assets/banner_center_4a14d.jpg?1677557355750" />
+      <img src="/public/banner_center_1a14d.jpg" />
+      <img src="/public/banner_center_2a14d.png" />
+      <img src="/public/banner_center_3a14d.jpg" />
+      <img src="/public/banner_center_4a14d.jpg" />
     </div>
   );
 }
