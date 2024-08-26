@@ -289,6 +289,15 @@ function ManageInvoice() {
                   justifyContent: "center",
                 }}
               >
+                Mã đơn hàng: {currentRecord?.order?.id}
+              </h2>
+              <h2
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
                 {currentRecord?.createdAt}
               </h2>
             </div>
