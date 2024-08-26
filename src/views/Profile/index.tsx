@@ -1,5 +1,5 @@
 import { Input, Button, notification, Select } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { API_ROOT } from "../../constant";
 import "./index.css";
@@ -36,18 +36,6 @@ function Profile() {
   const [address, setAddress] = useState(isAgentInfo(me) ? me?.address : "");
   const [taxCode, setTaxCode] = useState(isAgentInfo(me) ? me?.taxCode : "");
   const [gender, setGender] = useState(isStaffInfo(me) ? me?.gender : 1);
-
-  useEffect(() => {
-    if (me) {
-      setFullName(me?.fullName);
-      setEmail(me.email);
-      setPhoneNumber(me?.phoneNumber);
-      setAgentName(isAgentInfo(me) ? me?.agentName : "");
-      setAddress(isAgentInfo(me) ? me?.address : "");
-      setTaxCode(isAgentInfo(me) ? me?.taxCode : "");
-      setGender(isStaffInfo(me) ? me?.gender : 1);
-    }
-  }, [me]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
