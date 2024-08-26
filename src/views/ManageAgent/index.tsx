@@ -248,6 +248,7 @@ function ManageAgent() {
     if (createResponse.status !== 201) {
       addFailNotification(createResponse.status, createResponse.statusText);
     } else {
+      setIsAddModalOpen(false);
       addSuccessNotification();
       refreshAgents();
       clearAddInput();
