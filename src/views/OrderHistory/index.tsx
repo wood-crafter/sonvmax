@@ -53,16 +53,17 @@ function OrderHistory() {
   };
 
   const handleReAddToCart = async (order: Order) => {
-    const orderPromises: Promise<Response>[] = [];
-    order.orderProductSnapshots.forEach((it) => {
+    let isOrderOk = true;
+    order.orderProductSnapshots.forEach(async (it) => {
       const cartBody = {
         quantity: it.quantity,
         rgb: it.colorPick,
         volumeId: it.volumeId,
       };
 
-      orderPromises.push(
-        authFetch(`${API_ROOT}/order/create-order-product/${it.productId}`, {
+      const createOrderRes = await authFetch(
+        `${API_ROOT}/order/create-order-product/${it.productId}`,
+        {
           ...requestOptions,
           body: JSON.stringify(cartBody),
           method: "POST",
@@ -70,22 +71,19 @@ function OrderHistory() {
             ...requestOptions.headers,
             Authorization: `Bearer ${accessToken}`,
           },
-        })
-      );
-    });
-
-    //TODO: readd to cart status notifi
-    Promise.allSettled(orderPromises).then((results) => {
-      const allSuccessful = results.every(
-        (result) => result.status === "fulfilled"
+        }
       );
 
-      if (allSuccessful) {
-        cloneCartSuccess();
-      } else {
-        cloneCartFail();
+      if (!createOrderRes.ok) {
+        isOrderOk = false;
       }
     });
+
+    if (isOrderOk) {
+      cloneCartSuccess();
+    } else {
+      cloneCartFail();
+    }
   };
 
   const handleCancelOrder = async (id: string) => {
