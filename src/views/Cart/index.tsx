@@ -515,7 +515,13 @@ function UserCart() {
                       setIsOpenColorPick(true);
                     }}
                   ></Button>
-                  <div>{item?.color?.code}</div>
+                  <div>
+                    {item?.color
+                      ? item.color.code
+                      : `rgb(${item.colorPick?.r ?? 255}, ${
+                          item.colorPick?.g ?? 255
+                        }, ${item.colorPick?.b ?? 255})`}
+                  </div>
                 </div>
                 <DebouncedInputNumber
                   refreshCart={refreshCart}
