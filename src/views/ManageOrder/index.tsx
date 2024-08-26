@@ -10,7 +10,6 @@ import {
   Dropdown,
   Menu,
   Input,
-  Popconfirm,
   Modal,
   InputRef,
 } from "antd";
@@ -58,8 +57,6 @@ function ManageOrder() {
   const { data: agentResponse } = useAgents(1, 9999);
   const agents = agentResponse?.data ?? [];
 
-  const [editingRow, setEditingRow] = useState<string | null>(null);
-  const [description, setDescription] = useState<string>("");
   const [currentOrder, setCurrentOrder] = useState<any>(null);
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -326,17 +323,7 @@ function ManageOrder() {
         dataIndex: "description",
         key: "description",
         render: (_, record: Order) => {
-          const isEditing = editingRow === record.id;
-          return isEditing ? (
-            <Space size="middle">
-              <Input
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </Space>
-          ) : (
-            <div>{record.description}</div>
-          );
+          return <div>{record.description}</div>;
         },
       },
       {
@@ -397,49 +384,8 @@ function ManageOrder() {
         ],
         onFilter: (value, record) => record.status === value,
       },
-      {
-        title: "",
-        key: "action",
-        render: (_, record: Order) => {
-          return (
-            <Space size="middle">
-              {editingRow === record.id ? (
-                <>
-                  <Popconfirm
-                    title="Xác nhận cập nhật?"
-                    onConfirm={async () => {
-                      await updateOrder({
-                        id: record.id,
-                        description,
-                      });
-                      setEditingRow(null);
-                      refreshOrder();
-                    }}
-                    okText="Yes"
-                    cancelText="No"
-                  >
-                    <Button type="primary">Xác nhận</Button>
-                  </Popconfirm>
-                  <Button onClick={() => setEditingRow(null)}>Huỷ</Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    onClick={() => {
-                      setEditingRow(record.id);
-                      setDescription(record.description || "");
-                    }}
-                  >
-                    Sửa
-                  </Button>
-                </>
-              )}
-            </Space>
-          );
-        },
-      },
     ];
-  }, [agents, description, editingRow, refreshOrder, roleName, updateOrder]);
+  }, [agents, refreshOrder, roleName, updateOrder]);
 
   const orderColumns: ColumnType<any>[] = [
     {
