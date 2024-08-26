@@ -29,6 +29,7 @@ import { ACCOUTANT, API_ROOT, SALES } from "../../constant";
 import { useOrders } from "../../hooks/useOrder";
 import { requestOptions } from "../../hooks/utils";
 import { useAgents } from "../../hooks/useAgent";
+import TextArea from "antd/es/input/TextArea";
 
 type UpdateProps = {
   id: string;
@@ -41,6 +42,7 @@ type UpdateOrderProps = {
   description?: string;
   confirmBy?: string;
   voucherId?: string;
+  noted?: string;
 };
 
 function ManageOrder() {
@@ -56,6 +58,9 @@ function ManageOrder() {
   );
   const { data: agentResponse } = useAgents(1, 9999);
   const agents = agentResponse?.data ?? [];
+  const [isOpenNoteModal, setIsOpenNoteModal] = useState(false);
+  const [cancelingId, setCancelingId] = useState("");
+  const [note, setNote] = useState("");
 
   const [currentOrder, setCurrentOrder] = useState<any>(null);
   const [address, setAddress] = useState("");
@@ -71,6 +76,7 @@ function ManageOrder() {
 
     if (typeof status === "number") {
       updateOrderProps.status = status;
+      if (status === -1) updateOrderProps.noted = note;
       updateResponse = await authFetch(
         `${API_ROOT}/order/update-order-status/${id}`,
         {
@@ -138,7 +144,10 @@ function ManageOrder() {
           <Menu.Item
             key="-1"
             icon={<UserOutlined />}
-            onClick={() => updateOrder({ id: record.id, status: -1 })}
+            onClick={() => {
+              setCancelingId(record.id);
+              setIsOpenNoteModal(true);
+            }}
           >
             Huỷ bỏ
           </Menu.Item>
@@ -157,7 +166,10 @@ function ManageOrder() {
           <Menu.Item
             key="-1"
             icon={<UserOutlined />}
-            onClick={() => updateOrder({ id: record.id, status: -1 })}
+            onClick={() => {
+              setCancelingId(record.id);
+              setIsOpenNoteModal(true);
+            }}
           >
             Huỷ bỏ
           </Menu.Item>
@@ -319,11 +331,19 @@ function ManageOrder() {
         render: (price: number) => <div>{NumberToVND.format(price)}</div>,
       },
       {
-        title: "Ghi chú",
+        title: "Ghi chú khách hàng",
         dataIndex: "description",
         key: "description",
         render: (_, record: Order) => {
           return <div>{record.description}</div>;
+        },
+      },
+      {
+        title: "Ghi chú hủy đơn",
+        dataIndex: "noted",
+        key: "noted",
+        render: (_, record: Order) => {
+          return <div>{record.noted}</div>;
         },
       },
       {
@@ -481,6 +501,28 @@ function ManageOrder() {
       {contextHolder}
       <h2 style={{ color: "black" }}>Quản lý đơn</h2>
       <Table columns={columns} dataSource={orders} />
+      <Modal
+        title="Ghi chú hủy đơn"
+        open={!!isOpenNoteModal}
+        onOk={() => {
+          updateOrder({ id: cancelingId, status: -1 });
+          setCancelingId("");
+          setNote("");
+          setIsOpenNoteModal(false);
+        }}
+        onCancel={() => {
+          setCancelingId("");
+          setIsOpenNoteModal(false);
+        }}
+        width={"100%"}
+      >
+        <TextArea
+          value={note}
+          onChange={(e) => {
+            setNote(e.target.value);
+          }}
+        />
+      </Modal>
       <Modal
         title="Xem chi tiết đơn"
         open={!!currentOrder}

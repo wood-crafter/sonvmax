@@ -70,6 +70,7 @@ export type Category = {
 }
 
 export type Order = {
+  noted: string
   agentId: string
   address: string
   phoneNumberCustom: string
