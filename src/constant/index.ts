@@ -1,7 +1,7 @@
 export const HOME_TOP_BANNERS = [
-  "/public/bg_cover_newa14d.jpg",
-  "/public/bg_cover_new_2a14d.jpg",
-  "/public/bg_cover_new_1a14d.jpg",
+  "bg_cover_newa14d.jpg",
+  "bg_cover_new_2a14d.jpg",
+  "bg_cover_new_1a14d.jpg",
 ];
 
 export const ITEM_PER_ROW = 5;

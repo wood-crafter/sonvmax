@@ -64,10 +64,10 @@ function TopProductGrid({ products }: TopProductGridProps) {
 function QualityCertificates() {
   return (
     <div className="quality-certification-container">
-      <img src="/public/banner_center_1a14d.jpg" />
-      <img src="/public/banner_center_2a14d.png" />
-      <img src="/public/banner_center_3a14d.jpg" />
-      <img src="/public/banner_center_4a14d.jpg" />
+      <img src="banner_center_1a14d.jpg" />
+      <img src="banner_center_2a14d.png" />
+      <img src="banner_center_3a14d.jpg" />
+      <img src="banner_center_4a14d.jpg" />
     </div>
   );
 }

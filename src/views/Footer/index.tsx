@@ -20,7 +20,7 @@ function Footer() {
 
           <div>
             <a href="/">
-              <img alt="Sơn VMAX" src="/public/logoa14d.png" width="100%" />
+              <img alt="Sơn VMAX" src="logoa14d.png" width="100%" />
             </a>
           </div>
 
@@ -62,7 +62,7 @@ function Footer() {
           <h4 style={{ color: "#fff" }}>Mạng xã hội</h4>
           <a href="http://online.gov.vn/Home/WebDetails/96201" target="_blank">
             <img
-              src="/public/bcta14d.png"
+              src="bcta14d.png"
               style={{ maxWidth: "60%", marginTop: "20px" }}
             />
           </a>
@@ -79,16 +79,16 @@ function Footer() {
         </div>
         <div>
           <Link to="/">
-            <img alt="Sơn VMAX" src="/public/g6a14d.png" />
+            <img alt="Sơn VMAX" src="g6a14d.png" />
           </Link>
           <Link to="/">
-            <img alt="Sơn VMAX" src="/public/g5a14d.png" />
+            <img alt="Sơn VMAX" src="g5a14d.png" />
           </Link>
           <Link to="/">
-            <img alt="Sơn VMAX" src="/public/g4a14d.png" />
+            <img alt="Sơn VMAX" src="g4a14d.png" />
           </Link>
           <Link to="/">
-            <img alt="Sơn VMAX" src="/public/g1a14d.png" />
+            <img alt="Sơn VMAX" src="g1a14d.png" />
           </Link>
         </div>
       </div>
