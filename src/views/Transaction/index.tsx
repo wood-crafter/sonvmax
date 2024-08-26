@@ -183,8 +183,10 @@ function Transaction() {
 
       navigate("/transaction_history");
     } else {
+      const resJson = await createTransactionResponse.json();
       api.open({
         message: "Tạo phiếu nạp tiền thất bại",
+        description: resJson?.message,
         icon: <FrownOutlined style={{ color: "red" }} />,
       });
     }

@@ -170,8 +170,9 @@ function ManageVoucher() {
         },
       }
     );
-    if (createResponse.status !== 201) {
-      addFailNotification(createResponse.status, createResponse.statusText);
+    if (!createResponse.ok) {
+      const resJson = await createResponse.json();
+      addFailNotification(createResponse.status, resJson?.message);
     } else {
       addSuccessNotification();
     }

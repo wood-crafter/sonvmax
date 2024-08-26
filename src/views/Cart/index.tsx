@@ -311,7 +311,8 @@ function UserCart() {
       deleteSuccessNotification();
       refreshCart();
     } else {
-      deleteFailNotification(deleteRes.status, deleteRes.statusText);
+      const orderJson = await deleteRes.json();
+      deleteFailNotification(deleteRes.status, orderJson?.message);
     }
   };
 

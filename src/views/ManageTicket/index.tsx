@@ -45,7 +45,7 @@ function ManageTicket() {
   const handleCancelTicket = async () => {
     if (!currentCancel) {
       api.open({
-        message: "Tạo phiếu xuất lỗi",
+        message: "Hủy phiếu lỗi",
         icon: <FrownOutlined style={{ color: "red" }} />,
       });
     }
@@ -75,8 +75,10 @@ function ManageTicket() {
       setDescriptionCancel("");
       setCurrentCancel("");
     } else {
+      const resJson = await updateTicketRes.json();
       api.open({
         message: "Hủy phiếu thất bại",
+        description: resJson?.message,
         icon: <FrownOutlined style={{ color: "#red" }} />,
       });
     }
@@ -159,9 +161,10 @@ function ManageTicket() {
       refreshTickets();
       handleModalClose();
     } else {
+      const resJson = await updateTicketRes.json();
       api.open({
-        message: "Tạo phiếu xuất kho",
-        description: "Tạo phiếu xuất kho thất bại",
+        message: "Tạo phiếu xuất kho thất bại",
+        description: resJson?.message,
         icon: <FrownOutlined style={{ color: "#red" }} />,
       });
     }

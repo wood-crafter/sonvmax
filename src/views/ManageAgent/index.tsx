@@ -150,7 +150,9 @@ function ManageAgent() {
       updateSuccessNotification();
       refreshAgents();
     } else {
-      updateFailNotification(updateResponse.status, updateResponse.statusText);
+      const resJson = await updateResponse.json();
+
+      updateFailNotification(updateResponse.status, resJson?.message);
     }
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -188,7 +190,8 @@ function ManageAgent() {
     if (deleteResponse.ok) {
       deleteSuccessNotification();
     } else {
-      deleteFailNotification(deleteResponse.status, deleteResponse.statusText);
+      const resJson = await deleteResponse.json();
+      deleteFailNotification(deleteResponse.status, resJson.message);
     }
     refreshAgents();
   };
@@ -245,8 +248,9 @@ function ManageAgent() {
         },
       }
     );
-    if (createResponse.status !== 201) {
-      addFailNotification(createResponse.status, createResponse.statusText);
+    if (!createResponse.ok) {
+      const resJson = await createResponse.json();
+      addFailNotification(createResponse.status, resJson.message);
     } else {
       setIsAddModalOpen(false);
       addSuccessNotification();

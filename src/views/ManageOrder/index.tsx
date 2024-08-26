@@ -105,7 +105,8 @@ function ManageOrder() {
       refreshOrder();
       updateSuccessNotification();
     } else {
-      updateFailNotification();
+      const resJson = await updateResponse?.json();
+      updateFailNotification(resJson?.message);
     }
   };
 
@@ -117,10 +118,10 @@ function ManageOrder() {
     });
   };
 
-  const updateFailNotification = () => {
+  const updateFailNotification = (description: string) => {
     api.open({
-      message: "Cập nhật đơn hàng",
-      description: "Cập nhật đơn hàng thất bại",
+      message: "Cập nhật đơn hàng thất bại",
+      description: `Lỗi ${description}`,
       icon: <FrownOutlined style={{ color: "red" }} />,
     });
   };

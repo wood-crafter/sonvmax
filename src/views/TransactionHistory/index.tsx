@@ -39,9 +39,10 @@ function TransactionHistory() {
       });
       refreshTransaction();
     } else {
+      const resJson = await response.json();
       api.open({
         message: "Hủy phiếu thất bại",
-        description: "Hủy phiếu nạp tiền thất bại",
+        description: resJson?.message,
         icon: <FrownOutlined style={{ color: "red" }} />,
       });
     }

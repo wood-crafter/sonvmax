@@ -48,7 +48,7 @@ function useRoleTableColumns(
               onFail={() => {
                 api.success({
                   message: "Xóa thất bại",
-                  description: `Xóa chức vụ thất bại: ${role.name}`,
+                  description: `${role.name}: Chức vụ đang có nhân viên sở hữu`,
                   icon: <FrownOutlined style={{ color: "#108ee9" }} />,
                 });
               }}

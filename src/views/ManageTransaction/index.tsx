@@ -41,8 +41,10 @@ function ManageTransaction() {
       });
       refreshTransaction();
     } else {
+      const resJson = await response.json();
       api.open({
         message: "Cập nhật trạng thái thất bại",
+        description: resJson?.message,
         icon: <FrownOutlined style={{ color: "red" }} />,
       });
     }

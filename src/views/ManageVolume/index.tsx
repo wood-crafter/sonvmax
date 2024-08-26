@@ -35,10 +35,10 @@ function ManageVolume() {
     });
   };
 
-  const deleteFailNotification = () => {
+  const deleteFailNotification = (message: string) => {
     api.open({
       message: "Xoá thất bại",
-      description: "Xoá quy cách đóng gói thất bại",
+      description: message,
       icon: <FrownOutlined style={{ color: "red" }} />,
     });
   };
@@ -51,10 +51,10 @@ function ManageVolume() {
     });
   };
 
-  const addFailNotification = () => {
+  const addFailNotification = (message: string) => {
     api.open({
       message: "Thêm thất bại",
-      description: "Thêm quy cách đóng gói thất bại",
+      description: message,
       icon: <FrownOutlined style={{ color: "red" }} />,
     });
   };
@@ -73,7 +73,8 @@ function ManageVolume() {
       deleteSuccessNotification();
       refreshVolume();
     } else {
-      deleteFailNotification();
+      const resJson = await deleteRes.json();
+      deleteFailNotification(resJson?.message);
     }
   };
 
@@ -115,9 +116,10 @@ function ManageVolume() {
       refreshVolume();
       setEditingKey(null);
     } else {
+      const resJson = await updateRes.json();
       api.error({
         message: "Lỗi",
-        description: "Cập nhật quy cách đóng gói thất bại",
+        description: resJson?.message,
       });
     }
   };
@@ -148,7 +150,8 @@ function ManageVolume() {
       setNewVolume("");
       setIsAdding(false);
     } else {
-      addFailNotification();
+      const resJson = await addRes.json();
+      addFailNotification(resJson?.message);
     }
   };
 

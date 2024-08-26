@@ -108,9 +108,10 @@ function OrderHistory() {
       });
       refreshOrders();
     } else {
+      const resJson = await updateResponse.json();
       api.open({
-        message: "Hủy đơn hàng",
-        description: "Hủy đơn hàng thất bại",
+        message: "Hủy đơn hàng thất bại",
+        description: resJson?.message,
         icon: <FrownOutlined style={{ color: "#108ee9" }} />,
       });
     }

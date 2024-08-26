@@ -175,7 +175,8 @@ function AddProductButton(props: AddProductButtonProps) {
       }
     );
     if (!createResponse.ok) {
-      addFailNoti(createResponse.status, createResponse.statusText);
+      const resJson = await createResponse.json();
+      addFailNoti(createResponse.status, resJson?.message);
     } else {
       addSuccessNoti();
       setIsModalOpen(false);
@@ -472,7 +473,8 @@ function UpdateProductModal(props: UpdateProductModalProps) {
       refreshProducts();
       setIsModalOpen(false);
     } else {
-      updateFailNoti(updateResponse.status, updateResponse.statusText);
+      const resJson = await updateResponse.json();
+      updateFailNoti(updateResponse.status, resJson.message);
     }
   };
 

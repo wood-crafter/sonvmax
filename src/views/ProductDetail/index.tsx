@@ -147,11 +147,12 @@ function ProductDetail() {
       }
     );
 
-    if (createResponse.status === 201) {
+    if (createResponse.ok) {
       createCartSuccess();
       resetOrderInfo();
     } else {
-      createCartFail(createResponse.statusText);
+      const resJson = await createResponse.json();
+      createCartFail(resJson?.message);
     }
   };
 

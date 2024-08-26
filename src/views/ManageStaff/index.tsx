@@ -112,8 +112,10 @@ function ManageStaff() {
         icon: <SmileOutlined style={{ color: "#108ee9" }} />,
       });
     } else {
+      const resJson = await updateRes.json();
       api.open({
         message: "Tạo thất bại",
+        description: `${resJson?.message}`,
         icon: <FrownOutlined style={{ color: "red" }} />,
       });
     }
@@ -194,8 +196,9 @@ function ManageStaff() {
         },
       }
     );
-    if (createResponse.status !== 201) {
-      addFailNotification(createResponse.status, createResponse.statusText);
+    if (!createResponse.ok) {
+      const resJson = await createResponse.json();
+      addFailNotification(createResponse.status, resJson.message);
     } else {
       addSuccessNotification();
     }
