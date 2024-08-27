@@ -29,7 +29,7 @@ function Profile() {
   const [isEditing, setIsEditing] = useState(false);
 
   const [fullName, setFullName] = useState(me?.fullName || "");
-  const [email, setEmail] = useState(isAgentInfo(me) ? me?.email : "");
+  const [email, setEmail] = useState(me?.email ?? "");
   const [phoneNumber, setPhoneNumber] = useState(me?.phoneNumber || "");
   const [agentName, setAgentName] = useState(
     isAgentInfo(me) ? me?.agentName : ""
@@ -45,7 +45,7 @@ function Profile() {
   const handleCancel = () => {
     if (me) {
       setFullName(me?.fullName);
-      setEmail(isAgentInfo(me) ? me?.email : "");
+      setEmail(me?.email ?? "");
       setPhoneNumber(me?.phoneNumber);
       setAgentName(isAgentInfo(me) ? me?.agentName : "");
       setAddress(isAgentInfo(me) ? me?.address : "");
