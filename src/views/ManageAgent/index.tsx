@@ -11,6 +11,7 @@ import {
   Popconfirm,
   Select,
   InputRef,
+  Spin,
 } from "antd";
 import { ColumnType } from "antd/es/table";
 import {
@@ -41,6 +42,7 @@ function ManageAgent() {
   const { data: salesResponse } = useSales(1, 9999);
   const sales = salesResponse?.data;
   const agents = data?.data ?? [];
+  const [isApiCalling, setIsApiCalling] = useState(false);
   const roles = rolesResponse?.data;
   const searchInput = useRef<InputRef | null>(null);
 
@@ -133,6 +135,7 @@ function ManageAgent() {
     }
     const updateBody = JSON.stringify(updateData);
 
+    setIsApiCalling(true);
     const updateResponse = await authFetch(
       `${API_ROOT}/agent/update-agent/${currentEditing?.id}`,
       {
@@ -146,6 +149,7 @@ function ManageAgent() {
       }
     );
 
+    setIsApiCalling(false);
     if (updateResponse.ok) {
       updateSuccessNotification();
       refreshAgents();
@@ -175,6 +179,7 @@ function ManageAgent() {
   };
 
   const handleDeleteRecord = async (record: Agent) => {
+    setIsApiCalling(true);
     const deleteResponse = await authFetch(
       `${API_ROOT}/agent/remove-agent/${record.id}`,
       {
@@ -187,6 +192,7 @@ function ManageAgent() {
       }
     );
 
+    setIsApiCalling(false);
     if (deleteResponse.ok) {
       deleteSuccessNotification();
     } else {
@@ -234,6 +240,7 @@ function ManageAgent() {
       staffId: nextSale,
     });
 
+    setIsApiCalling(true);
     const createResponse = await authFetch(
       `${API_ROOT}/agent/create-agent/${
         roles?.find((it) => it.name === "AGENT")?.id
@@ -248,6 +255,7 @@ function ManageAgent() {
         },
       }
     );
+    setIsApiCalling(false);
     if (!createResponse.ok) {
       const resJson = await createResponse.json();
       addFailNotification(createResponse.status, resJson.message);
@@ -459,7 +467,9 @@ function ManageAgent() {
           Thêm đại lý
         </Button>
       )}
-      <Table columns={columns} dataSource={agents} />
+      <Spin spinning={isApiCalling}>
+        <Table columns={columns} dataSource={agents} />
+      </Spin>
       <Modal
         title="Sửa thông tin khách hàng"
         open={isModalOpen}

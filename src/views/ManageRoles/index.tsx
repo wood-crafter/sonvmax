@@ -109,17 +109,17 @@ function AddRoleButton(props: AddRoleButtonProps) {
       const { roleName } = args;
 
       try {
-        const res = await trigger({ roleName })
+        const res = await trigger({ roleName });
 
         if (res.error) {
-          throw new Error(res.message?.join(',') ?? res.error);
+          throw new Error(res.message?.join(",") ?? res.error);
         }
 
         onAdded({ roleName });
         setIsModalOpen(false);
       } catch (error) {
         const { message } = error as { message?: string };
-        onFailed({ description: message ?? "Unknown error" });
+        onFailed({ description: message ?? "Lỗi không xác định" });
       }
     },
     [onAdded, onFailed, trigger]

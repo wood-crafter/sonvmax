@@ -10,6 +10,7 @@ import {
   Radio,
   Popconfirm,
   Select,
+  Spin,
 } from "antd";
 import { ColumnType } from "antd/es/table";
 import {
@@ -43,6 +44,7 @@ function ManageStaff() {
   const staffs = data?.data ?? [];
   const roles = rolesResponse?.data;
   const searchInput = useRef<InputRef | null>(null);
+  const [isApiCalling, setIsApiCalling] = useState(false);
 
   const missingAddPropsNotification = () => {
     api.open({
@@ -93,6 +95,7 @@ function ManageStaff() {
     }
     const updateBody = JSON.stringify(updateData);
 
+    setIsApiCalling(true);
     const updateRes = await authFetch(
       `${API_ROOT}/staff/update-staff/${currentEditing?.id}`,
       {
@@ -106,6 +109,7 @@ function ManageStaff() {
       }
     );
 
+    setIsApiCalling(false);
     if (updateRes.ok) {
       api.open({
         message: "Tạo thành công",
@@ -142,7 +146,8 @@ function ManageStaff() {
   };
 
   const handleDeleteRecord = async (record: Staff) => {
-    await authFetch(`${API_ROOT}/staff/remove-staff/${record.id}`, {
+    setIsApiCalling(true);
+    const res = await authFetch(`${API_ROOT}/staff/remove-staff/${record.id}`, {
       ...requestOptions,
       method: "DELETE",
       headers: {
@@ -150,7 +155,22 @@ function ManageStaff() {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    refreshStaffs();
+    setIsApiCalling(false);
+
+    if (res.ok) {
+      refreshStaffs();
+      api.open({
+        message: "Xóa nhân viên thành công",
+        icon: <SmileOutlined style={{ color: "blue" }} />,
+      });
+    } else {
+      const resJson = await res.json();
+      api.open({
+        message: "Xóa nhân viên thất bại",
+        description: resJson?.message,
+        icon: <FrownOutlined style={{ color: "red" }} />,
+      });
+    }
   };
 
   const clearAddInput = () => {
@@ -184,6 +204,7 @@ function ManageStaff() {
       fullName: nextFullName,
     });
 
+    setIsApiCalling(true);
     const createResponse = await authFetch(
       `${API_ROOT}/staff/create-staff/${nextRole}`,
       {
@@ -196,6 +217,7 @@ function ManageStaff() {
         },
       }
     );
+    setIsApiCalling(false);
     if (!createResponse.ok) {
       const resJson = await createResponse.json();
       addFailNotification(createResponse.status, resJson.message);
@@ -348,7 +370,9 @@ function ManageStaff() {
       >
         Thêm nhân viên
       </Button>
-      <Table columns={columns} dataSource={staffs} />
+      <Spin spinning={isApiCalling}>
+        <Table columns={columns} dataSource={staffs} />
+      </Spin>
       <Modal
         title="Sửa thông tin nhân viên"
         open={isModalOpen}
