@@ -217,7 +217,9 @@ function ManageTicket() {
                   width: "3rem",
                   height: "3rem",
                   border: "1px solid black",
-                  backgroundColor: `rgb(${record.colorDetails.r}, ${record.colorDetails.g}, ${record.colorDetails.b})`,
+                  backgroundColor: `rgb(${record.colorDetails.r ?? 255}, ${
+                    record.colorDetails.g ?? 255
+                  }, ${record.colorDetails.b ?? 255})`,
                 }}
               ></div>
               <div>{`Mã màu: ${record.colorDetails.code}`}</div>
@@ -238,10 +240,14 @@ function ManageTicket() {
                   width: "3rem",
                   height: "3rem",
                   border: "1px solid black",
-                  backgroundColor: `rgb(${record.colorPick.r}, ${record.colorPick.g}, ${record.colorPick.b})`,
+                  backgroundColor: `rgb(${record.colorPick.r ?? 255}, ${
+                    record.colorPick.g ?? 255
+                  }, ${record.colorPick.b ?? 255})`,
                 }}
               ></div>
-              <div>{`rgb(${record.colorPick.r}, ${record.colorPick.g}, ${record.colorPick.b})`}</div>
+              <div>{`rgb(${record.colorPick.r ?? 255}, ${
+                record.colorPick.g ?? 255
+              }, ${record.colorPick.b ?? 255})`}</div>
             </div>
           );
         }

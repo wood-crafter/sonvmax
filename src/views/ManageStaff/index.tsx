@@ -145,11 +145,12 @@ function ManageStaff() {
     setIsModalOpen(false);
   };
 
-  const handleDeleteRecord = async (record: Staff) => {
+  const handleDeleteRecord = async (record: Staff, isActive: boolean) => {
     setIsApiCalling(true);
-    const res = await authFetch(`${API_ROOT}/staff/remove-staff/${record.id}`, {
+    const res = await authFetch(`${API_ROOT}/staff/update-staff/${record.id}`, {
       ...requestOptions,
-      method: "DELETE",
+      method: "PUT",
+      body: JSON.stringify({ isActive: isActive }),
       headers: {
         ...requestOptions.headers,
         Authorization: `Bearer ${accessToken}`,
@@ -160,13 +161,13 @@ function ManageStaff() {
     if (res.ok) {
       refreshStaffs();
       api.open({
-        message: "Xóa nhân viên thành công",
+        message: "Sửa viên thành công",
         icon: <SmileOutlined style={{ color: "blue" }} />,
       });
     } else {
       const resJson = await res.json();
       api.open({
-        message: "Xóa nhân viên thất bại",
+        message: "Sửa nhân viên thất bại",
         description: resJson?.message,
         icon: <FrownOutlined style={{ color: "red" }} />,
       });
@@ -339,21 +340,33 @@ function ManageStaff() {
     {
       title: "",
       key: "action",
-      render: (_, record: Staff) => (
-        <Space size="middle">
-          <Button onClick={() => showModal(record)}>Sửa</Button>
-          <Popconfirm
-            title="Xoá nhân viên"
-            description="Bạn chắc chắn muốn xoá nhân viên này?"
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            onConfirm={() => handleDeleteRecord(record)}
-            okText="Xoá"
-            cancelText="Huỷ"
-          >
-            <Button>Xoá</Button>
-          </Popconfirm>
-        </Space>
-      ),
+      render: (_, record: Staff) => {
+        return (
+          <Space size="middle">
+            <Button onClick={() => showModal(record)}>Sửa</Button>
+            <Popconfirm
+              title={
+                record.isActive
+                  ? "Ngừng hoạt động nhân viên"
+                  : "Hoạt động nhân viên"
+              }
+              description={
+                record.isActive
+                  ? "Bạn chắc chắn muốn ngừng hoạt động nhân viên này"
+                  : "Bạn chắc chắn muốn hoạt động nhân viên này"
+              }
+              icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+              onConfirm={() => handleDeleteRecord(record, !record.isActive)}
+              okText={record.isActive ? "Ngừng hoạt động" : "Hoạt động"}
+              cancelText="Huỷ"
+            >
+              <Button>
+                {record.isActive ? "Ngừng hoạt động" : "Hoạt động"}
+              </Button>
+            </Popconfirm>
+          </Space>
+        );
+      },
     },
   ];
 
