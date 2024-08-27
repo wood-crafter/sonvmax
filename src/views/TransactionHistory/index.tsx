@@ -1,5 +1,5 @@
-import React from "react";
-import { Table, Dropdown, Menu, Button, notification } from "antd";
+import React, { useState } from "react";
+import { Table, Dropdown, Menu, Button, notification, Spin } from "antd";
 import { ColumnType } from "antd/es/table";
 import { useTransaction } from "../../hooks/useTransaction";
 import { Transaction } from "../../type";
@@ -16,8 +16,10 @@ function TransactionHistory() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
+  const [isApiCalling, setIsApiCalling] = useState(false);
 
   const cancelTransaction = async (id: string) => {
+    setIsApiCalling(true);
     const response = await authFetch(
       `${API_ROOT}/transaction/update-status/${id}`,
       {
@@ -31,6 +33,7 @@ function TransactionHistory() {
       }
     );
 
+    setIsApiCalling(false);
     if (response.ok) {
       api.open({
         message: "Hủy phiếu nạp tiền",
@@ -133,11 +136,13 @@ function TransactionHistory() {
     <div className="TransactionHistory">
       <h3>Lịch sử nạp tiền</h3>
       {contextHolder}
-      <Table
-        style={{ width: "100%" }}
-        dataSource={transactions?.data}
-        columns={columns}
-      />
+      <Spin spinning={isApiCalling}>
+        <Table
+          style={{ width: "100%" }}
+          dataSource={transactions?.data}
+          columns={columns}
+        />
+      </Spin>
     </div>
   );
 }

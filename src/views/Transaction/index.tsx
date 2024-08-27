@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Button, Input, notification } from "antd";
+import { Modal, Button, Input, notification, Spin } from "antd";
 import { NumberToVND } from "../../helper";
 import "./index.css";
 import { API_ROOT } from "../../constant";
@@ -109,6 +109,7 @@ function Transaction() {
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
   const navigate = useNavigate();
+  const [isApiCalling, setIsApiCalling] = useState(false);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -162,6 +163,7 @@ function Transaction() {
       totalAmount: amount,
       description: description,
     };
+    setIsApiCalling(true);
     const createTransactionResponse = await authFetch(
       `${API_ROOT}/transaction/create-transaction`,
       {
@@ -175,6 +177,7 @@ function Transaction() {
       }
     );
 
+    setIsApiCalling(false);
     if (createTransactionResponse.ok) {
       api.open({
         message: "Tạo phiếu nạp tiền thành công",
@@ -195,62 +198,67 @@ function Transaction() {
   return (
     <div className="Transaction">
       {contextHolder}
-      <div
-        style={{
-          width: "50%",
-          backgroundColor: "white",
-          padding: "2rem",
-          borderRadius: "1rem",
-        }}
-      >
-        <div className="description-zone">
-          <p>Ngân hàng: Techcombank</p>
-          <p>Số tài khoản: 2010666161</p>
-          <p>Chủ tài khoản: Nguyễn Kim Hưng</p>
-        </div>
-        <div className="transaction-form">
-          <Input
-            type="number"
-            placeholder="Nhập số tiền"
-            value={amount}
-            onChange={handleAmountChange}
-            style={{}}
-          />
-          <p
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "flex-end",
-              color: "red",
-            }}
-          >
-            {capitalizeFirstLetter(convertNumberToText(amount))}
-          </p>
-          <TextArea
-            placeholder="Ghi chú"
-            value={description}
-            onChange={handleDescriptionChange}
-            style={{ marginBottom: "10px" }}
-            rows={3}
-          />
-          <Button type="primary" onClick={showConfirm}>
-            Nạp tiền
-          </Button>
-        </div>
-        <Modal
-          title="Xác nhận giao dịch"
-          open={isModalVisible}
-          onOk={handleOk}
-          onCancel={handleCancel}
+      {isApiCalling && <Spin spinning={isApiCalling} />}
+      {!isApiCalling && (
+        <div
+          style={{
+            width: "50%",
+            backgroundColor: "white",
+            padding: "2rem",
+            borderRadius: "1rem",
+          }}
         >
-          <p>Ngân hàng: Techcombank</p>
-          <p>STK: 2010666161</p>
-          <p>Chủ tài khoản: Nguyễn Kim Hưng</p>
-          <p>Số tiền: {NumberToVND.format(amount)}</p>
-          <p>Bằng chữ: {capitalizeFirstLetter(convertNumberToText(amount))}</p>
-          <p>Ghi chú: {description}</p>
-        </Modal>
-      </div>
+          <div className="description-zone">
+            <p>Ngân hàng: Techcombank</p>
+            <p>Số tài khoản: 2010666161</p>
+            <p>Chủ tài khoản: Nguyễn Kim Hưng</p>
+          </div>
+          <div className="transaction-form">
+            <Input
+              type="number"
+              placeholder="Nhập số tiền"
+              value={amount}
+              onChange={handleAmountChange}
+              style={{}}
+            />
+            <p
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "flex-end",
+                color: "red",
+              }}
+            >
+              {capitalizeFirstLetter(convertNumberToText(amount))}
+            </p>
+            <TextArea
+              placeholder="Ghi chú"
+              value={description}
+              onChange={handleDescriptionChange}
+              style={{ marginBottom: "10px" }}
+              rows={3}
+            />
+            <Button type="primary" onClick={showConfirm}>
+              Nạp tiền
+            </Button>
+          </div>
+          <Modal
+            title="Xác nhận giao dịch"
+            open={isModalVisible}
+            onOk={handleOk}
+            onCancel={handleCancel}
+          >
+            <p>Ngân hàng: Techcombank</p>
+            <p>STK: 2010666161</p>
+            <p>Chủ tài khoản: Nguyễn Kim Hưng</p>
+            <p>Số tiền: {NumberToVND.format(amount)}</p>
+            <p>
+              Bằng chữ: {capitalizeFirstLetter(convertNumberToText(amount))}
+            </p>
+            <p>Ghi chú: {description}</p>
+          </Modal>
+        </div>
+      )}
     </div>
   );
 }
