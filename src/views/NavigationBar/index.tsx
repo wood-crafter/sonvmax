@@ -44,11 +44,15 @@ const useManagerMenuItems = () => {
   const roleName = useUserStore((state) => state.roleName);
 
   const managerItems: MenuItem[] = [
-    {
-      label: <Link to="/manage/dashboard">Thống kê</Link>,
-      icon: <BarChartOutlined />,
-      key: "dashboard",
-    },
+    ...([OWNER.role, ACCOUTANT.role].includes(roleName)
+      ? [
+          {
+            label: <Link to="/manage/dashboard">Thống kê</Link>,
+            icon: <BarChartOutlined />,
+            key: "dashboard",
+          },
+        ]
+      : []),
     ...([OWNER.role].includes(roleName)
       ? [
           {

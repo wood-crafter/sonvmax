@@ -126,7 +126,7 @@ const AppRoutes = () => {
         <Route
           path="dashboard"
           element={
-            <Layout hasNav isManager>
+            <Layout hasNav isManager roleAllow={[OWNER.role, ACCOUTANT.role]}>
               <Dashboard />
             </Layout>
           }
