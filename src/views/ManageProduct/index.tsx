@@ -41,6 +41,7 @@ import { requestOptions } from "../../hooks/utils";
 import { useCategories } from "../../hooks/useCategories";
 
 type AddProductButtonProps = {
+  setIsApiCalling: React.Dispatch<React.SetStateAction<boolean>>;
   categories: Category[] | undefined;
   handleSetNumberInput: (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -59,6 +60,7 @@ type AddProductButtonProps = {
 };
 
 type UpdateProductModalProps = {
+  setIsApiCalling: React.Dispatch<React.SetStateAction<boolean>>;
   categories: Category[] | undefined;
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -85,6 +87,7 @@ type ProductTableProps = {
   volumes: Volume[] | undefined;
   showModal: (record: Product) => void;
   handleDeleteRecord: (record: Product) => Promise<void>;
+  isApiCalling: boolean;
 };
 
 const getDefaultSelectedVolumePrices = (products: Product[] | undefined) => {
@@ -109,6 +112,7 @@ function AddProductButton(props: AddProductButtonProps) {
     addSuccessNoti,
     addFailNoti,
     volumes,
+    setIsApiCalling,
   } = props;
   const [nextProductName, setNextProductName] = useState("");
   const [nextImage, setNextImage] = useState<string>("");
@@ -162,6 +166,7 @@ function AddProductButton(props: AddProductButtonProps) {
       canColorPick: nextCanColorPick,
     });
 
+    setIsApiCalling(true);
     const createResponse = await authFetch(
       `${API_ROOT}/product/create-product/${nextCategory}`,
       {
@@ -174,6 +179,7 @@ function AddProductButton(props: AddProductButtonProps) {
         },
       }
     );
+    setIsApiCalling(false);
     if (!createResponse.ok) {
       const resJson = await createResponse.json();
       addFailNoti(createResponse.status, resJson?.message);
@@ -404,6 +410,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
     updateSuccessNoti,
     updateFailNoti,
     missingUpdatePriceNoti,
+    setIsApiCalling,
   } = props;
 
   const [productName, setProductName] = useState<string>("");
@@ -455,6 +462,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
     };
     const updateBody = JSON.stringify(updateData);
 
+    setIsApiCalling(true);
     const updateResponse = await authFetch(
       `${API_ROOT}/product/update-product/${currentEditing?.id}`,
       {
@@ -468,6 +476,7 @@ function UpdateProductModal(props: UpdateProductModalProps) {
       }
     );
 
+    setIsApiCalling(false);
     if (updateResponse.ok) {
       updateSuccessNoti();
       refreshProducts();
@@ -667,8 +676,14 @@ function UpdateProductModal(props: UpdateProductModalProps) {
 }
 
 function ProductTable(props: ProductTableProps) {
-  const { products, categories, volumes, showModal, handleDeleteRecord } =
-    props;
+  const {
+    products,
+    categories,
+    volumes,
+    showModal,
+    handleDeleteRecord,
+    isApiCalling,
+  } = props;
   const [selectedVolumePrices, setSelectedVolumePrices] = useState<{
     [key: string]: number;
   }>(getDefaultSelectedVolumePrices(products));
@@ -854,7 +869,11 @@ function ProductTable(props: ProductTableProps) {
     showModal,
     handleDeleteRecord,
   ]);
-  return <Table columns={columns} dataSource={products} />;
+  return (
+    <Spin spinning={isApiCalling}>
+      <Table columns={columns} dataSource={products} />
+    </Spin>
+  );
 }
 
 function ManageProduct() {
@@ -863,6 +882,7 @@ function ManageProduct() {
   const [api, contextHolder] = notification.useNotification();
   const { data: categoryResponse } = useCategories(1);
   const { data, isLoading, mutate: refreshProducts } = useProducts(1, 99999);
+  const [isApiCalling, setIsApiCalling] = useState(false);
   const products = useMemo(
     () => data?.data.map((it) => ({ key: it.id, ...it })),
     [data?.data]
@@ -933,15 +953,35 @@ function ManageProduct() {
   };
 
   const handleDeleteRecord = async (record: Product) => {
-    await authFetch(`${API_ROOT}/product/remove-product/${record.id}`, {
-      ...requestOptions,
-      method: "DELETE",
-      headers: {
-        ...requestOptions.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    refreshProducts();
+    setIsApiCalling(true);
+    const res = await authFetch(
+      `${API_ROOT}/product/remove-product/${record.id}`,
+      {
+        ...requestOptions,
+        method: "DELETE",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    setIsApiCalling(false);
+
+    if (res.ok) {
+      api.open({
+        message: "Xóa thành công",
+        icon: <SmileOutlined style={{ color: "#108ee9" }} />,
+      });
+      refreshProducts();
+    } else {
+      const resJson = await res.json();
+      api.open({
+        message: "Xóa thất bại",
+        description: resJson?.message,
+        icon: <FrownOutlined style={{ color: "red" }} />,
+      });
+    }
   };
 
   const handleSetNumberInput = (
@@ -971,6 +1011,7 @@ function ManageProduct() {
         refreshProducts={refreshProducts}
         accessToken={accessToken}
         authFetch={authFetch}
+        setIsApiCalling={setIsApiCalling}
       />
       <ProductTable
         volumes={volumes}
@@ -978,6 +1019,7 @@ function ManageProduct() {
         products={products}
         handleDeleteRecord={handleDeleteRecord}
         categories={categories}
+        isApiCalling={isApiCalling}
       />
       <UpdateProductModal
         missingUpdatePriceNoti={missingUpdatePriceNoti}
@@ -992,6 +1034,7 @@ function ManageProduct() {
         currentEditing={currentEditing}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+        setIsApiCalling={setIsApiCalling}
       />
     </div>
   );

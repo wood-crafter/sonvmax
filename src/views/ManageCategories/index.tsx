@@ -5,6 +5,7 @@ import {
   notification,
   Popconfirm,
   Space,
+  Spin,
   Table,
 } from "antd";
 import {
@@ -26,22 +27,30 @@ import "./index.css";
 export function ManageCategories() {
   const { data: categories, isLoading, mutate } = useCategories(1);
   const [notificationApi, contextHolder] = notification.useNotification();
+  const [isApiCalling, setIsApiCalling] = useState(false);
 
-  const columns = useCategoryTableColumns(notificationApi, mutate);
+  const columns = useCategoryTableColumns(
+    notificationApi,
+    mutate,
+    setIsApiCalling
+  );
 
   return (
     <div className="ManageCategories">
       <h2 style={{ color: "black" }}>Quản lý danh mục</h2>
       {contextHolder}
       <AddCategoryButton
+        setIsApiCalling={setIsApiCalling}
         notificationApi={notificationApi}
         requestCategoryRefresh={mutate}
       />
-      <Table
-        dataSource={categories?.data}
-        columns={columns}
-        loading={isLoading}
-      />
+      <Spin spinning={isApiCalling}>
+        <Table
+          dataSource={categories?.data}
+          columns={columns}
+          loading={isLoading}
+        />
+      </Spin>
     </div>
   );
 }
@@ -56,13 +65,17 @@ type AddCategoryParams = ActionHandlerParams & {
   description: string;
 };
 
-function useAddCategoryHandler(notificationApi: NotificationInstance) {
+function useAddCategoryHandler(
+  notificationApi: NotificationInstance,
+  setIsApiCalling: React.Dispatch<React.SetStateAction<boolean>>
+) {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
 
   const addCategory = useCallback(
     ({ name, description, onSuccess }: AddCategoryParams) => {
       try {
+        setIsApiCalling(true);
         authFetch(`${API_ROOT}/category/create-category`, {
           method: "POST",
           headers: {
@@ -71,6 +84,7 @@ function useAddCategoryHandler(notificationApi: NotificationInstance) {
           },
           body: JSON.stringify({ name, description }),
         }).then((response) => {
+          setIsApiCalling(false);
           if (response.ok) {
             notificationApi.success({
               message: "Thành công",
@@ -85,6 +99,7 @@ function useAddCategoryHandler(notificationApi: NotificationInstance) {
           }
         });
       } catch (error) {
+        setIsApiCalling(false);
         notificationApi.error({
           message: "Lỗi",
           description: "Có lỗi xảy ra khi thêm danh mục",
@@ -98,18 +113,22 @@ function useAddCategoryHandler(notificationApi: NotificationInstance) {
 }
 
 type AddCategoryButtonProps = {
+  setIsApiCalling: React.Dispatch<React.SetStateAction<boolean>>;
   notificationApi: NotificationInstance;
   requestCategoryRefresh: () => void;
 };
 
 function AddCategoryButton(props: AddCategoryButtonProps) {
-  const { notificationApi, requestCategoryRefresh } = props;
+  const { notificationApi, requestCategoryRefresh, setIsApiCalling } = props;
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
 
-  const { addCategory } = useAddCategoryHandler(notificationApi);
+  const { addCategory } = useAddCategoryHandler(
+    notificationApi,
+    setIsApiCalling
+  );
 
   const handleClearForm = () => {
     setCategoryName("");
@@ -142,6 +161,7 @@ function AddCategoryButton(props: AddCategoryButtonProps) {
         type="primary"
         className="AddCategoryButton"
         onClick={() => setIsModalVisible(true)}
+        style={{ marginBottom: "1rem" }}
       >
         Thêm danh mục
       </Button>
@@ -181,7 +201,10 @@ type EditCategoryParams = ActionHandlerParams & {
   description: string | null;
 };
 
-export function useEditCategoryHandler(notificationApi: NotificationInstance) {
+export function useEditCategoryHandler(
+  notificationApi: NotificationInstance,
+  setIsApiCalling: React.Dispatch<React.SetStateAction<boolean>>
+) {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
 
@@ -194,6 +217,7 @@ export function useEditCategoryHandler(notificationApi: NotificationInstance) {
       onError,
     }: EditCategoryParams) => {
       try {
+        setIsApiCalling(true);
         const response = await authFetch(
           `${API_ROOT}/category/update-category/${id}`,
           {
@@ -206,6 +230,7 @@ export function useEditCategoryHandler(notificationApi: NotificationInstance) {
           }
         );
 
+        setIsApiCalling(false);
         if (response.ok) {
           notificationApi.success({
             message: "Thành công",
@@ -238,7 +263,8 @@ type DeleteCategoryParams = ActionHandlerParams & {
 };
 
 export function useDeleteCategoryHandler(
-  notificationApi: NotificationInstance
+  notificationApi: NotificationInstance,
+  setIsApiCalling: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
@@ -246,12 +272,14 @@ export function useDeleteCategoryHandler(
   const deleteCategory = useCallback(
     ({ id, onSuccess, onError }: DeleteCategoryParams) => {
       try {
+        setIsApiCalling(true);
         authFetch(`${API_ROOT}/category/remove-category/${id}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }).then((response) => {
+          setIsApiCalling(false);
           if (response.ok) {
             notificationApi.success({
               message: "Thành công",
@@ -267,6 +295,7 @@ export function useDeleteCategoryHandler(
           }
         });
       } catch (error) {
+        setIsApiCalling(false);
         notificationApi.error({
           message: "Lỗi",
           description: "Có lỗi xảy ra khi xoá danh mục",
@@ -282,14 +311,21 @@ export function useDeleteCategoryHandler(
 
 function useCategoryTableColumns(
   notificationApi: NotificationInstance,
-  requestCategoryRefresh: () => void
+  requestCategoryRefresh: () => void,
+  setIsApiCalling: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editedName, setEditedName] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
 
-  const { editCategory } = useEditCategoryHandler(notificationApi);
-  const { deleteCategory } = useDeleteCategoryHandler(notificationApi);
+  const { editCategory } = useEditCategoryHandler(
+    notificationApi,
+    setIsApiCalling
+  );
+  const { deleteCategory } = useDeleteCategoryHandler(
+    notificationApi,
+    setIsApiCalling
+  );
 
   const handleStartEditing = (record: Category) => {
     setEditingKey(record.id);

@@ -21,9 +21,9 @@ function useAverageOrderValueChartOptions(dashboardData: DashboardData[]) {
           afterLabel: (tooltipItem: TooltipItem<"line">) => {
             const { averageOrderValue } = dashboardData[tooltipItem.dataIndex];
 
-            return `Tổng doanh thu: ${new Intl.NumberFormat("vi-VN").format(
-              averageOrderValue.averageOrderValue
-            )} VND`;
+            return `Giá trị đơn trung bình: ${new Intl.NumberFormat(
+              "vi-VN"
+            ).format(averageOrderValue.averageOrderValue)} VND`;
           },
         },
       },
@@ -39,7 +39,7 @@ function useAverageOrderValueChartOptions(dashboardData: DashboardData[]) {
       y: {
         title: {
           display: true,
-          text: "Tổng doanh thu (VND)",
+          text: "Giá trị đơn trung bình (VND)",
         },
         min: 0,
       },

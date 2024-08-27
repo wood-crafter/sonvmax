@@ -35,6 +35,7 @@ function ManageVoucher() {
   const { data, isLoading, mutate: refreshVouchers } = useVouchers(1);
   const { data: agents } = useAgents(1);
   const voucher = data?.data ?? [];
+  const [isApiCalling, setIsApiCalling] = useState(false);
 
   const missingAddPropsNotification = () => {
     api.open({
@@ -89,7 +90,8 @@ function ManageVoucher() {
     };
     const updateBody = JSON.stringify(updateData);
 
-    await authFetch(
+    setIsApiCalling(true);
+    const res = await authFetch(
       `${API_ROOT}/voucher/update-voucher/${currentEditing?.id}`,
       {
         ...requestOptions,
@@ -101,6 +103,21 @@ function ManageVoucher() {
         },
       }
     );
+
+    setIsApiCalling(false);
+    if (res.ok) {
+      api.open({
+        message: `Sửa voucher thành công`,
+        icon: <SmileOutlined style={{ color: "blue" }} />,
+      });
+    } else {
+      const resJson = await res.json();
+      api.open({
+        message: `Sửa voucher thất bại`,
+        description: resJson.message ?? "",
+        icon: <FrownOutlined style={{ color: "red" }} />,
+      });
+    }
   };
 
   const showModal = (record: Voucher) => {
@@ -123,15 +140,33 @@ function ManageVoucher() {
   };
 
   const handleDeleteRecord = async (record: Voucher) => {
-    await authFetch(`${API_ROOT}/voucher/remove-voucher/${record.id}`, {
-      ...requestOptions,
-      method: "DELETE",
-      headers: {
-        ...requestOptions.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    refreshVouchers();
+    setIsApiCalling(true);
+    const res = await authFetch(
+      `${API_ROOT}/voucher/remove-voucher/${record.id}`,
+      {
+        ...requestOptions,
+        method: "DELETE",
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    setIsApiCalling(false);
+    if (res.ok) {
+      api.open({
+        message: `Xóa voucher thành công`,
+        icon: <SmileOutlined style={{ color: "blue" }} />,
+      });
+      refreshVouchers();
+    } else {
+      const resJson = await res.json();
+      api.open({
+        message: `Xóa voucher thất bại`,
+        description: resJson.message ?? "",
+        icon: <FrownOutlined style={{ color: "red" }} />,
+      });
+    }
   };
 
   const clearAddInput = () => {
@@ -158,6 +193,7 @@ function ManageVoucher() {
       agentId: nextAgent,
     });
 
+    setIsApiCalling(true);
     const createResponse = await authFetch(
       `${API_ROOT}/voucher/create-voucher`,
       {
@@ -170,6 +206,7 @@ function ManageVoucher() {
         },
       }
     );
+    setIsApiCalling(false);
     if (!createResponse.ok) {
       const resJson = await createResponse.json();
       addFailNotification(createResponse.status, resJson?.message);
@@ -317,7 +354,9 @@ function ManageVoucher() {
       >
         Thêm Voucher
       </Button>
-      <Table columns={columns} dataSource={voucher} />
+      <Spin spinning={isApiCalling}>
+        <Table columns={columns} dataSource={voucher} />
+      </Spin>
       <Modal
         title="Sửa thông tin voucher"
         open={isModalOpen}

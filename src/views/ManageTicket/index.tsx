@@ -8,6 +8,7 @@ import {
   Input,
   notification,
   Space,
+  Spin,
 } from "antd";
 import {
   SmileOutlined,
@@ -40,6 +41,7 @@ function ManageTicket() {
   const [currentCancel, setCurrentCancel] = useState("");
   const [descriptionCancel, setDescriptionCancel] = useState("");
   const [isCancelDetails, setIsCancelDetails] = useState(false);
+  const [isApiCalling, setIsApiCalling] = useState(false);
   const authFetch = useAuthenticatedFetch();
 
   const handleCancelTicket = async () => {
@@ -49,6 +51,7 @@ function ManageTicket() {
         icon: <FrownOutlined style={{ color: "red" }} />,
       });
     }
+    setIsApiCalling(true);
     const updateTicketRes = await authFetch(
       `${API_ROOT}/ticket/${currentCancel}`,
       {
@@ -65,6 +68,7 @@ function ManageTicket() {
       }
     );
 
+    setIsApiCalling(false);
     if (updateTicketRes.ok) {
       api.open({
         message: "Hủy phiếu thành công",
@@ -139,6 +143,7 @@ function ManageTicket() {
         update: item,
       },
     };
+    setIsApiCalling(true);
     const updateTicketRes = await authFetch(
       `${API_ROOT}/ticket/${selectedTicket.ticket.id}`,
       {
@@ -152,6 +157,7 @@ function ManageTicket() {
       }
     );
 
+    setIsApiCalling(false);
     if (updateTicketRes.ok) {
       api.open({
         message: "Tạo phiếu xuất kho",
@@ -427,13 +433,15 @@ function ManageTicket() {
     <div className="ManageTicket">
       <h3>Quản lý xuất kho</h3>
       {contextHolder}
-      <Table
-        columns={columns}
-        dataSource={data?.data}
-        onRow={(record) => ({
-          onDoubleClick: () => handleRowClick(record),
-        })}
-      />
+      <Spin spinning={isApiCalling}>
+        <Table
+          columns={columns}
+          dataSource={data?.data}
+          onRow={(record) => ({
+            onDoubleClick: () => handleRowClick(record),
+          })}
+        />
+      </Spin>
       {selectedTicket && (
         <Modal
           title="Chi tiết phiếu xuất kho"
@@ -451,12 +459,14 @@ function ManageTicket() {
           ]}
           width={"100%"}
         >
-          <Table
-            columns={orderColumns}
-            dataSource={selectedTicket.ticket?.order?.warehouseOrders.filter(
-              (it: any) => it.quantity !== 0
-            )}
-          />
+          <Spin spinning={isApiCalling}>
+            <Table
+              columns={orderColumns}
+              dataSource={selectedTicket.ticket?.order?.warehouseOrders.filter(
+                (it: any) => it.quantity !== 0
+              )}
+            />
+          </Spin>
         </Modal>
       )}
       <Modal

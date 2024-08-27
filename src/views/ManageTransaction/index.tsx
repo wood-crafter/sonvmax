@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import "./index.css";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useUserStore } from "../../store/user";
 import { useTransaction } from "../../hooks/useTransaction";
 import { Transaction } from "../../type";
 import Table, { ColumnType } from "antd/es/table";
-import { notification, Button, Input, Space } from "antd";
+import { notification, Button, Input, Space, Spin } from "antd";
 import { NumberToVND } from "../../helper";
 import {
   SmileOutlined,
@@ -19,9 +19,15 @@ function ManageTransaction() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
-  const { data: transaction, mutate: refreshTransaction } = useTransaction(1);
+  const {
+    data: transaction,
+    isLoading,
+    mutate: refreshTransaction,
+  } = useTransaction(1);
+  const [isApiCalling, setIsApiCalling] = useState(false);
 
   const handleStatusChange = async (id: string, newStatus: number) => {
+    setIsApiCalling(true);
     const response = await authFetch(
       `${API_ROOT}/transaction/update-status/${id}`,
       {
@@ -34,6 +40,7 @@ function ManageTransaction() {
       }
     );
 
+    setIsApiCalling(false);
     if (response.ok) {
       api.open({
         message: "Cập nhật trạng thái thành công",
@@ -223,11 +230,14 @@ function ManageTransaction() {
     return columns;
   }, [transaction?.data]);
 
+  if (isLoading) return <Spin size="large" />;
   return (
     <div className="ManageTransaction">
       <h3>Quản lý phiếu nạp tiền</h3>
       {contextHolder}
-      <Table columns={columns} dataSource={transaction?.data} />
+      <Spin spinning={isApiCalling}>
+        <Table columns={columns} dataSource={transaction?.data} />
+      </Spin>
     </div>
   );
 }

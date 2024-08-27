@@ -1,6 +1,14 @@
 import { useState } from "react";
 import "./index.css";
-import { Button, Input, notification, Popconfirm, Space, Form } from "antd";
+import {
+  Button,
+  Input,
+  notification,
+  Popconfirm,
+  Space,
+  Form,
+  Spin,
+} from "antd";
 import { useUserStore } from "../../store/user";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { useVolume } from "../../hooks/useVolume";
@@ -21,6 +29,7 @@ function ManageVolume() {
   const [api, contextHolder] = notification.useNotification();
   const { data, mutate: refreshVolume } = useVolume(1);
   const volume = data?.data;
+  const [isApiCalling, setIsApiCalling] = useState(false);
 
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editedVolume, setEditedVolume] = useState<string>("");
@@ -60,6 +69,7 @@ function ManageVolume() {
   };
 
   const handleDeleteRecord = async (id: string) => {
+    setIsApiCalling(true);
     const deleteRes = await authFetch(`${API_ROOT}/volume/${id}`, {
       ...requestOptions,
       method: "DELETE",
@@ -69,6 +79,7 @@ function ManageVolume() {
       },
     });
 
+    setIsApiCalling(false);
     if (deleteRes.ok) {
       deleteSuccessNotification();
       refreshVolume();
@@ -97,6 +108,7 @@ function ManageVolume() {
       return;
     }
 
+    setIsApiCalling(true);
     const updateRes = await authFetch(`${API_ROOT}/volume/${record.id}`, {
       ...requestOptions,
       method: "PUT",
@@ -108,6 +120,7 @@ function ManageVolume() {
       body: JSON.stringify({ volume: editedVolume }),
     });
 
+    setIsApiCalling(false);
     if (updateRes.ok) {
       api.success({
         message: "Thành công",
@@ -133,6 +146,7 @@ function ManageVolume() {
       return;
     }
 
+    setIsApiCalling(true);
     const addRes = await authFetch(`${API_ROOT}/volume`, {
       ...requestOptions,
       method: "POST",
@@ -144,6 +158,7 @@ function ManageVolume() {
       body: JSON.stringify({ volume: newVolume }),
     });
 
+    setIsApiCalling(false);
     if (addRes.ok) {
       addSuccessNotification();
       refreshVolume();
@@ -254,7 +269,9 @@ function ManageVolume() {
           </Form.Item>
         </Form>
       )}
-      <Table columns={columns} dataSource={volume} />
+      <Spin spinning={isApiCalling}>
+        <Table columns={columns} dataSource={volume} />
+      </Spin>
     </div>
   );
 }
