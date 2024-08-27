@@ -527,6 +527,7 @@ function UserCart() {
                             message: "Sản phẩm này không cho phép chọn màu",
                             icon: <FrownOutlined style={{ color: "red" }} />,
                           });
+                          return;
                         }
                         setCurrentEditingId(item.id);
                         setCurrentEditingProductId(item.productId);

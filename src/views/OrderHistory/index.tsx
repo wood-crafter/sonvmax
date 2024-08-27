@@ -57,11 +57,16 @@ function OrderHistory() {
     let isOrderOk = true;
     setIsApiCalling(true);
     order.orderProductSnapshots.forEach(async (it) => {
-      const cartBody = {
+      const cartBody: any = {
         quantity: it.quantity,
-        rgb: it.colorPick,
         volumeId: it.volumeId,
       };
+
+      if (it?.colorPick) {
+        cartBody.rgb = it.colorPick;
+      } else {
+        cartBody.colorId = it?.colorId;
+      }
 
       const createOrderRes = await authFetch(
         `${API_ROOT}/order/create-order-product/${it.productId}`,
