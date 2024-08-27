@@ -373,13 +373,15 @@ function UserCart() {
           sum +
           item.originalPrice *
             item.quantity *
-            (item.colorClassification === 1
-              ? 0.05
-              : item.colorClassification === 2
-              ? 0.1
-              : item.colorClassification === 3
-              ? 0.2
-              : 0),
+            (!item.colorId
+              ? item.colorClassification === 1
+                ? 0.05
+                : item.colorClassification === 2
+                ? 0.1
+                : item.colorClassification === 3
+                ? 0.2
+                : 0
+              : (item.color.priceColor ?? 0) / 100),
         0
       );
 
