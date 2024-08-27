@@ -55,10 +55,53 @@ function Profile() {
     }
   };
 
+  function isValidEmail(email: string) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
   const handleUpdate = async () => {
     let updateData;
 
     if (isAgentInfo(me)) {
+      if (me.fullName && !fullName) {
+        api.error({
+          message: "Tên người đại diện không được bỏ trống!",
+        });
+        return;
+      } else if (me.email && !email) {
+        api.error({
+          message: "Email không được để trống!",
+        });
+        return;
+      } else if (me.phoneNumber && !phoneNumber) {
+        api.error({
+          message: "Số điện thoại không được để trống!",
+        });
+        return;
+      } else if (me.agentName && !agentName) {
+        api.error({
+          message: "Tên đại lý không được để trống!",
+        });
+        return;
+      } else if (me.address && !address) {
+        api.error({
+          message: "Địa chỉ không được để trống!",
+        });
+        return;
+      } else if (me.taxCode && !taxCode) {
+        api.error({
+          message: "Mã số thuế không được để trống!",
+        });
+        return;
+      }
+
+      if (email && !isValidEmail(email)) {
+        api.error({
+          message: "Email không hợp lệ!",
+        });
+        return;
+      }
       updateData = {
         fullName,
         email,
@@ -66,8 +109,37 @@ function Profile() {
         agentName,
         address,
         taxCode,
+        username: me?.username,
+        rank: me?.rank,
       };
     } else if (isStaffInfo(me)) {
+      if (me.fullName && !fullName) {
+        api.error({
+          message: "Tên người đại diện không được bỏ trống!",
+        });
+        return;
+      } else if (me.email && !email) {
+        api.error({
+          message: "Email không được để trống!",
+        });
+        return;
+      } else if (me.phoneNumber && !phoneNumber) {
+        api.error({
+          message: "Số điện thoại không được để trống!",
+        });
+        return;
+      } else if (me.gender && !gender) {
+        api.error({
+          message: "Giới tính không được để trống!",
+        });
+        return;
+      }
+      if (email && !isValidEmail(email)) {
+        api.error({
+          message: "Email không hợp lệ!",
+        });
+        return;
+      }
       updateData = {
         fullName,
         email,
