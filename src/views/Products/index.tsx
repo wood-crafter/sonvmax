@@ -4,7 +4,7 @@ import { Product } from "../../type";
 import { NumberToVND } from "../../helper";
 import { useProducts } from "../../hooks/useProduct";
 import { DISCOUNT_AMOUNT } from "../../constant";
-import { Pagination } from "antd";
+import { Pagination, Spin } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useUserStore } from "../../store/user";
@@ -18,13 +18,11 @@ function Products() {
   const queryParams = new URLSearchParams(location.search);
   const searchName = queryParams.get("searchName");
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, mutate: refreshProducts } = useProducts(
-    currentPage,
-    10,
-    true,
-    categoryId,
-    searchName ?? ""
-  );
+  const {
+    data,
+    isLoading,
+    mutate: refreshProducts,
+  } = useProducts(currentPage, 10, true, categoryId, searchName ?? "");
   const products = data?.data ?? [];
 
   useEffect(() => {
@@ -35,6 +33,8 @@ function Products() {
     setCurrentPage(newPage);
     refreshProducts();
   };
+
+  if (isLoading) return <Spin size="large" />;
   return (
     <div className="Products">
       <h3 style={{ marginLeft: "2rem" }}>Danh sách sản phẩm</h3>

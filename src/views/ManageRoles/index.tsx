@@ -82,7 +82,7 @@ function DeleteRoleButton(props: DeleteRoleButtonProps) {
       onClick={async () => {
         const deleteResult = await trigger({ id });
 
-        if (deleteResult.message === "Role deleted successfully") {
+        if (deleteResult.message === "Xóa chức vụ thành công") {
           onDeleted();
         } else {
           onFail();

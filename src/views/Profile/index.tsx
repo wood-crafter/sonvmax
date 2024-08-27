@@ -98,8 +98,10 @@ function Profile() {
       setUserInformation(updatedMe);
       setIsEditing(false);
     } else {
+      const resJons = await res.json();
       api.error({
         message: "Cập nhật thất bại",
+        description: resJons?.message,
       });
     }
   };
