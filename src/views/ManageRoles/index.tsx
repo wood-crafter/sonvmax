@@ -96,22 +96,33 @@ function DeleteRoleButton(props: DeleteRoleButtonProps) {
 
 type AddRoleButtonProps = {
   onAdded(args: { roleName: string }): void;
+  onFailed(args: { description: string }): void;
 };
 
 function AddRoleButton(props: AddRoleButtonProps) {
-  const { onAdded } = props;
+  const { onAdded, onFailed } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { trigger } = useCreateRole();
 
   const handleAddRole = useCallback(
     async (args: { roleName: string }) => {
       const { roleName } = args;
-      await trigger({ roleName });
 
-      setIsModalOpen(false);
-      onAdded({ roleName });
+      try {
+        const res = await trigger({ roleName })
+
+        if (res.error) {
+          throw new Error(res.message?.join(',') ?? res.error);
+        }
+
+        onAdded({ roleName });
+        setIsModalOpen(false);
+      } catch (error) {
+        const { message } = error as { message?: string };
+        onFailed({ description: message ?? "Unknown error" });
+      }
     },
-    [onAdded]
+    [onAdded, onFailed, trigger]
   );
 
   return (
@@ -155,7 +166,7 @@ export function ManageRoles() {
 
       mutate();
     },
-    [api]
+    [api, mutate]
   );
 
   const columns = useRoleTableColumns(api, isLoading || isValidating, mutate);
@@ -166,7 +177,16 @@ export function ManageRoles() {
     <div className="ManageRoles">
       <h2 style={{ color: "black" }}>Quản lý chức vụ</h2>
       {contextHolder}
-      <AddRoleButton onAdded={handleRoleAdded} />
+      <AddRoleButton
+        onAdded={handleRoleAdded}
+        onFailed={({ description }) => {
+          api.error({
+            message: "Thêm chức vụ thất bại",
+            description,
+            icon: <FrownOutlined style={{ color: "#f00" }} />,
+          });
+        }}
+      />
       <Table dataSource={roles} columns={columns} />
     </div>
   );

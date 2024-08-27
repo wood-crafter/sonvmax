@@ -17,6 +17,9 @@ export function EditRoleModal(props: EditRoleModalProps) {
       title="Thêm vị trí"
       open={isOpen}
       onOk={() => onSubmit({ roleName })}
+      okButtonProps={{
+        disabled: roleName.length === 0,
+      }}
       onCancel={onCancel}
     >
       <Form>
