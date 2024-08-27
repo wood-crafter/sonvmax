@@ -619,6 +619,18 @@ function UserCart() {
                 </div>
               </div>
             )}
+            {level && totalPrice > 0 && (
+              <div style={{ display: "flex" }}>
+                <strong>Giá giảm cấp đại lý:</strong>
+                <div style={{ color: "black", marginLeft: "0.5rem" }}>
+                  -{" "}
+                  {NumberToVND.format(
+                    (totalPrice + colorPrice) *
+                      (level === "1" ? 0.4 : level === "2" ? 0.3 : 0.2)
+                  )}
+                </div>
+              </div>
+            )}
             {selectedVoucher &&
               voucher?.find((it) => it.id === selectedVoucher) && (
                 <div style={{ display: "flex" }}>
@@ -641,18 +653,6 @@ function UserCart() {
                   </div>
                 </div>
               )}
-            {level && totalPrice > 0 && (
-              <div style={{ display: "flex" }}>
-                <strong>Giá giảm cấp đại lý:</strong>
-                <div style={{ color: "black", marginLeft: "0.5rem" }}>
-                  -{" "}
-                  {NumberToVND.format(
-                    (totalPrice + colorPrice) *
-                      (level === "1" ? 0.4 : level === "2" ? 0.3 : 0.2)
-                  )}
-                </div>
-              </div>
-            )}
             <div style={{ display: "flex" }}>
               <strong>Tổng thanh toán:</strong>
               <div style={{ color: "red", marginLeft: "0.5rem" }}>
