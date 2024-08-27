@@ -1,7 +1,7 @@
 import "./index.css";
 import { UploadOutlined, AppstoreAddOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
-import { Button, Upload, notification } from "antd";
+import { Button, Spin, Upload, notification } from "antd";
 import { ReactNode, useState } from "react";
 import readXlsxFile from "read-excel-file";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
@@ -48,6 +48,7 @@ function ManageColor() {
   const accessToken = useUserStore((state) => state.accessToken);
   const authFetch = useAuthenticatedFetch();
   const [api, contextHolder] = notification.useNotification();
+  const [isApiCalling, setIsApiCalling] = useState(false);
   const [files, setFiles] = useState<RcFile[]>([]);
   const openNotification = (
     message: string,
@@ -78,6 +79,7 @@ function ManageColor() {
         notifyWrongFormatAddColor();
         return;
       }
+      setIsApiCalling(true);
       const createResponse = await authFetch(`${API_ROOT}/color/import-color`, {
         ...requestOptions,
         body: JSON.stringify({
@@ -95,7 +97,8 @@ function ManageColor() {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      if (createResponse.status !== 201) {
+      setIsApiCalling(false);
+      if (!createResponse.ok) {
         openNotification(
           "Thêm vào bảng màu thất bại",
           `
@@ -126,17 +129,22 @@ function ManageColor() {
     <div className="ManageColor">
       {contextHolder}
       <h2 style={{ color: "black" }}>Quản lý màu</h2>
-      <Upload {...props}>
-        <Button icon={<UploadOutlined />}>Thêm file màu</Button>
-      </Upload>
+      {isApiCalling && <Spin size="large" spinning={isApiCalling} />}
+      {!isApiCalling && (
+        <>
+          <Upload {...props}>
+            <Button icon={<UploadOutlined />}>Thêm file màu</Button>
+          </Upload>
 
-      <Button
-        disabled={!files?.length}
-        icon={<AppstoreAddOutlined />}
-        onClick={handleAddToColors}
-      >
-        Thêm vào bảng màu
-      </Button>
+          <Button
+            disabled={!files?.length}
+            icon={<AppstoreAddOutlined />}
+            onClick={handleAddToColors}
+          >
+            Thêm vào bảng màu
+          </Button>
+        </>
+      )}
     </div>
   );
 }
