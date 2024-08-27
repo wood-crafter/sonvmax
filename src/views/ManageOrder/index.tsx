@@ -61,6 +61,7 @@ function ManageOrder() {
   const [isOpenNoteModal, setIsOpenNoteModal] = useState(false);
   const [cancelingId, setCancelingId] = useState("");
   const [note, setNote] = useState("");
+  const [isApiCalling, setIsApiCalling] = useState(false);
 
   const [currentOrder, setCurrentOrder] = useState<any>(null);
   const [address, setAddress] = useState("");
@@ -77,6 +78,7 @@ function ManageOrder() {
     if (typeof status === "number") {
       updateOrderProps.status = status;
       if (status === -1) updateOrderProps.noted = note;
+      setIsApiCalling(true);
       updateResponse = await authFetch(
         `${API_ROOT}/order/update-order-status/${id}`,
         {
@@ -93,6 +95,7 @@ function ManageOrder() {
 
     if (description) {
       updateOrderProps.description = description;
+      setIsApiCalling(true);
       updateResponse = await authFetch(`${API_ROOT}/order/update-order/${id}`, {
         ...requestOptions,
         body: JSON.stringify(updateOrderProps),
@@ -104,6 +107,7 @@ function ManageOrder() {
       });
     }
 
+    setIsApiCalling(false);
     if (updateResponse?.ok) {
       refreshOrder();
       updateSuccessNotification();
@@ -494,13 +498,15 @@ function ManageOrder() {
     },
   ];
 
-  if (isLoading) return <Spin />;
+  if (isLoading) return <Spin size="large" />;
 
   return (
     <div className="ManageOrder">
       {contextHolder}
       <h2 style={{ color: "black" }}>Quản lý đơn</h2>
-      <Table columns={columns} dataSource={orders} />
+      <Spin size="large" spinning={isApiCalling}>
+        <Table columns={columns} dataSource={orders} />
+      </Spin>
       <Modal
         title="Ghi chú hủy đơn"
         open={!!isOpenNoteModal}

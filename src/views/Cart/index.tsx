@@ -7,6 +7,7 @@ import {
   Button,
   Modal,
   Input,
+  Spin,
 } from "antd";
 import { useCart } from "../../hooks/useCart";
 import { AgentInfo, Cart, PagedResponse, RGB, StaffInfo } from "../../type";
@@ -191,6 +192,7 @@ function UserCart() {
   const level = useUserStore((state) => state.level);
   const [colorId, setColorId] = useState<string | null>("");
   const [isOpenOrderDetail, setIsOpenOrderDetail] = useState(false);
+  const [isApiCalling, setIsApiCalling] = useState(false);
   const [orderAddress, setOrderAddress] = useState(
     isAgentInfo(me) ? me?.address : ""
   );
@@ -271,6 +273,7 @@ function UserCart() {
       phoneNumber: phoneNumber,
     };
 
+    setIsApiCalling(true);
     const orderRes = await authFetch(`${API_ROOT}/order/create-order`, {
       ...requestOptions,
       method: "POST",
@@ -281,6 +284,7 @@ function UserCart() {
       },
     });
 
+    setIsApiCalling(false);
     if (orderRes.ok) {
       const me = await triggerMe();
       setUserInformation(me);
@@ -295,6 +299,7 @@ function UserCart() {
   };
 
   const handleDeleteCart = async (id: string) => {
+    setIsApiCalling(true);
     const deleteRes = await authFetch(
       `${API_ROOT}/order/remove-order-product/${id}`,
       {
@@ -307,6 +312,7 @@ function UserCart() {
       }
     );
 
+    setIsApiCalling(false);
     if (deleteRes.ok) {
       deleteSuccessNotification();
       refreshCart();
@@ -321,6 +327,7 @@ function UserCart() {
     volumeId: string,
     id: string
   ) => {
+    setIsApiCalling(true);
     await authFetch(`${API_ROOT}/order/create-order-product/${productId}`, {
       ...requestOptions,
       body: JSON.stringify({ volumeId: volumeId, id }),
@@ -330,6 +337,7 @@ function UserCart() {
         Authorization: `Bearer ${accessToken}`,
       },
     });
+    setIsApiCalling(false);
     refreshCart();
   };
 
@@ -447,275 +455,285 @@ function UserCart() {
           onChange={(e) => setPhoneNumber(e.target.value)}
         ></Input>
       </Modal>
-      {currentCart && (
-        <div className="cart-container">
-          {currentCart.map((item: Cart) => {
-            return (
-              <div key={item.id} className="cart-item">
-                <div className="cart-item-image-container">
-                  <img
-                    src={item.product.image}
-                    style={{ width: "100%", height: "100%" }}
-                  />
-                </div>
-                <div className="cart-item-product-info">
-                  <div>{item.product.nameProduct}</div>
-                  <div style={{ color: "red" }}>
-                    {NumberToVND.format(item.price)}
+      <Spin spinning={isApiCalling}>
+        {currentCart && (
+          <div className="cart-container">
+            {currentCart.map((item: Cart) => {
+              return (
+                <div key={item.id} className="cart-item">
+                  <div className="cart-item-image-container">
+                    <img
+                      src={item.product.image}
+                      style={{ width: "100%", height: "100%" }}
+                    />
                   </div>
-                  <div>x{item.quantity}</div>
-                </div>
-                {item?.product?.volumes && (
-                  <div className="cart-voumes">
-                    <Select
-                      defaultValue={item.volumeId}
-                      onChange={(value: string) => {
-                        updateOrderProduct(item.productId, value, item.id);
-                      }}
-                    >
-                      {item?.product?.volumes?.map((volume) => {
-                        return (
-                          <Select.Option key={volume.id} value={volume.id}>
-                            {volume.volume}
-                          </Select.Option>
-                        );
-                      })}
-                    </Select>
+                  <div className="cart-item-product-info">
+                    <div>{item.product.nameProduct}</div>
+                    <div style={{ color: "red" }}>
+                      {NumberToVND.format(item.price)}
+                    </div>
+                    <div>x{item.quantity}</div>
                   </div>
-                )}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                >
-                  <Button
-                    className="rePick-color"
+                  {item?.product?.volumes && (
+                    <div className="cart-voumes">
+                      <Select
+                        defaultValue={item.volumeId}
+                        onChange={(value: string) => {
+                          updateOrderProduct(item.productId, value, item.id);
+                        }}
+                      >
+                        {item?.product?.volumes?.map((volume) => {
+                          return (
+                            <Select.Option key={volume.id} value={volume.id}>
+                              {volume.volume}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </div>
+                  )}
+                  <div
                     style={{
-                      border: "1px solid black",
-                      marginLeft: "1rem",
-                      marginRight: "1rem",
-                      backgroundColor: `rgb(${
-                        item?.color?.r
-                          ? item?.color?.r
-                          : item.colorPick?.r ?? 255
-                      }, ${
-                        item?.color?.g
-                          ? item?.color?.g
-                          : item.colorPick?.g ?? 255
-                      }, ${
-                        item?.color?.b
-                          ? item?.color?.b
-                          : item.colorPick?.b ?? 255
-                      })`,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
                     }}
+                  >
+                    <Button
+                      className="rePick-color"
+                      style={{
+                        border: "1px solid black",
+                        marginLeft: "1rem",
+                        marginRight: "1rem",
+                        backgroundColor: `rgb(${
+                          item?.color?.r
+                            ? item?.color?.r
+                            : item.colorPick?.r ?? 255
+                        }, ${
+                          item?.color?.g
+                            ? item?.color?.g
+                            : item.colorPick?.g ?? 255
+                        }, ${
+                          item?.color?.b
+                            ? item?.color?.b
+                            : item.colorPick?.b ?? 255
+                        })`,
+                      }}
+                      onClick={() => {
+                        if (!item.product.canColorPick) {
+                          api.open({
+                            message: "Sản phẩm này không cho phép chọn màu",
+                            icon: <FrownOutlined style={{ color: "red" }} />,
+                          });
+                        }
+                        setCurrentEditingId(item.id);
+                        setCurrentEditingProductId(item.productId);
+                        setColorId((item.colorId ?? "") + "");
+                        setCurrrentColor(
+                          item.colorId ? item.color : item.colorPick
+                        );
+                        setIsOpenColorPick(true);
+                      }}
+                    ></Button>
+                    <div>
+                      {item?.color
+                        ? item.color.code
+                        : `rgb(${item.colorPick?.r ?? 255}, ${
+                            item.colorPick?.g ?? 255
+                          }, ${item.colorPick?.b ?? 255})`}
+                    </div>
+                  </div>
+                  <DebouncedInputNumber
+                    refreshCart={refreshCart}
+                    className="cart-item-num-of-product"
+                    id={item.id}
+                    min={1}
+                    max={100000}
+                    defaultValue={item.quantity}
+                  />
+                  <Checkbox
+                    checked={!!cartsChecked.find((it) => it === item.id)}
+                    onChange={(e) => {
+                      handleChangeCheckedProduct(e, item.id);
+                    }}
+                    style={{ marginRight: "2rem" }}
+                  />
+                  <div className="cart-item-total">
+                    Tổng: {NumberToVND.format(item.price * item.quantity)}
+                  </div>
+                  <Button
+                    className="cart-item-delete"
                     onClick={() => {
-                      if (!item.product.canColorPick) {
-                        api.open({
-                          message: "Sản phẩm này không cho phép chọn màu",
-                          icon: <FrownOutlined style={{ color: "red" }} />,
-                        });
-                      }
-                      setCurrentEditingId(item.id);
-                      setCurrentEditingProductId(item.productId);
-                      setColorId((item.colorId ?? "") + "");
-                      setCurrrentColor(
-                        item.colorId ? item.color : item.colorPick
-                      );
-                      setIsOpenColorPick(true);
+                      handleDeleteCart(item.id);
                     }}
-                  ></Button>
-                  <div>
-                    {item?.color
-                      ? item.color.code
-                      : `rgb(${item.colorPick?.r ?? 255}, ${
-                          item.colorPick?.g ?? 255
-                        }, ${item.colorPick?.b ?? 255})`}
+                  >
+                    Xoá
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {!!currentCart?.length && (
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Button
+              style={{ marginRight: "2rem", marginTop: "0.5rem" }}
+              onClick={handlePickAll}
+            >
+              {isPickAll ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+            </Button>
+          </div>
+        )}
+        {!!currentCart?.length && (
+          <div
+            style={{
+              width: "calc(100% - 2rem)",
+              marginRight: "2rem",
+              marginTop: "2rem",
+              marginBottom: "2rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+            }}
+          >
+            <div style={{ display: "flex" }}>
+              <strong>Tổng giá niêm yết:</strong>
+              <div style={{ color: "black", marginLeft: "0.5rem" }}>
+                {NumberToVND.format(totalPrice)}
+              </div>
+            </div>
+            {colorPrice !== 0 && (
+              <div style={{ display: "flex" }}>
+                <strong>Tổng giá pha màu:</strong>
+                <div style={{ color: "black", marginLeft: "0.5rem" }}>
+                  + {NumberToVND.format(colorPrice)}
+                </div>
+              </div>
+            )}
+            {selectedVoucher &&
+              voucher?.find((it) => it.id === selectedVoucher) && (
+                <div style={{ display: "flex" }}>
+                  <strong>Giá giảm voucher:</strong>
+                  <div style={{ color: "black", marginLeft: "0.5rem" }}>
+                    -{" "}
+                    {NumberToVND.format(
+                      (totalPrice + colorPrice) *
+                        (level
+                          ? level === "1"
+                            ? 0.6
+                            : level === "2"
+                            ? 0.7
+                            : 0.8
+                          : 1) *
+                        ((voucher?.find((it) => it.id === selectedVoucher)
+                          ?.discountAmount ?? 0) /
+                          100)
+                    )}
                   </div>
                 </div>
-                <DebouncedInputNumber
-                  refreshCart={refreshCart}
-                  className="cart-item-num-of-product"
-                  id={item.id}
-                  min={1}
-                  max={100000}
-                  defaultValue={item.quantity}
-                />
-                <Checkbox
-                  checked={!!cartsChecked.find((it) => it === item.id)}
-                  onChange={(e) => {
-                    handleChangeCheckedProduct(e, item.id);
-                  }}
-                  style={{ marginRight: "2rem" }}
-                />
-                <div className="cart-item-total">
-                  Tổng: {NumberToVND.format(item.price * item.quantity)}
-                </div>
-                <Button
-                  className="cart-item-delete"
-                  onClick={() => {
-                    handleDeleteCart(item.id);
-                  }}
-                >
-                  Xoá
-                </Button>
-              </div>
-            );
-          })}
-        </div>
-      )}
-      {!!currentCart?.length && (
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          <Button
-            style={{ marginRight: "2rem", marginTop: "0.5rem" }}
-            onClick={handlePickAll}
-          >
-            {isPickAll ? "Bỏ chọn tất cả" : "Chọn tất cả"}
-          </Button>
-        </div>
-      )}
-      {!!currentCart?.length && (
-        <div
-          style={{
-            width: "calc(100% - 2rem)",
-            marginRight: "2rem",
-            marginTop: "2rem",
-            marginBottom: "2rem",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
-          }}
-        >
-          <div style={{ display: "flex" }}>
-            <strong>Tổng giá niêm yết:</strong>
-            <div style={{ color: "black", marginLeft: "0.5rem" }}>
-              {NumberToVND.format(totalPrice)}
-            </div>
-          </div>
-          {colorPrice !== 0 && (
-            <div style={{ display: "flex" }}>
-              <strong>Tổng giá pha màu:</strong>
-              <div style={{ color: "black", marginLeft: "0.5rem" }}>
-                + {NumberToVND.format(colorPrice)}
-              </div>
-            </div>
-          )}
-          {selectedVoucher &&
-            voucher?.find((it) => it.id === selectedVoucher) && (
+              )}
+            {level && totalPrice > 0 && (
               <div style={{ display: "flex" }}>
-                <strong>Giá giảm voucher:</strong>
+                <strong>Giá giảm cấp đại lý:</strong>
                 <div style={{ color: "black", marginLeft: "0.5rem" }}>
                   -{" "}
                   {NumberToVND.format(
                     (totalPrice + colorPrice) *
-                      ((voucher?.find((it) => it.id === selectedVoucher)
-                        ?.discountAmount ?? 0) /
-                        100)
+                      (level === "1" ? 0.4 : level === "2" ? 0.3 : 0.2)
                   )}
                 </div>
               </div>
             )}
-          {level && totalPrice > 0 && (
             <div style={{ display: "flex" }}>
-              <strong>Giá giảm cấp đại lý:</strong>
-              <div style={{ color: "black", marginLeft: "0.5rem" }}>
-                -{" "}
-                {NumberToVND.format(
-                  (totalPrice + colorPrice) *
-                    (level === "1" ? 0.4 : level === "2" ? 0.3 : 0.2)
-                )}
+              <strong>Tổng thanh toán:</strong>
+              <div style={{ color: "red", marginLeft: "0.5rem" }}>
+                {NumberToVND.format(total)}
               </div>
             </div>
-          )}
-          <div style={{ display: "flex" }}>
-            <strong>Tổng thanh toán:</strong>
-            <div style={{ color: "red", marginLeft: "0.5rem" }}>
-              {NumberToVND.format(total)}
-            </div>
           </div>
-        </div>
-      )}
-      {voucher && voucher.length > 0 && (
-        <div
-          style={{
-            marginBottom: "1rem",
-            display: "flex",
-            justifyContent: "flex-end",
-            marginRight: "1rem",
-          }}
-        >
-          <Select
-            onChange={(value) => setSelectedVoucher(value)}
-            placeholder="Chọn voucher"
-            style={{ width: "20%" }}
-          >
-            <Select.Option key={"noVoucher"} value={""}>
-              Bỏ chọn
-            </Select.Option>
-            {voucher.map((v) => (
-              <Select.Option key={v.id} value={v.id}>
-                {v.code} - {v.discountAmount}%
-              </Select.Option>
-            ))}
-          </Select>
-        </div>
-      )}
-      {currentCart?.length !== 0 ? (
-        <Popconfirm
-          title="Bạn chưa chọn voucher, bạn có muốn tiếp tục không?"
-          onConfirm={() => {
-            if (cartsChecked.length < 1) {
-              noProductInOrder();
-              return;
-            }
-            setIsOpenOrderDetail(true);
-          }}
-          okText="Có"
-          cancelText="Hủy"
-          disabled={!needsVouchersNotAppliedWarning}
-          icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-        >
-          <button
-            onClick={
-              needsVouchersNotAppliedWarning
-                ? undefined
-                : () => {
-                    if (cartsChecked.length < 1) {
-                      noProductInOrder();
-                      return;
-                    }
-                    setIsOpenOrderDetail(true);
-                  }
-            }
+        )}
+        {!!currentCart?.length && voucher && voucher.length > 0 && (
+          <div
             style={{
-              marginLeft: "1rem",
+              marginBottom: "1rem",
+              display: "flex",
+              justifyContent: "flex-end",
               marginRight: "1rem",
-              color: "white",
-              backgroundColor: "black",
             }}
           >
-            Đặt hàng
-          </button>
-        </Popconfirm>
-      ) : (
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          Chưa có sản phẩm nào
-        </div>
-      )}
+            <Select
+              onChange={(value) => setSelectedVoucher(value)}
+              placeholder="Chọn voucher"
+              style={{ width: "20%" }}
+            >
+              <Select.Option key={"noVoucher"} value={""}>
+                Bỏ chọn
+              </Select.Option>
+              {voucher.map((v) => (
+                <Select.Option key={v.id} value={v.id}>
+                  {v.code} - {v.discountAmount}%
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+        )}
+        {currentCart?.length !== 0 ? (
+          <Popconfirm
+            title="Bạn chưa chọn voucher, bạn có muốn tiếp tục không?"
+            onConfirm={() => {
+              if (cartsChecked.length < 1) {
+                noProductInOrder();
+                return;
+              }
+              setIsOpenOrderDetail(true);
+            }}
+            okText="Có"
+            cancelText="Hủy"
+            disabled={!needsVouchersNotAppliedWarning}
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+          >
+            <button
+              onClick={
+                needsVouchersNotAppliedWarning
+                  ? undefined
+                  : () => {
+                      if (cartsChecked.length < 1) {
+                        noProductInOrder();
+                        return;
+                      }
+                      setIsOpenOrderDetail(true);
+                    }
+              }
+              style={{
+                marginLeft: "1rem",
+                marginRight: "1rem",
+                color: "white",
+                backgroundColor: "black",
+                width: "calc(100% - 2rem)",
+              }}
+            >
+              Đặt hàng
+            </button>
+          </Popconfirm>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              width: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            Chưa có sản phẩm nào
+          </div>
+        )}
+      </Spin>
     </div>
   );
 }

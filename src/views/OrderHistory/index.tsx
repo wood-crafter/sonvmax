@@ -31,6 +31,7 @@ function OrderHistory() {
   const { data, isLoading, mutate: refreshOrders } = useOrders();
   const [currentOrder, setCurrentOrder] = useState<any>(null);
   const [metadataOrder, setMetadataOrder] = useState<any>(null);
+  const [isApiCalling, setIsApiCalling] = useState(false);
   const orders = useMemo(
     () => data?.data.map((it) => ({ key: it.id, ...it })),
     [data?.data]
@@ -54,6 +55,7 @@ function OrderHistory() {
 
   const handleReAddToCart = async (order: Order) => {
     let isOrderOk = true;
+    setIsApiCalling(true);
     order.orderProductSnapshots.forEach(async (it) => {
       const cartBody = {
         quantity: it.quantity,
@@ -79,6 +81,7 @@ function OrderHistory() {
       }
     });
 
+    setIsApiCalling(false);
     if (isOrderOk) {
       cloneCartSuccess();
     } else {
@@ -87,6 +90,7 @@ function OrderHistory() {
   };
 
   const handleCancelOrder = async (id: string) => {
+    setIsApiCalling(true);
     const updateResponse = await authFetch(
       `${API_ROOT}/order/update-order-status/${id}`,
       {
@@ -100,6 +104,7 @@ function OrderHistory() {
       }
     );
 
+    setIsApiCalling(false);
     if (updateResponse.ok) {
       api.open({
         message: "Hủy đơn hàng",
@@ -315,22 +320,24 @@ function OrderHistory() {
   return (
     <div className="OrderHistory">
       {contextHolder}
-      <Table
-        columns={columns}
-        dataSource={orders}
-        onRow={(record) => ({
-          onDoubleClick: () => {
-            setCurrentOrder(record.orderProductSnapshots);
-            setMetadataOrder({
-              address: record.address,
-              phoneNumber: record.phoneNumber,
-              addressCustom: record.addressCustom,
-              phoneNumberCustom: record.phoneNumberCustom,
-              id: record.id,
-            });
-          },
-        })}
-      />
+      <Spin spinning={isApiCalling}>
+        <Table
+          columns={columns}
+          dataSource={orders}
+          onRow={(record) => ({
+            onDoubleClick: () => {
+              setCurrentOrder(record.orderProductSnapshots);
+              setMetadataOrder({
+                address: record.address,
+                phoneNumber: record.phoneNumber,
+                addressCustom: record.addressCustom,
+                phoneNumberCustom: record.phoneNumberCustom,
+                id: record.id,
+              });
+            },
+          })}
+        />
+      </Spin>
       <Modal
         title={`Xem chi tiết đơn: ${metadataOrder?.id ?? ""}`}
         open={!!currentOrder}

@@ -1,4 +1,4 @@
-import { Form, Input, Button, notification } from "antd";
+import { Form, Input, Button, notification, Spin } from "antd";
 import { useState } from "react";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { API_ROOT } from "../../constant";
@@ -17,6 +17,7 @@ function ChangePassword() {
   const [api, contextHolder] = notification.useNotification();
   const authFetch = useAuthenticatedFetch();
   const [loading, setLoading] = useState(false);
+  const [isApiCalling, setIsApiCalling] = useState(false);
 
   const handleFinish = async (values: ChangePassProp) => {
     setLoading(true);
@@ -32,6 +33,7 @@ function ChangePassword() {
     }
 
     try {
+      setIsApiCalling(true);
       const res = await authFetch(`${API_ROOT}/auth/change-password`, {
         method: "POST",
         headers: {
@@ -39,6 +41,7 @@ function ChangePassword() {
         },
         body: JSON.stringify({ currentPassword: oldPassword, newPassword }),
       });
+      setIsApiCalling(false);
 
       if (res.ok) {
         api.success({
@@ -59,6 +62,8 @@ function ChangePassword() {
       setLoading(false);
     }
   };
+
+  if (isApiCalling) return <Spin size="large"></Spin>;
 
   return (
     <div className="ChangePassword">
