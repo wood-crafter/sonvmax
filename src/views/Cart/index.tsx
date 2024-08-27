@@ -611,14 +611,6 @@ function UserCart() {
                 {NumberToVND.format(totalPrice)}
               </div>
             </div>
-            {colorPrice !== 0 && (
-              <div style={{ display: "flex" }}>
-                <strong>Tổng giá pha màu:</strong>
-                <div style={{ color: "black", marginLeft: "0.5rem" }}>
-                  + {NumberToVND.format(colorPrice)}
-                </div>
-              </div>
-            )}
             {level && totalPrice > 0 && (
               <div style={{ display: "flex" }}>
                 <strong>Giá giảm cấp đại lý:</strong>
@@ -628,6 +620,14 @@ function UserCart() {
                     (totalPrice + colorPrice) *
                       (level === "1" ? 0.4 : level === "2" ? 0.3 : 0.2)
                   )}
+                </div>
+              </div>
+            )}
+            {colorPrice !== 0 && (
+              <div style={{ display: "flex" }}>
+                <strong>Tổng giá pha màu:</strong>
+                <div style={{ color: "black", marginLeft: "0.5rem" }}>
+                  + {NumberToVND.format(colorPrice)}
                 </div>
               </div>
             )}

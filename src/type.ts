@@ -150,6 +150,7 @@ export type RequestOptions = {
 }
 
 export type Agent = {
+  isActive?: boolean
   id: string
   roleId: string
   email: string

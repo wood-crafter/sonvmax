@@ -80,7 +80,7 @@ function ManageAgent() {
 
   const deleteSuccessNotification = () => {
     api.open({
-      message: "Xoá thành công",
+      message: "Sửa thành công thành công",
       description: "",
       icon: <SmileOutlined style={{ color: "#108ee9" }} />,
     });
@@ -88,7 +88,7 @@ function ManageAgent() {
 
   const deleteFailNotification = (status: number, statusText: string) => {
     api.open({
-      message: "Xoá thất bại",
+      message: "Sửa thất bại",
       description: `Mã lỗi: ${status} ${statusText}`,
       icon: <FrownOutlined style={{ color: "#108ee9" }} />,
     });
@@ -178,13 +178,14 @@ function ManageAgent() {
     setIsModalOpen(false);
   };
 
-  const handleDeleteRecord = async (record: Agent) => {
+  const handleDeleteRecord = async (record: Agent, isActive: boolean) => {
     setIsApiCalling(true);
     const deleteResponse = await authFetch(
-      `${API_ROOT}/agent/remove-agent/${record.id}`,
+      `${API_ROOT}/agent/update-agent/${record.id}`,
       {
         ...requestOptions,
-        method: "DELETE",
+        body: JSON.stringify({ isActive: isActive }),
+        method: "PUT",
         headers: {
           ...requestOptions.headers,
           Authorization: `Bearer ${accessToken}`,
@@ -417,27 +418,41 @@ function ManageAgent() {
             {
               title: "",
               key: "action",
-              render: (_: any, record: Agent) => (
-                <Space size="middle">
-                  <Button
-                    onClick={() => {
-                      showModal(record);
-                    }}
-                  >
-                    Sửa
-                  </Button>
-                  <Popconfirm
-                    title="Xoá đại lý"
-                    description="Bạn chắc chắn muốn xoá đại lý này?"
-                    icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-                    onConfirm={() => handleDeleteRecord(record)}
-                    okText="Xoá"
-                    cancelText="Huỷ"
-                  >
-                    <Button>Xoá</Button>
-                  </Popconfirm>
-                </Space>
-              ),
+              render: (_: any, record: Agent) => {
+                return (
+                  <Space size="middle">
+                    <Button
+                      onClick={() => {
+                        showModal(record);
+                      }}
+                    >
+                      Sửa
+                    </Button>
+                    <Popconfirm
+                      title={
+                        record.isActive ? "Tạm dừng đại lý" : "Mở lại đại lý"
+                      }
+                      description={
+                        record.isActive
+                          ? "Bạn chắc chắn muốn tạm dừng đại lý?"
+                          : "Mở lại đại lý này?"
+                      }
+                      icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+                      onConfirm={() =>
+                        handleDeleteRecord(record, !record.isActive)
+                      }
+                      okText={
+                        record.isActive ? "Tạm dừng đại lý" : "Mở lại đại lý"
+                      }
+                      cancelText="Huỷ"
+                    >
+                      <Button>
+                        {record.isActive ? "Tạm dừng đại lý" : "Mở lại đại lý"}
+                      </Button>
+                    </Popconfirm>
+                  </Space>
+                );
+              },
             },
           ]
         : []),
