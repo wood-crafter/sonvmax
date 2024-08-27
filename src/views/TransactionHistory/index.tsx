@@ -134,7 +134,7 @@ function TransactionHistory() {
 
   return (
     <div className="TransactionHistory">
-      <h3>Lịch sử nạp tiền</h3>
+      <h3 style={{ color: "black" }}>Lịch sử nạp tiền</h3>
       {contextHolder}
       <Spin spinning={isApiCalling}>
         <Table
