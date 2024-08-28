@@ -444,7 +444,10 @@ function ManageTicket() {
           columns={columns}
           dataSource={data?.data}
           onRow={(record) => ({
-            onDoubleClick: () => handleRowClick(record),
+            onDoubleClick: () => {
+              if (+record?.ticket?.statusTicket === -1) return;
+              handleRowClick(record);
+            },
           })}
         />
       </Spin>

@@ -75,9 +75,23 @@ function ManageOrder() {
 
     let updateResponse;
 
-    if (typeof status === "number") {
+    if (status === -1) {
+      setIsApiCalling(true);
       updateOrderProps.status = status;
-      if (status === -1) updateOrderProps.noted = note;
+      updateOrderProps.noted = note;
+      updateResponse = await authFetch(
+        `${API_ROOT}/order/update-order-status/${id}`,
+        {
+          ...requestOptions,
+          body: JSON.stringify(updateOrderProps),
+          method: "PUT",
+          headers: {
+            ...requestOptions.headers,
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+    } else if (typeof status === "number") {
       setIsApiCalling(true);
       updateResponse = await authFetch(
         `${API_ROOT}/order/update-order-status/${id}`,
@@ -91,9 +105,7 @@ function ManageOrder() {
           },
         }
       );
-    }
-
-    if (description) {
+    } else if (description) {
       updateOrderProps.description = description;
       setIsApiCalling(true);
       updateResponse = await authFetch(`${API_ROOT}/order/update-order/${id}`, {
