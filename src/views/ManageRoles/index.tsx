@@ -111,8 +111,12 @@ function AddRoleButton(props: AddRoleButtonProps) {
       try {
         const res = await trigger({ roleName });
 
-        if (res.error) {
-          throw new Error(res.message?.join(",") ?? res.error);
+        if (res.statusCode !== 200) {
+          const message = Array.isArray(res.message)
+            ? res.message.join(",")
+            : res.message ?? res.error;
+
+          throw new Error(message);
         }
 
         onAdded({ roleName });
