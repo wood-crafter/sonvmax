@@ -59,7 +59,7 @@ function ManageTicket() {
         method: "PUT",
         body: JSON.stringify({
           statusTicket: -1,
-          description: descriptionCancel,
+          noted: descriptionCancel,
         }),
         headers: {
           ...requestOptions.headers,
