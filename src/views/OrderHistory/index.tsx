@@ -202,6 +202,11 @@ function OrderHistory() {
       sorter: (a, b) => a.status - b.status,
     },
     {
+      title: "Ghi chú nhân viên",
+      dataIndex: "noted",
+      key: "noted",
+    },
+    {
       title: "",
       key: "action",
       render: (_, record: Order) => (
