@@ -431,7 +431,7 @@ function ManageAgent() {
         ],
         onFilter: (value, record) => record.isActive === value,
       },
-      ...(roleName !== "SALES"
+      ...(roleName === "OWNER"
         ? [
             {
               title: "",
@@ -464,7 +464,9 @@ function ManageAgent() {
                       }
                       cancelText="Huỷ"
                     >
-                      <Button>
+                      <Button
+                        style={{ color: record.isActive ? "red" : "green" }}
+                      >
                         {record.isActive ? "Tạm dừng" : "Mở lại"}
                       </Button>
                     </Popconfirm>

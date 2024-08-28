@@ -2,6 +2,10 @@
   flex-grow: 1;
 }
 
+.Layout-wrapper:has(.ManageStaff) {
+  overflow-y: auto;
+}
+
 .ManageStaff .modal-update-container {
   display: flex;
   flex-direction: column;
