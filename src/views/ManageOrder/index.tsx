@@ -92,6 +92,7 @@ function ManageOrder() {
         }
       );
     } else if (typeof status === "number") {
+      updateOrderProps.status = status;
       setIsApiCalling(true);
       updateResponse = await authFetch(
         `${API_ROOT}/order/update-order-status/${id}`,
