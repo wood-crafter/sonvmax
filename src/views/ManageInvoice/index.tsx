@@ -164,8 +164,8 @@ function ManageInvoice() {
       ),
       onFilter: (value, record) =>
         record.agentName
-          .toLowerCase()
-          .includes((value as string).toLowerCase()),
+          ?.toLowerCase()
+          .includes((value as string)?.toLowerCase()),
     },
     {
       title: "Tổng tiền",

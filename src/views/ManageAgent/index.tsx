@@ -413,6 +413,24 @@ function ManageAgent() {
         ],
         onFilter: (value, record) => record.rank === value,
       },
+      {
+        title: "Trạng thái",
+        dataIndex: "isActive",
+        key: "isActive",
+        render: (isActive) => {
+          return (
+            <div style={{ color: isActive ? "green" : "red" }}>
+              {isActive ? "Hoạt động" : "Tạm dừng"}
+            </div>
+          );
+        },
+        sorter: (a, b) => (a.isActive && !b.isActive ? 1 : -1),
+        filters: [
+          { text: "Hoạt động", value: true },
+          { text: "Tạm dừng", value: false },
+        ],
+        onFilter: (value, record) => record.isActive === value,
+      },
       ...(roleName !== "SALES"
         ? [
             {
@@ -482,7 +500,7 @@ function ManageAgent() {
           Thêm đại lý
         </Button>
       )}
-      <Spin spinning={isApiCalling}>
+      <Spin spinning={isApiCalling} style={{ maxWidth: "100%" }}>
         <Table columns={columns} dataSource={agents} />
       </Spin>
       <Modal
