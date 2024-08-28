@@ -465,7 +465,7 @@ function ManageAgent() {
                       cancelText="Huỷ"
                     >
                       <Button>
-                        {record.isActive ? "Tạm dừng đại lý" : "Mở lại đại lý"}
+                        {record.isActive ? "Tạm dừng" : "Mở lại"}
                       </Button>
                     </Popconfirm>
                   </Space>
