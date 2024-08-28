@@ -75,7 +75,7 @@ function ManageOrder() {
 
     let updateResponse;
 
-    if (status === -1) {
+    if (status == -1) {
       setIsApiCalling(true);
       updateOrderProps.status = status;
       updateOrderProps.noted = note;
